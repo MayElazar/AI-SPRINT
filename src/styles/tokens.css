@@ -1,0 +1,114 @@
+/*
+  Design tokens, v5, clinical blue and companion physician.
+  Mirrors C-core/design-system-tokens.css exactly. Keep both in sync
+  if the palette changes, this file is the source of truth for the
+  real app build, C-core's copy is the source of truth for the
+  documented design system.
+*/
+
+:root {
+  --bg: #f4f8fd;
+  --surface: #ffffff;
+  --text: #293754;
+  --text-soft: #5b6b85;
+  --border: #dce6f2;
+
+  --accent: #3674d9;
+  --accent-deep: #2557b0;
+  --accent-bright: #3f9fff;
+  --accent-tint: #e4eefc;
+
+  --teal: #1f8a70;
+  --teal-tint: #ddeee9;
+
+  --available: #2ecc71;
+  --star: #f4c728;
+
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --shadow-card: 0 10px 26px rgba(20, 40, 80, 0.08);
+  --frame-bg: #e7eff9;
+
+  /* Liquid Glass material, scoped to the tab bar and the story text/video
+     toggle. The material itself stays neutral and translucent per Apple's
+     own Liquid Glass guidance, color only appears on the active/selected
+     state, here as the requested purple-pink glow. */
+  --glass-bg: rgba(255, 255, 255, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-sheen: rgba(255, 255, 255, 0.55);
+  --glass-sheen-2: rgba(255, 255, 255, 0);
+  --glass-shadow: 0 8px 32px rgba(31, 20, 60, 0.16), 0 1px 1px rgba(255, 255, 255, 0.8) inset,
+    0 -1px 6px rgba(31, 20, 60, 0.06) inset;
+  /* Real Schneider brand colors, purple and deep blue, chosen from the full
+     set (#F7C0CD, #004C9A, #7B69AF, #96CB63, #FFC645, #00B5D6, #EF4C67) for
+     contrast and legibility as a fill/glow pair. */
+  --glow-purple: #7b69af;
+  --glow-pink: #004c9a;
+  --glow-active: linear-gradient(135deg, var(--glow-purple), var(--glow-pink));
+  --glow-shadow: 0 4px 18px rgba(123, 105, 175, 0.4), 0 2px 8px rgba(0, 76, 154, 0.35);
+}
+
+:root[data-theme="dark"] {
+  --bg: #141a24;
+  --surface: #1e2635;
+  --text: #e7edf6;
+  --text-soft: #9aa8bc;
+  --border: #2b3547;
+
+  --accent: #5c93e8;
+  --accent-deep: #4779c7;
+  --accent-bright: #3f9fff;
+  --accent-tint: #223049;
+
+  --teal: #4db89e;
+  --teal-tint: #1c2e28;
+
+  --available: #2ecc71;
+  --star: #f4c728;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --frame-bg: #0a0d13;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a24;
+    --surface: #1e2635;
+    --text: #e7edf6;
+    --text-soft: #9aa8bc;
+    --border: #2b3547;
+
+    --accent: #5c93e8;
+    --accent-deep: #4779c7;
+    --accent-bright: #3f9fff;
+    --accent-tint: #223049;
+
+    --teal: #4db89e;
+    --teal-tint: #1c2e28;
+
+    --available: #2ecc71;
+    --star: #f4c728;
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --frame-bg: #0a0d13;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f8fd;
+  --surface: #ffffff;
+  --text: #293754;
+  --text-soft: #5b6b85;
+  --border: #dce6f2;
+
+  --accent: #3674d9;
+  --accent-deep: #2557b0;
+  --accent-bright: #3f9fff;
+  --accent-tint: #e4eefc;
+
+  --teal: #1f8a70;
+  --teal-tint: #ddeee9;
+
+  --available: #2ecc71;
+  --star: #f4c728;
+  --shadow-card: 0 10px 26px rgba(20, 40, 80, 0.08);
+  --frame-bg: #e7eff9;
+}
