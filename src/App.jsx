@@ -57,7 +57,13 @@ export default function App() {
         />
       )}
 
-      {phase === "updates" && <Notes logEntries={logEntries} />}
+      {phase === "updates" && (
+        <Notes
+          logEntries={logEntries}
+          currentStage={currentStage}
+          onAddLog={(entry) => setLogEntries((prev) => [...prev, entry])}
+        />
+      )}
 
       {phase === "ask" && <AskAI onBack={() => setPhase("home")} />}
 

@@ -96,10 +96,6 @@ export default function AskAI({ onBack }) {
 
   return (
     <div className="screen ask-screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
 
       <div className="back-row">
         <button

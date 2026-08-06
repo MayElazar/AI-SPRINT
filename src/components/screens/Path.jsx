@@ -4,10 +4,6 @@ import { STAGES } from "../../data/stages.js";
 export default function Path({ currentStage, onOpenStage }) {
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="path-hero">
         <div className="eyebrow">Noa's path</div>
         <div className="title headline">Five stages, one at a time</div>

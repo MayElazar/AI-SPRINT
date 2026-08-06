@@ -21,10 +21,6 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog }
 
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="back-row">
         <button className="back-btn" onClick={onBack}>
           ←

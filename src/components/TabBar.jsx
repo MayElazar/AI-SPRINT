@@ -12,12 +12,13 @@ const HomeIcon = (
 const UpdatesIcon = (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M12 21s7-6.5 7-11.5A7 7 0 105 9.5C5 14.5 12 21 12 21z"
+      d="M15.5 4.5l4 4L8 20H4v-4l11.5-11.5z"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinejoin="round"
+      strokeLinecap="round"
     />
-    <path d="M12 8v3.5l2.2 1.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.5 6.5l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 

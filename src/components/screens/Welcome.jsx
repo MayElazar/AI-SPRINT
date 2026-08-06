@@ -3,10 +3,6 @@ import drCohen from "../../assets/dr-cohen.png";
 export default function Welcome({ onViewPath }) {
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="onb-wrap">
         <div>
           <div className="welcome-photo-wrap">

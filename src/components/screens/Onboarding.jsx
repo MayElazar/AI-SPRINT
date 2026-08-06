@@ -40,10 +40,6 @@ export default function Onboarding({ onDone }) {
 
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="onb-wrap">
         {step === 1 && (
           <>

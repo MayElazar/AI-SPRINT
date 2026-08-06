@@ -1,10 +1,6 @@
 export default function Arrival({ onCheckIn }) {
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="onb-wrap">
         <div>
           <div className="onb-hero">

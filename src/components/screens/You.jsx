@@ -1,10 +1,6 @@
 export default function You() {
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
       <div className="path-hero">
         <div className="eyebrow">You</div>
         <div className="title headline">Michal and David</div>

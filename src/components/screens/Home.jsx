@@ -71,10 +71,6 @@ export default function Home({
 
   return (
     <div className="screen">
-      <div className="statusbar">
-        <span>9:41</span>
-        <span>🔊 📶 🔋</span>
-      </div>
 
       <div className="section-label" style={{ marginTop: 0 }}>
         Right now
