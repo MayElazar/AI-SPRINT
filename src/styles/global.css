@@ -1413,7 +1413,7 @@ button:focus-visible {
    the reference (light glass bar, dark icons, gray active-state pill). */
 .tab-bar {
   position: sticky;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom));
   z-index: 5;
   margin: 24px auto 0;
   width: fit-content;
