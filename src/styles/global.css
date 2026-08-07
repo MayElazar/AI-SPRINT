@@ -1409,7 +1409,10 @@ button:focus-visible {
    icon-only, a plain soft pill behind the active icon, no color, matching
    the reference (light glass bar, dark icons, gray active-state pill). */
 .tab-bar {
-  margin: 24px auto calc(12px + env(safe-area-inset-bottom));
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 5;
+  margin: 24px auto 0;
   width: fit-content;
   display: flex;
   justify-content: center;
