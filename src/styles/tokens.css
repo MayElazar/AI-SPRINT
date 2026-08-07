@@ -167,6 +167,16 @@
   --cyan-tint-text: #5cd3ea;
   --coral-tint: #2e1a1e;
   --coral-tint-text: #f0899a;
+
+  /* Dark-mode glass: previously undefined here, so dark mode fell back
+     to the light default (a white-based glass), putting light text on
+     a near-white card. Dark surface tint instead of white. */
+  --glass-bg: rgba(30, 38, 53, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-sheen: rgba(255, 255, 255, 0.06);
+  --glass-sheen-2: rgba(255, 255, 255, 0);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(255, 255, 255, 0.05) inset,
+    0 -1px 6px rgba(0, 0, 0, 0.2) inset;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -211,6 +221,13 @@
     --cyan-tint-text: #5cd3ea;
     --coral-tint: #2e1a1e;
     --coral-tint-text: #f0899a;
+
+    --glass-bg: rgba(30, 38, 53, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-sheen: rgba(255, 255, 255, 0.06);
+    --glass-sheen-2: rgba(255, 255, 255, 0);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(255, 255, 255, 0.05) inset,
+      0 -1px 6px rgba(0, 0, 0, 0.2) inset;
   }
 }
 

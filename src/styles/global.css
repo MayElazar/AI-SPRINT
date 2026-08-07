@@ -38,7 +38,7 @@ button:focus-visible {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: var(--bg);
   overflow-x: hidden;
 }
 
@@ -1132,13 +1132,16 @@ button:focus-visible {
   align-items: center;
   gap: 11px;
   /* Matches a real iOS banner: heavily blurred, lightly tinted glass
-     with a large corner radius and a soft drop shadow, not a flat card. */
-  background: rgba(255, 255, 255, 0.62);
+     with a large corner radius and a soft drop shadow, not a flat card.
+     Uses --glass-bg/--glass-border (theme-aware) rather than a hardcoded
+     white, a fixed white glass over a dark background in dark mode put
+     light text on a near-white card. */
+  background: var(--glass-bg);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--glass-border);
   border-radius: 22px;
-  box-shadow: 0 8px 24px rgba(20, 40, 80, 0.13);
+  box-shadow: var(--shadow-card);
   padding: 12px 14px;
   transform: translateX(var(--drag-x, 0px));
   animation: notif-enter 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
@@ -1419,10 +1422,12 @@ button:focus-visible {
   gap: 4px;
   padding: 10px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 10px 30px rgba(20, 40, 80, 0.14), 0 1px 1px rgba(255, 255, 255, 0.9) inset,
-    0 -1px 6px rgba(20, 40, 80, 0.05) inset;
+  /* Theme-aware glass tokens, not a hardcoded white, same bug the
+     push-banner glass had: a fixed white glass over a dark background
+     in dark mode washes the icons out against a near-white pill. */
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   overflow: hidden;
@@ -1434,7 +1439,7 @@ button:focus-visible {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 55%);
+  background: linear-gradient(180deg, var(--glass-sheen) 0%, var(--glass-sheen-2) 55%);
 }
 
 .tab-btn {
@@ -1908,12 +1913,15 @@ button:focus-visible {
   display: flex;
   align-items: center;
   gap: 11px;
-  background: rgba(255, 255, 255, 0.82);
+  /* Theme-aware glass, not hardcoded white, same fix as .ios-notif
+     and .tab-bar: a fixed white glass over a dark bg in dark mode
+     read as a near-white card with unreadable light text on it. */
+  background: var(--glass-bg);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--glass-border);
   border-radius: 22px;
-  box-shadow: 0 12px 32px rgba(20, 40, 80, 0.22);
+  box-shadow: var(--glass-shadow);
   padding: 12px 14px 14px;
   pointer-events: auto;
   cursor: grab;
