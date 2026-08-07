@@ -68,7 +68,10 @@ button:focus-visible {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 22px 20px 40px;
+  /* Extra bottom padding clears the now-fixed tab bar (~54px tall,
+     20px offset) so content never scrolls in underneath it. Screens
+     without a tab bar just get a bit of harmless extra whitespace. */
+  padding: 22px 20px calc(40px + 74px + 20px);
 }
 
 /* Onboarding + arrival */
@@ -1412,10 +1415,19 @@ button:focus-visible {
    icon-only, a plain soft pill behind the active icon, no color, matching
    the reference (light glass bar, dark icons, gray active-state pill). */
 .tab-bar {
-  position: sticky;
+  /* Fixed, not sticky: sticky only pins once its normal-flow position
+     would scroll off-screen, so on a page whose content is exactly
+     viewport-height it sits just below the fold until the user
+     scrolls. Fixed keeps it visible immediately, the way a bottom nav
+     actually behaves. Constrained to the app's 480px mobile column,
+     a bare position:fixed spans the full desktop viewport instead. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  max-width: 480px;
   bottom: calc(20px + env(safe-area-inset-bottom));
   z-index: 5;
-  margin: 24px auto 0;
+  margin: 0 auto;
   width: fit-content;
   display: flex;
   justify-content: center;
