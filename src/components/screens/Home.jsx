@@ -1,156 +1,63 @@
-import { useState, useRef } from "react";
-import Avatar from "../Avatar.jsx";
+import { useState } from "react";
 import StoryTray from "../StoryTray.jsx";
-import { STAGES } from "../../data/stages.js";
+import NotifCard from "../NotifCard.jsx";
 
-function formatNow() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-export default function Home({
-  currentStage,
-  onOpenStory,
-  onOpenStage,
-  logEntries,
-  onAddLog,
-  onSeeAllNotes,
-}) {
-  const s = STAGES[currentStage];
-
-  // Everything that would realistically have happened by now, in order.
-  const checkinsSoFar = STAGES.slice(0, currentStage + 1).flatMap((st) =>
-    st.checkins.map((c) => ({ ...c, stageLabel: st.label }))
-  );
-
-  const [noteText, setNoteText] = useState("");
-  const [recording, setRecording] = useState(false);
-  const [micError, setMicError] = useState("");
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-
-  function writeNote() {
-    const text = noteText.trim();
-    if (!text) return;
-    onAddLog({ stageKey: s.key, stageLabel: s.label, time: formatNow(), type: "text", text });
-    setNoteText("");
-  }
-
-  async function startRecording() {
-    setMicError("");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
-      chunksRef.current = [];
-      mr.ondataavailable = (e) => chunksRef.current.push(e.data);
-      mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const audioUrl = URL.createObjectURL(blob);
-        onAddLog({
-          stageKey: s.key,
-          stageLabel: s.label,
-          time: formatNow(),
-          type: "audio",
-          audioUrl,
-        });
-        stream.getTracks().forEach((t) => t.stop());
-      };
-      mr.start();
-      mediaRecorderRef.current = mr;
-      setRecording(true);
-    } catch (err) {
-      setMicError("Microphone access is needed to record a note.");
-    }
-  }
-
-  function stopRecording() {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
-  }
-
-  const recentNotes = [...logEntries].slice(-2).reverse();
+// `checkins` arrives newest-first from App, which owns delivery timing
+// so banners can slide in over any screen.
+//
+// Home shows only the latest check-in, replaced as new ones land. The
+// full history stays one tap away in Updates, so nothing is lost, it
+// just isn't stacked up on the home screen.
+export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins }) {
+  const [dismissed, setDismissed] = useState(() => new Set());
+  const latest = checkins.find((c) => !dismissed.has(c.key)) || null;
 
   return (
     <div className="screen">
-
-      <div className="section-label" style={{ marginTop: 0 }}>
-        Right now
-      </div>
-      <div className="now-card">
-        <div className="now-avatar">
-          <Avatar kind={s.avatar} alt={s.person} />
+      <div className="home-topbar">
+        <div className="section-label" style={{ margin: 0 }}>
+          Right now
         </div>
-        <div>
-          <div className="now-title headline">{s.title}</div>
-          <div className="now-sub">{s.sub}</div>
-        </div>
+        <button className="bell-badge" aria-label="Notifications" onClick={onSeeAllCheckins}>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 4a5 5 0 00-5 5v3.4c0 .6-.2 1.2-.6 1.7L5 16h14l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V9a5 5 0 00-5-5z"
+              stroke="var(--text-soft)"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+            />
+            <path d="M10 19a2 2 0 004 0" stroke="var(--text-soft)" strokeWidth="1.7" strokeLinecap="round" />
+          </svg>
+          {latest && <span className="bell-dot" />}
+        </button>
       </div>
 
-      <div className="section-label">Noa's path</div>
-      <StoryTray currentStage={currentStage} onOpenStory={onOpenStory} />
-
-      <div className="section-label">Check-ins</div>
-      {checkinsSoFar.length === 0 ? (
+      {!latest ? (
         <div className="qa-scope-note">
           No updates yet. The moment something happens, it'll show up here, this
           isn't a live feed, so a quiet stretch doesn't mean anything's wrong.
         </div>
       ) : (
-        <div className="checkin-feed">
-          {checkinsSoFar.map((c, i) => (
-            <div className="checkin-item" key={i}>
-              <div className="checkin-time">
-                {c.time} · {c.stageLabel}
-              </div>
-              {c.text}
-            </div>
-          ))}
+        <div className="latest-checkin">
+          {/* Keyed so a new check-in re-runs the slide-in animation
+              rather than swapping text inside the existing card. */}
+          <NotifCard
+            key={latest.key}
+            appLabel={`Alongside · ${latest.stageTitle}`}
+            time={latest.time}
+            text={latest.text}
+            onDismiss={() => setDismissed((prev) => new Set(prev).add(latest.key))}
+          />
+          {checkins.length > 1 && (
+            <button className="see-all-checkins" onClick={onSeeAllCheckins}>
+              See all {checkins.length} check-ins ›
+            </button>
+          )}
         </div>
       )}
 
-      <div className="section-label">Notes</div>
-      <div className="log-card">
-        <div className="log-label">Write or record a note</div>
-        <textarea
-          className="log-input"
-          rows={2}
-          placeholder="e.g. Dr. Cohen said the IV went in easily"
-          value={noteText}
-          onChange={(e) => setNoteText(e.target.value)}
-        />
-        <div className="note-actions">
-          <button className="log-btn" onClick={writeNote}>
-            Save note
-          </button>
-          <button
-            className={`record-btn ${recording ? "recording" : ""}`}
-            onClick={recording ? stopRecording : startRecording}
-          >
-            <span className="record-dot" />
-            {recording ? "Stop recording" : "Record"}
-          </button>
-        </div>
-        {micError && <div className="mic-error">{micError}</div>}
-      </div>
-
-      {recentNotes.length > 0 && (
-        <div className="path-list" style={{ marginBottom: 8 }}>
-          {recentNotes.map((e, i) => (
-            <div className="notes-screen-item" key={i} style={{ marginBottom: 0 }}>
-              <div className="log-stage">
-                {e.stageLabel} · {e.time}
-              </div>
-              {e.type === "audio" ? (
-                <audio className="note-audio" src={e.audioUrl} controls />
-              ) : (
-                e.text
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      <button className="see-all-notes" onClick={onSeeAllNotes}>
-        See all notes ›
-      </button>
+      <div className="section-label">Naya's path</div>
+      <StoryTray currentStage={currentStage} onOpenStory={onOpenStory} />
     </div>
   );
 }

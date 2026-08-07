@@ -1,51 +1,129 @@
 /*
-  Design tokens, v5, clinical blue and companion physician.
-  Mirrors C-core/design-system-tokens.css exactly. Keep both in sync
-  if the palette changes, this file is the source of truth for the
-  real app build, C-core's copy is the source of truth for the
-  documented design system.
+  Design tokens, v6, Schneider brand + companion-app component patterns.
+  Mirrors C-core/design-system-tokens.css. This file is the source of
+  truth for the running app build; C-core's copy is the source of truth
+  for the documented design system. Keep both in sync if the palette
+  or component tokens change.
+
+  v6 replaces the placeholder Ada-Health-blue direction (v5) with
+  Schneider Children's Medical Center's real seven-hue brand kit, in a
+  proper three-layer architecture (primitive -> semantic -> component).
+  The legacy --accent/--teal/etc. names below are kept so existing
+  component CSS doesn't need a rewrite, they now alias the new semantic
+  and component tokens instead of holding their own separate values, so
+  there is exactly one source of truth per token.
+
+  Contrast checked before publishing (WCAG 2.1, vs #FFFFFF):
+    deep blue  8.40:1  -> primary, text or white-text fill anywhere
+    purple     4.69:1  -> fill + normal white text OK
+    coral      3.56:1  -> large/bold text or icon-fill only
+    cyan       2.45:1  -> decorative/glow only, never text or a functional fill
+    green      1.91:1  -> status-tint source only, never a solid fill
+    pink       1.57:1  -> decorative/tint only
+    gold       1.57:1  -> status-tint source only
 */
 
 :root {
+  /* ---------- Layer 1: Primitive ---------- */
+  --raw-pink: #f7c0cd;
+  --raw-deep-blue: #004c9a;
+  --raw-purple: #7b69af;
+  --raw-green: #96cb63;
+  --raw-gold: #ffc645;
+  --raw-cyan: #00b5d6;
+  --raw-coral: #ef4c67;
+
+  /* A more saturated, deeper purple than the brand kit's dusty
+     --raw-purple, used as the primary accent so it reads as strong
+     rather than muted. 6.79:1 against white, above --raw-purple's
+     4.69:1. --raw-purple itself stays available for the softer pastel
+     tint pairing. */
+  --raw-purple-strong: #6a45b0;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* ---------- Layer 2: Semantic ---------- */
   --bg: #f4f8fd;
   --surface: #ffffff;
   --text: #293754;
   --text-soft: #5b6b85;
   --border: #dce6f2;
 
-  /* Real Schneider brand colors, deep blue as the main accent, cyan as the
-     secondary. Cyan alone fails contrast everywhere (2.45:1), same pattern
-     as the earlier accent-bright token, so it's scoped to decorative and
-     glow use only, never text or a fill carrying white text. */
-  --accent: #004c9a;
-  --accent-deep: #00305e;
-  --accent-bright: #00b5d6;
-  --accent-tint: #e3edf7;
+  /* Primary moved off deep blue onto purple, using the bolder
+     --raw-purple-strong (6.79:1) rather than the brand kit's dustier
+     --raw-purple (4.69:1), --accent-deep is a darkened match (10.28:1)
+     for anything needing a stronger stand-alone shade. */
+  --accent: var(--raw-purple-strong);
+  --accent-deep: #3b2570;
+  --accent-bright: var(--raw-cyan);
+  --accent-tint: #ece9f5;
 
-  --teal: #1f8a70;
-  --teal-tint: #ddeee9;
+  /* The nurse role tag moves onto deep blue, now free since purple
+     carries the primary action. Kept as --teal/--teal-tint so
+     Avatar.jsx and the role-tag CSS don't need renaming. */
+  --teal: var(--raw-deep-blue);
+  --teal-tint: #e3edf7;
 
   --available: #2ecc71;
-  --star: #f4c728;
+  --star: var(--raw-gold);
+
+  --status-success-tint: #eef6e4;
+  --status-success-text: #5b8a2e;
+  --status-warning-tint: #fff6e0;
+  --status-warning-text: #a9791a;
+  --status-info-tint: var(--accent-tint);
+  --status-info-text: var(--accent);
+  --status-neutral-tint: #eef1f6;
+  --status-neutral-text: var(--text-soft);
+
+  /* Light pastel tints of the remaining brand hues, from the reference
+     screenshots' airy, colorful-card look (a distinct pastel per stat
+     tile/icon chip, rather than one blue everywhere). Icon/text pairing
+     kept dark-on-light so nothing relies on the raw hue's own contrast. */
+  --pink-tint: #fdedf1;
+  --pink-tint-text: #a14f68;
+  --purple-tint: #ece9f5;
+  --purple-tint-text: #5d4f96;
+  --green-tint: var(--status-success-tint);
+  --green-tint-text: var(--status-success-text);
+  --gold-tint: var(--status-warning-tint);
+  --gold-tint-text: var(--status-warning-text);
+  --cyan-tint: #e3f8fb;
+  --cyan-tint-text: #0d7f97;
+  --coral-tint: #fdedef;
+  --coral-tint-text: #c23e56;
 
   --radius-card: 20px;
   --radius-pill: 999px;
   --shadow-card: 0 10px 26px rgba(20, 40, 80, 0.08);
+  --shadow-sm: 0 2px 8px rgba(20, 40, 80, 0.06);
   --frame-bg: #e7eff9;
 
   /* Liquid Glass material, scoped to the tab bar and the story text/video
      toggle. The material itself stays neutral and translucent per Apple's
      own Liquid Glass guidance, color only appears on the active/selected
-     state, here as the requested purple-pink glow. */
+     state. */
   --glass-bg: rgba(255, 255, 255, 0.42);
   --glass-border: rgba(255, 255, 255, 0.65);
   --glass-sheen: rgba(255, 255, 255, 0.55);
   --glass-sheen-2: rgba(255, 255, 255, 0);
   --glass-shadow: 0 8px 32px rgba(31, 20, 60, 0.16), 0 1px 1px rgba(255, 255, 255, 0.8) inset,
     0 -1px 6px rgba(31, 20, 60, 0.06) inset;
-  /* Deep blue to cyan, matching the main/secondary accent tokens. */
+
+  /* ---------- Layer 3: Component ---------- */
   --glow-active: linear-gradient(135deg, var(--accent-deep) 0%, var(--accent-bright) 100%);
-  --glow-shadow: 0 4px 18px rgba(0, 76, 154, 0.4), 0 2px 10px rgba(0, 181, 214, 0.35);
+  --glow-shadow: 0 4px 18px rgba(68, 58, 107, 0.4), 0 2px 10px rgba(0, 181, 214, 0.35);
+
+  --journey-step-ring-done: #c3c9d4;
+  --journey-step-ring-current: var(--glow-active);
+
+  --promo-banner-gradient: linear-gradient(135deg, var(--accent-deep) 0%, var(--accent) 100%);
 }
 
 :root[data-theme="dark"] {
@@ -55,18 +133,40 @@
   --text-soft: #9aa8bc;
   --border: #2b3547;
 
-  --accent: #5c93e8;
-  --accent-deep: #4779c7;
+  --accent: #a89bde;
+  --accent-deep: #8f7fd0;
   --accent-bright: #3f9fff;
-  --accent-tint: #223049;
+  --accent-tint: #2a2540;
 
-  --teal: #4db89e;
-  --teal-tint: #1c2e28;
+  --teal: #5c93e8;
+  --teal-tint: #223049;
 
   --available: #2ecc71;
   --star: #f4c728;
   --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
   --frame-bg: #0a0d13;
+
+  --status-success-tint: #1e2a16;
+  --status-success-text: #9fcb6e;
+  --status-warning-tint: #2e2712;
+  --status-warning-text: #e8c267;
+  --status-info-tint: #2a2540;
+  --status-info-text: #a89bde;
+  --status-neutral-tint: #232b3a;
+  --status-neutral-text: #9aa8bc;
+
+  --pink-tint: #2e1e26;
+  --pink-tint-text: #e5a8bc;
+  --purple-tint: #2a2540;
+  --purple-tint-text: #b6a8e8;
+  --green-tint: #1e2a16;
+  --green-tint-text: #9fcb6e;
+  --gold-tint: #2e2712;
+  --gold-tint-text: #e8c267;
+  --cyan-tint: #12292e;
+  --cyan-tint-text: #5cd3ea;
+  --coral-tint: #2e1a1e;
+  --coral-tint-text: #f0899a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -77,18 +177,40 @@
     --text-soft: #9aa8bc;
     --border: #2b3547;
 
-    --accent: #5c93e8;
-    --accent-deep: #4779c7;
+    --accent: #a89bde;
+    --accent-deep: #8f7fd0;
     --accent-bright: #3f9fff;
-    --accent-tint: #223049;
+    --accent-tint: #2a2540;
 
-    --teal: #4db89e;
-    --teal-tint: #1c2e28;
+    --teal: #5c93e8;
+    --teal-tint: #223049;
 
     --available: #2ecc71;
     --star: #f4c728;
     --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
     --frame-bg: #0a0d13;
+
+    --status-success-tint: #1e2a16;
+    --status-success-text: #9fcb6e;
+    --status-warning-tint: #2e2712;
+    --status-warning-text: #e8c267;
+    --status-info-tint: #2a2540;
+    --status-info-text: #a89bde;
+    --status-neutral-tint: #232b3a;
+    --status-neutral-text: #9aa8bc;
+
+    --pink-tint: #2e1e26;
+    --pink-tint-text: #e5a8bc;
+    --purple-tint: #2a2540;
+    --purple-tint-text: #b6a8e8;
+    --green-tint: #1e2a16;
+    --green-tint-text: #9fcb6e;
+    --gold-tint: #2e2712;
+    --gold-tint-text: #e8c267;
+    --cyan-tint: #12292e;
+    --cyan-tint-text: #5cd3ea;
+    --coral-tint: #2e1a1e;
+    --coral-tint-text: #f0899a;
   }
 }
 
@@ -99,16 +221,29 @@
   --text-soft: #5b6b85;
   --border: #dce6f2;
 
-  --accent: #3674d9;
-  --accent-deep: #2557b0;
-  --accent-bright: #3f9fff;
-  --accent-tint: #e4eefc;
+  --accent: var(--raw-purple-strong);
+  --accent-deep: #3b2570;
+  --accent-bright: var(--raw-cyan);
+  --accent-tint: #ece9f5;
 
-  --teal: #1f8a70;
-  --teal-tint: #ddeee9;
+  --teal: var(--raw-deep-blue);
+  --teal-tint: #e3edf7;
 
   --available: #2ecc71;
-  --star: #f4c728;
+  --star: var(--raw-gold);
   --shadow-card: 0 10px 26px rgba(20, 40, 80, 0.08);
   --frame-bg: #e7eff9;
+
+  --pink-tint: #fdedf1;
+  --pink-tint-text: #a14f68;
+  --purple-tint: #ece9f5;
+  --purple-tint-text: #5d4f96;
+  --green-tint: #eef6e4;
+  --green-tint-text: #5b8a2e;
+  --gold-tint: #fff6e0;
+  --gold-tint-text: #a9791a;
+  --cyan-tint: #e3f8fb;
+  --cyan-tint-text: #0d7f97;
+  --coral-tint: #fdedef;
+  --coral-tint-text: #c23e56;
 }

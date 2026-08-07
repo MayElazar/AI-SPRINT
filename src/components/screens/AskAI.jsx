@@ -10,10 +10,10 @@ import { STAGES } from "../../data/stages.js";
 const ALL_QA = STAGES.flatMap((s) => s.qa.map((qa) => ({ ...qa, stage: s.label })));
 
 const FALLBACK =
-  "I can only help with logistics here, timing, who to ask, what to bring. For anything about Noa's actual condition or care, that stays with her care team, not me.";
+  "I can only help with logistics here, timing, who to ask, what to bring. For anything about Naya's actual condition or care, that stays with her care team, not me.";
 
 const GREETING =
-  "Hi, ask me anything about today's logistics, timing, who to talk to, what to bring. I'll stay out of anything medical, that's for Noa's care team.";
+  "Hi, ask me anything about today's logistics, timing, who to talk to, what to bring. I'll stay out of anything medical, that's for Naya's care team.";
 
 function findAnswer(text) {
   const q = text.trim().toLowerCase();

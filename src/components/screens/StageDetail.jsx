@@ -109,7 +109,7 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog }
       ))}
       <div className="qa-scope-note">
         <strong>Scoped on purpose:</strong> these answer logistics only, timing,
-        who to ask, what to bring. Nothing here explains or characterizes Noa's
+        who to ask, what to bring. Nothing here explains or characterizes Naya's
         specific medical situation, that stays with her care team.
       </div>
     </div>

@@ -1,30 +1,37 @@
-import Avatar from "./Avatar.jsx";
+import StageIcon from "./StageIcon.jsx";
 import { STAGES } from "../data/stages.js";
 
-// Instagram-Stories-style row: circular avatars with a ring showing
-// done / current / upcoming, label underneath.
+// Stacked cards, matching the check-in notification style, rather
+// than a horizontal circle scroller. Each stage's icon sits on its
+// own pastel tint, the current stage gets a highlighted card.
 export default function StoryTray({ currentStage, onOpenStory }) {
   return (
-    <div className="story-tray">
+    <div className="path-cards">
       {STAGES.map((s, i) => {
         const status = i < currentStage ? "done" : i === currentStage ? "current" : "upcoming";
         return (
           <button
             key={s.key}
-            className={`story-item ${status}`}
+            className={`path-card ${status}`}
             onClick={() => onOpenStory(i)}
           >
-            <div className="story-ring">
-              <div className="story-avatar">
-                <Avatar kind={s.avatar} alt={s.person} />
-              </div>
+            <div className={`path-card-icon tint-${s.color}`}>
+              <StageIcon stageKey={s.key} />
               {status === "done" && (
-                <span className="story-check" aria-hidden="true">
+                <span className="path-card-check" aria-hidden="true">
                   ✓
                 </span>
               )}
             </div>
-            <div className="story-label">{s.label}</div>
+            <div className="path-card-body">
+              <div className="path-card-label">{s.label}</div>
+              <div className="path-card-meta">
+                {status === "current" && "Happening now"}
+                {status === "done" && "Completed"}
+                {status === "upcoming" && "Up next"}
+              </div>
+            </div>
+            <div className="path-card-chev">›</div>
           </button>
         );
       })}

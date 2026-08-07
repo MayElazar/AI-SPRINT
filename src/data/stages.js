@@ -9,6 +9,7 @@ export const STAGES = [
     person: "Your care team",
     role: "Dr. Cohen, Yael, and Galit",
     avatar: "team",
+    color: "purple",
     title: "Meet your care team",
     sub: "Before today starts, a quick introduction to who's with you.",
     offers: ["Checklist"],
@@ -22,11 +23,40 @@ export const STAGES = [
     qa: [
       {
         q: "Will the doctor I meet today be the one doing the procedure?",
-        a: "Yes, Dr. Cohen leads Noa's procedure and is who you'll see throughout.",
+        a: "Yes, Dr. Cohen leads Naya's procedure and is who you'll see throughout.",
       },
       {
         q: "Who do I go to if I have a question about today's plan?",
         a: "Yael, she's your point of contact for the whole day.",
+      },
+    ],
+  },
+  {
+    key: "tour",
+    label: "Hospital tour",
+    person: "Yael",
+    role: "Unit nurse, your point of contact today",
+    avatar: "tour",
+    color: "cyan",
+    title: "A quick tour",
+    sub: "Where everything is before today gets moving: the unit, the waiting area, the cafeteria.",
+    offers: ["Checklist"],
+    resource: null,
+    checklist: [
+      "Cath Lab unit, 3rd floor, where you'll check in and wait",
+      "Family waiting area, right outside the unit, with charging points and a TV",
+      "Cafeteria, ground floor, open from 7am",
+      "Quiet room, past reception on the same floor, if you need a few minutes alone",
+    ],
+    checkins: [],
+    qa: [
+      {
+        q: "Where do I wait during the procedure itself?",
+        a: "The family waiting area right outside the unit, Yael will point it out.",
+      },
+      {
+        q: "Is there somewhere to get food nearby?",
+        a: "The cafeteria on the ground floor, open from 7am.",
       },
     ],
   },
@@ -36,6 +66,7 @@ export const STAGES = [
     person: "Yael",
     role: "Unit nurse, your point of contact today",
     avatar: "nurse",
+    color: "gold",
     title: "Checked in",
     sub: "Getting oriented for today, before things get moving.",
     offers: ["Video", "Checklist"],
@@ -48,7 +79,7 @@ export const STAGES = [
     transcript:
       "Hi, I'm Yael. I'll be with you throughout today. Right now our team is confirming your child's details and getting everything ready before the procedure begins.",
     checklist: [
-      "Bring Noa's insurance card and ID",
+      "Bring Naya's insurance card and ID",
       "Fasting since midnight, water only until 6am",
       "Arrive 30 minutes before your scheduled time",
     ],
@@ -68,8 +99,9 @@ export const STAGES = [
     key: "prep",
     label: "Prep",
     person: "Dr. Cohen",
-    role: "Pediatric cardiologist, Noa's procedure",
+    role: "Pediatric cardiologist, Naya's procedure",
     avatar: "doctor",
+    color: "coral",
     title: "In prep",
     sub: "IV line, final checks, a word with the anesthesia team.",
     offers: ["Video"],
@@ -94,8 +126,9 @@ export const STAGES = [
     key: "procedure",
     label: "Procedure",
     person: "Dr. Cohen",
-    role: "Pediatric cardiologist, Noa's procedure",
+    role: "Pediatric cardiologist, Naya's procedure",
     avatar: "doctor",
+    color: "pink",
     title: "In procedure",
     sub: "Typically 2 to 3 hours. This is where periodic check-ins replace a live feed.",
     offers: ["Video", "Check-ins"],
@@ -108,7 +141,7 @@ export const STAGES = [
       "Your child is in the procedure room now. We're threading a small catheter through a blood vessel to the heart, guided by imaging the whole time, and she is fully monitored and asleep. Most parents say this wait is harder than the procedure itself, and that's completely normal. There's nothing you need to do right now except wait, and you'll know the moment there's an update.",
     checklist: [],
     checkins: [
-      { time: "11:42 AM", text: "Noa is settled and the procedure has started, on schedule." },
+      { time: "11:42 AM", text: "Naya is settled and the procedure has started, on schedule." },
       { time: "12:35 PM", text: "Still on track. No news is expected news right now." },
       {
         time: "1:20 PM",
@@ -132,6 +165,7 @@ export const STAGES = [
     person: "Yael",
     role: "Unit nurse, your point of contact today",
     avatar: "nurse",
+    color: "green",
     title: "In recovery",
     sub: "Out of the procedure, being watched as she wakes.",
     offers: ["Video", "Check-ins"],
@@ -144,7 +178,7 @@ export const STAGES = [
       "Your child is out of the procedure now, and we're watching closely as she wakes up. Some grogginess or fussiness at first is completely normal, and we'll let you know as soon as you can come in and see her.",
     checklist: [],
     checkins: [
-      { time: "1:52 PM", text: "Noa is out of the procedure and in recovery, vitals being monitored." },
+      { time: "1:52 PM", text: "Naya is out of the procedure and in recovery, vitals being monitored." },
     ],
     qa: [
       {
@@ -163,6 +197,7 @@ export const STAGES = [
     person: "Galit",
     role: "Discharge nurse",
     avatar: "nurse",
+    color: "gold",
     title: "Ready for home",
     sub: "The last stage. Instructions get written down as Galit covers them.",
     offers: ["Checklist"],

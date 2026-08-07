@@ -4,7 +4,7 @@ export default function You() {
       <div className="path-hero">
         <div className="eyebrow">You</div>
         <div className="title headline">Michal and David</div>
-        <div className="sub">Noa's parents, connected for today's visit.</div>
+        <div className="sub">Naya's parents, connected for today's visit.</div>
       </div>
 
       <div className="section-label" style={{ marginTop: 0 }}>
@@ -13,7 +13,7 @@ export default function You() {
       <div className="confirm-card">
         <div className="confirm-row">
           <span>Child</span>
-          <span>Noa, age 4</span>
+          <span>Naya, age 4</span>
         </div>
         <div className="confirm-row">
           <span>Both parents connected</span>

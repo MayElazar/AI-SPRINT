@@ -156,6 +156,13 @@ button:focus-visible {
   margin-top: auto;
 }
 
+.primary-btn-lg {
+  padding: 18px;
+  font-size: 15.5px;
+  background: var(--accent);
+  box-shadow: 0 12px 26px rgba(68, 58, 107, 0.35);
+}
+
 .secondary-btn {
   background: var(--accent-tint);
   color: var(--accent-deep);
@@ -287,30 +294,47 @@ button:focus-visible {
 }
 
 /* Welcome */
-.welcome-photo-wrap {
+.welcome-hero-card {
   position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 4px auto 18px;
-}
-
-.welcome-photo-wrap::before {
-  content: "";
-  position: absolute;
-  inset: -28px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent-bright) 0%, transparent 68%);
-  opacity: 0.45;
-}
-
-.welcome-photo-wrap img {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+  height: 232px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-bottom: 20px;
+  background: linear-gradient(165deg, var(--purple-tint) 0%, var(--surface) 65%);
   box-shadow: var(--shadow-card);
 }
+
+.welcome-hero-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.welcome-hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(20, 15, 35, 0.32) 100%);
+}
+
+.welcome-float-icon {
+  position: absolute;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card);
+}
+.welcome-float-icon svg { width: 20px; height: 20px; }
+.welcome-float-icon.icon-heart { top: 14px; left: 14px; }
+.welcome-float-icon.icon-pulse { top: 14px; right: 14px; }
 
 .welcome-eyebrow {
   text-align: center;
@@ -322,9 +346,10 @@ button:focus-visible {
   margin-bottom: 10px;
 }
 
-.welcome-title {
+.welcome-hero-title {
   text-align: center;
-  font-size: 24px;
+  font-size: 28px;
+  line-height: 1.15;
   font-weight: 700;
   margin-bottom: 10px;
 }
@@ -399,82 +424,6 @@ button:focus-visible {
 }
 
 /* Story tray, Instagram-style circles */
-.story-tray {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  padding: 2px 2px 18px;
-  margin-bottom: 4px;
-}
-
-.story-item {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  width: 64px;
-}
-
-.story-ring {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--border);
-}
-
-.story-item.current .story-ring {
-  background: var(--glow-active);
-  box-shadow: var(--glow-shadow);
-}
-
-.story-item.done .story-ring {
-  background: #c3c9d4;
-}
-
-.story-check {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--teal);
-  color: #fff;
-  border: 2px solid var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-  z-index: 1;
-}
-
-.story-avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  background: var(--surface);
-  border: 2px solid var(--surface);
-}
-
-.story-avatar img,
-.story-avatar svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .story-label {
   font-size: 10.5px;
   font-weight: 600;
@@ -482,9 +431,112 @@ button:focus-visible {
   text-align: center;
 }
 
-.story-item.current .story-label {
-  color: var(--accent-deep);
+/* Naya's path, stacked cards matching the check-in notification
+   style, rather than a horizontal circle scroller. */
+.path-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.path-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.path-card.current {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-card);
+}
+
+.path-card.upcoming {
+  opacity: 0.6;
+}
+
+.path-card-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Pastel ground, with the matching dark tint colour inherited by the
+   line icon's currentColor stroke. */
+.path-card-icon.tint-purple { background: var(--purple-tint); color: var(--purple-tint-text); }
+.path-card-icon.tint-cyan { background: var(--cyan-tint); color: var(--cyan-tint-text); }
+.path-card-icon.tint-gold { background: var(--gold-tint); color: var(--gold-tint-text); }
+.path-card-icon.tint-coral { background: var(--coral-tint); color: var(--coral-tint-text); }
+.path-card-icon.tint-pink { background: var(--pink-tint); color: var(--pink-tint-text); }
+.path-card-icon.tint-green { background: var(--green-tint); color: var(--green-tint-text); }
+
+.path-card-icon > svg {
+  width: 23px;
+  height: 23px;
+}
+
+.path-card-check {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--available);
+  color: #fff;
+  border: 2px solid var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1;
+}
+
+.path-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.path-card-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.path-card.current .path-card-label {
+  color: var(--accent-deep);
+}
+
+.path-card-meta {
+  font-size: 11.5px;
+  color: var(--text-soft);
+  margin-top: 1px;
+}
+
+.path-card.current .path-card-meta {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.path-card-chev {
+  color: var(--text-soft);
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 /* Story overlay, full-screen viewer. In video mode the clip is a full-bleed
@@ -1025,6 +1077,146 @@ button:focus-visible {
   margin-bottom: 3px;
 }
 
+/* Home top bar: "Right now" label plus a bell affordance with an
+   unread-style red dot, pinned to the very top of the screen rather
+   than buried next to the Check-ins section. */
+.home-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.bell-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+.bell-badge svg {
+  width: 17px;
+  height: 17px;
+}
+.bell-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--raw-coral);
+  border: 1.5px solid var(--surface);
+}
+
+/* iOS-style notification cards: a frosted rounded card, a small
+   circular app icon on the left, a bold sender label with a
+   timestamp on the right, and a message preview below. Newest sits
+   on top and slides/fades in like a real notification arriving;
+   tap to expand, swipe (a "nudge") to dismiss, driven by --drag-x
+   from NotifCard's pointer handlers. */
+.notif-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ios-notif {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  /* Matches a real iOS banner: heavily blurred, lightly tinted glass
+     with a large corner radius and a soft drop shadow, not a flat card. */
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(20, 40, 80, 0.13);
+  padding: 12px 14px;
+  transform: translateX(var(--drag-x, 0px));
+  animation: notif-enter 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
+  user-select: none;
+}
+
+@keyframes notif-enter {
+  from { transform: translateY(-16px) translateX(var(--drag-x, 0px)); opacity: 0; }
+  to { transform: translateY(0) translateX(var(--drag-x, 0px)); opacity: 1; }
+}
+
+.ios-notif.expanded {
+  box-shadow: 0 14px 32px rgba(20, 40, 80, 0.14);
+}
+
+.ios-notif-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+}
+.ios-notif-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.ios-notif-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ios-notif-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.ios-notif-app {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ios-notif-time {
+  font-size: 11.5px;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.ios-notif-text {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.ios-notif.expanded .ios-notif-text {
+  -webkit-line-clamp: unset;
+}
+
+.ios-notif-hint {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
 .log-card {
   background: var(--accent-tint);
   border-radius: var(--radius-card);
@@ -1425,4 +1617,331 @@ button:focus-visible {
   justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
+}
+
+/* ============================================================
+   Design System v6 components
+   Structural patterns adapted from reference-app screenshots,
+   see C-core/design-system.md for the full spec and rationale.
+   ============================================================ */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.status-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.status-pill.success { background: var(--status-success-tint); color: var(--status-success-text); }
+.status-pill.success .dot { background: var(--status-success-text); }
+.status-pill.info { background: var(--status-info-tint); color: var(--status-info-text); }
+.status-pill.info .dot { background: var(--status-info-text); }
+.status-pill.warning { background: var(--status-warning-tint); color: var(--status-warning-text); }
+.status-pill.warning .dot { background: var(--status-warning-text); }
+.status-pill.neutral { background: var(--status-neutral-tint); color: var(--status-neutral-text); }
+.status-pill.neutral .dot { background: var(--status-neutral-text); }
+
+.stat-tile-row {
+  display: flex;
+  gap: 12px;
+}
+.stat-tile {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+}
+.stat-tile .chip {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  font-size: 15px;
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+.stat-tile .value {
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text);
+}
+.stat-tile .label {
+  font-size: 12px;
+  color: var(--text-soft);
+  margin-top: 2px;
+}
+
+.promo-banner {
+  background: var(--promo-banner-gradient);
+  border-radius: var(--radius-card);
+  color: #fff;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.promo-banner .txt strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.promo-banner .txt span {
+  font-size: 12.5px;
+  opacity: 0.85;
+}
+.promo-banner .cta {
+  background: #fff;
+  color: var(--accent-deep);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Light variant, pastel gradient from the reference screenshots' airy
+   card look, rather than a solid deep-blue fill. Text stays dark since
+   the pastel ground can't carry white text. */
+.promo-banner.light {
+  background: linear-gradient(135deg, var(--purple-tint) 0%, var(--pink-tint) 100%);
+  color: var(--text);
+}
+.promo-banner.light .txt span {
+  color: var(--text-soft);
+  opacity: 1;
+}
+.promo-banner.light .cta {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ============================================================
+   Logo loader: the reference puzzle SVG the user supplied, recolored
+   to Schneider's brand hues. Motion is native SVG SMIL baked into the
+   markup itself (see LogoLoader.jsx), not CSS, so there's nothing to
+   animate here.
+   ============================================================ */
+.logo-loader svg { overflow: visible; }
+
+.boot-splash {
+  position: fixed;
+  inset: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg);
+}
+.boot-splash .boot-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  letter-spacing: 0.02em;
+}
+.boot-splash .boot-word {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: boot-word-fade 0.8s ease-out;
+}
+@keyframes boot-word-fade {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   AI transcription in-progress state: a shimmering skeleton of the
+   note being written, plus a rotating action word so the wait reads
+   as work happening rather than a stall.
+   ============================================================ */
+.transcribing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.transcribing-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.transcribing-spark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  flex-shrink: 0;
+  animation: spark-pulse 1.8s ease-in-out infinite;
+}
+.transcribing-spark svg {
+  width: 15px;
+  height: 15px;
+}
+
+@keyframes spark-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.75; }
+}
+
+.transcribing-word {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  animation: boot-word-fade 0.5s ease-out;
+}
+
+.skeleton-line {
+  height: 11px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 9px;
+  background: linear-gradient(
+    90deg,
+    var(--border) 0%,
+    var(--accent-tint) 40%,
+    var(--border) 80%
+  );
+  background-size: 240% 100%;
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+.skeleton-line:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 140% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transcribing-spark,
+  .skeleton-line,
+  .transcribing-word {
+    animation: none;
+  }
+}
+
+.transcript-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+/* Latest check-in on Home: one card, replaced as new ones land, with a
+   link through to the full history in Updates. */
+.latest-checkin {
+  margin-bottom: 16px;
+}
+
+.see-all-checkins {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* ============================================================
+   Push banner: slides down over whatever screen is showing, sits for
+   5s, slides back up. Swipe up dismisses early.
+   Constrained to the 480px mobile column like .app-shell, a bare
+   position:fixed would span the whole desktop viewport.
+   ============================================================ */
+.notif-banner-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 90;
+  padding: 10px 14px 0;
+  pointer-events: none;
+}
+
+.notif-banner {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 22px;
+  box-shadow: 0 12px 32px rgba(20, 40, 80, 0.22);
+  padding: 12px 14px 14px;
+  pointer-events: auto;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+  position: relative;
+  /* Parked just above the top edge until .shown lands. */
+  transform: translateY(calc(-100% - 24px));
+  opacity: 0;
+}
+
+.notif-banner.shown {
+  transform: translateY(var(--drag-y, 0px));
+  opacity: 1;
+}
+
+/* The little grab handle iOS puts at the bottom of a banner. */
+.notif-banner-grip {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 40, 80, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notif-banner {
+    transition: opacity 0.2s ease !important;
+    transform: translateY(0);
+  }
 }
