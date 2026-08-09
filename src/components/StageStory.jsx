@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import Avatar from "./Avatar.jsx";
 import HospitalMap3D from "./HospitalMap3D.jsx";
 import { STAGES } from "../data/stages.js";
+import drBruckheimerPhoto from "../assets/dr-cohen.png";
+import yaelPhoto from "../assets/yael.png";
+import galitPhoto from "../assets/galit.png";
 
 const RESOURCE_ICON = {
   map: (
@@ -36,24 +39,26 @@ const RESOURCE_ICON = {
 const DRAG_THRESHOLD = 60;
 
 // "Meet the team" is photos, not footage, nothing is actually happening
-// yet for a video to capture. Dr. Bruckheimer has a real reference photo
-// already (app/src/assets/dr-cohen.png via Avatar); Yael and Galit still
-// use the generic illustrated avatar until real photos exist.
+// yet for a video to capture. All three now have real reference photos
+// via Avatar (dr-cohen.png, yael.png, galit.png).
 const TEAM_MEMBERS = [
   {
     avatar: "doctor",
+    photo: drBruckheimerPhoto,
     name: "Dr. Bruckheimer",
     role: "Pediatric cardiologist",
     caption: "Leads Maya's procedure today, and is who you'll see throughout.",
   },
   {
-    avatar: "nurse",
+    avatar: "yael",
+    photo: yaelPhoto,
     name: "Yael",
     role: "Unit nurse",
     caption: "Your point of contact for the whole day, from check-in through the wait.",
   },
   {
-    avatar: "nurse",
+    avatar: "galit",
+    photo: galitPhoto,
     name: "Galit",
     role: "Discharge nurse",
     caption: "Walks you through going home at the end, so nothing gets missed.",
@@ -74,6 +79,22 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
   const [checkedItems, setCheckedItems] = useState(() => new Set());
   const [map3dOpen, setMap3dOpen] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [teamPhotoIndex, setTeamPhotoIndex] = useState(0);
+
+  // Reset the carousel to the first person whenever a fresh visit to
+  // "Meet the team" starts, rather than remembering the last photo shown.
+  useEffect(() => {
+    setTeamPhotoIndex(0);
+  }, [stageIndex]);
+
+  function handleTeamPhotoTap(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const tappedLeftHalf = e.clientX - rect.left < rect.width / 2;
+    setTeamPhotoIndex((i) => {
+      const count = TEAM_MEMBERS.length;
+      return tappedLeftHalf ? (i - 1 + count) % count : (i + 1) % count;
+    });
+  }
 
   function toggleChecklistItem(itemKey) {
     setCheckedItems((prev) => {
@@ -136,15 +157,25 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
   return (
     <div className="story-overlay">
       {isMeetTeam ? (
-        <div className={`story-video-placeholder tint-${s.color}`}>
-          <div className="story-team-strip">
-            {TEAM_MEMBERS.map((m) => (
-              <div className="story-team-avatar" key={m.name}>
-                <Avatar kind={m.avatar} alt={m.name} />
-              </div>
+        <>
+          <img
+            key={TEAM_MEMBERS[teamPhotoIndex].name}
+            className="story-video-bg story-team-photo"
+            src={TEAM_MEMBERS[teamPhotoIndex].photo}
+            alt={TEAM_MEMBERS[teamPhotoIndex].name}
+            onClick={handleTeamPhotoTap}
+          />
+          <div className="story-team-dots">
+            {TEAM_MEMBERS.map((m, i) => (
+              <button
+                key={m.name}
+                className={`story-team-dot ${i === teamPhotoIndex ? "on" : ""}`}
+                onClick={() => setTeamPhotoIndex(i)}
+                aria-label={`Show ${m.name}`}
+              />
             ))}
           </div>
-        </div>
+        </>
       ) : hasVideo ? (
         <>
           <video

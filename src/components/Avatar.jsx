@@ -1,4 +1,6 @@
 import drBruckheimer from "../assets/dr-cohen.png";
+import yael from "../assets/yael.png";
+import galit from "../assets/galit.png";
 
 const NURSE_SVG = (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -60,12 +62,18 @@ const TOUR_SVG = (
   </svg>
 );
 
-// avatarKind: "doctor" | "nurse" | "team" | "tour". Only Dr. Bruckheimer has
-// a real reference photo, see O-output/.../video-scripts for the open
-// item on Yael/Galit references.
+// avatarKind: "doctor" | "yael" | "galit" | "nurse" | "team" | "tour".
+// Dr. Bruckheimer, Yael, and Galit all have real reference photos now;
+// "nurse" stays as a generic illustrated fallback for any unnamed staff.
 export default function Avatar({ kind, alt }) {
   if (kind === "doctor") {
     return <img src={drBruckheimer} alt={alt || "Dr. Bruckheimer"} />;
+  }
+  if (kind === "yael") {
+    return <img src={yael} alt={alt || "Yael"} />;
+  }
+  if (kind === "galit") {
+    return <img src={galit} alt={alt || "Galit"} />;
   }
   if (kind === "team") {
     return TEAM_SVG;

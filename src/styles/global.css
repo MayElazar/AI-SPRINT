@@ -597,25 +597,35 @@ button:focus-visible {
   object-fit: cover;
 }
 
-.story-team-strip {
+.story-team-photo {
+  cursor: pointer;
+}
+
+.story-team-dots {
+  position: absolute;
+  z-index: 1;
+  bottom: 184px;
+  left: 0;
+  right: 0;
   display: flex;
-  gap: 16px;
+  justify-content: center;
+  gap: 7px;
 }
 
-.story-team-avatar {
-  width: 78px;
-  height: 78px;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-  border: 3px solid rgba(255, 255, 255, 0.55);
+.story-team-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  border: none;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
 }
 
-.story-team-avatar img,
-.story-team-avatar svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.story-team-dot.on {
+  width: 20px;
+  background: #fff;
 }
 
 .story-team-avatar-sm {
