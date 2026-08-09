@@ -5,14 +5,15 @@ import Welcome from "./components/screens/Welcome.jsx";
 import Home from "./components/screens/Home.jsx";
 import StageDetail from "./components/screens/StageDetail.jsx";
 import Notes from "./components/screens/Notes.jsx";
-import AskAI from "./components/screens/AskAI.jsx";
 import You from "./components/screens/You.jsx";
 import TabBar from "./components/TabBar.jsx";
 import StageStory from "./components/StageStory.jsx";
+import HospitalMap3D from "./components/HospitalMap3D.jsx";
+import NoteComposer from "./components/NoteComposer.jsx";
 import { STAGES } from "./data/stages.js";
 
-// phase: "welcome" | "home" | "stage" | "updates" | "ask" | "you"
-const TAB_PHASES = ["home", "updates", "ask", "you"];
+// phase: "welcome" | "home" | "stage" | "updates" | "you"
+const TAB_PHASES = ["home", "updates", "you"];
 
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
 const PUSH_INTERVAL_MS = 6000;
@@ -21,12 +22,14 @@ export default function App() {
   const [phase, setPhase] = useState("welcome");
   const [booting, setBooting] = useState(true);
   const [bootWordIndex, setBootWordIndex] = useState(0);
-  const [currentStage, setCurrentStage] = useState(4); // demo default: Procedure
+  const [currentStage, setCurrentStage] = useState(0);
   const [openStageIndex, setOpenStageIndex] = useState(null);
   const [storyIndex, setStoryIndex] = useState(null); // non-null while the story overlay is open
   const [logEntries, setLogEntries] = useState([]);
+  const [mapOpen, setMapOpen] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
 
-  const showTabBar = (TAB_PHASES.includes(phase) && phase !== "ask") || phase === "stage";
+  const showTabBar = TAB_PHASES.includes(phase) || phase === "stage";
   const activeTab = phase === "stage" ? "home" : phase;
 
   useEffect(() => {
@@ -51,6 +54,8 @@ export default function App() {
           ...c,
           stageLabel: st.label,
           stageTitle: st.title,
+          person: c.person || st.person,
+          roleShort: (c.role || st.role).split(",")[0],
           key: `${st.key}-${c.time}`,
         }))
       ),
@@ -63,11 +68,14 @@ export default function App() {
   useEffect(() => {
     if (booting) return;
     if (deliveredCount >= checkinsChrono.length) return;
+    // Every check-in, including the first one right after a stage opens
+    // up, waits the same real interval, so updates read as arriving one
+    // at a time rather than dumping the whole stage's history at once.
     const t = setTimeout(() => {
       const next = checkinsChrono[deliveredCount];
       setBannerQueue((q) => [...q, next]);
       setDeliveredCount((n) => n + 1);
-    }, deliveredCount === 0 ? 900 : PUSH_INTERVAL_MS);
+    }, PUSH_INTERVAL_MS);
     return () => clearTimeout(t);
   }, [booting, deliveredCount, checkinsChrono]);
 
@@ -80,6 +88,10 @@ export default function App() {
   function openStage(i) {
     setOpenStageIndex(i);
     setPhase("stage");
+  }
+
+  function completeStage() {
+    setCurrentStage((s) => Math.min(s + 1, STAGES.length - 1));
   }
 
   if (booting) {
@@ -106,6 +118,7 @@ export default function App() {
           onOpenStory={(i) => setStoryIndex(i)}
           checkins={deliveredCheckins}
           onSeeAllCheckins={() => setPhase("updates")}
+          onOpenMap={() => setMapOpen(true)}
         />
       )}
 
@@ -123,11 +136,9 @@ export default function App() {
           logEntries={logEntries}
           currentStage={currentStage}
           checkins={deliveredCheckins}
-          onAddLog={(entry) => setLogEntries((prev) => [...prev, entry])}
+          onOpenComposer={() => setComposerOpen(true)}
         />
       )}
-
-      {phase === "ask" && <AskAI onBack={() => setPhase("home")} />}
 
       {phase === "you" && <You />}
 
@@ -140,6 +151,32 @@ export default function App() {
           onClose={() => setStoryIndex(null)}
           onNavigate={(i) => {
             if (i >= 0 && i < STAGES.length) setStoryIndex(i);
+          }}
+          onComplete={() => {
+            completeStage();
+            setStoryIndex(null);
+          }}
+        />
+      )}
+
+      {mapOpen && <HospitalMap3D onClose={() => setMapOpen(false)} />}
+
+      {composerOpen && (
+        <NoteComposer
+          onClose={() => setComposerOpen(false)}
+          onSave={(note) => {
+            const s = STAGES[currentStage];
+            setLogEntries((prev) => [
+              ...prev,
+              {
+                id: `note-${Date.now()}`,
+                stageKey: s.key,
+                stageLabel: s.label,
+                time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                ...note,
+              },
+            ]);
+            setComposerOpen(false);
           }}
         />
       )}

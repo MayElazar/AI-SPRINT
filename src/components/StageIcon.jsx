@@ -1,5 +1,5 @@
 /*
-  Stage icons for Naya's path.
+  Stage icons for Maya's path.
 
   NOTE ON PROVENANCE: these are hand-drawn to match the Streamline
   "Ultimate Regular" style the user referenced (24px grid, ~1.5px

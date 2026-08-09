@@ -9,6 +9,8 @@ export default function NotifCard({
   appLabel,
   time,
   text,
+  tag,
+  tagVariant = "neutral",
   onDismiss,
   style,
   ownsTap = true,
@@ -81,7 +83,10 @@ export default function NotifCard({
       </div>
       <div className="ios-notif-body">
         <div className="ios-notif-top">
-          <span className="ios-notif-app">{appLabel}</span>
+          <span className="ios-notif-app-row">
+            <span className="ios-notif-app">{appLabel}</span>
+            {tag && <span className={`entry-tag entry-tag-${tagVariant}`}>{tag}</span>}
+          </span>
           <span className="ios-notif-time">{time}</span>
         </div>
         <div className="ios-notif-text">{text}</div>

@@ -1,202 +1,135 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import NotifCard from "../NotifCard.jsx";
-import { STAGES } from "../../data/stages.js";
 
-function formatNow() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+// "11:42 AM" -> 702, so check-ins (fixed fictional times from stages.js)
+// and notes (real wall-clock times) can be merged into one true order
+// rather than just concatenated as two separate lists.
+function timeToMinutes(t) {
+  const m = /(\d+):(\d+)\s*(AM|PM)/i.exec(t || "");
+  if (!m) return 0;
+  let h = parseInt(m[1], 10) % 12;
+  if (/pm/i.test(m[3])) h += 12;
+  return h * 60 + parseInt(m[2], 10);
 }
 
-// Shown while a recording is being turned into text. Light in tone,
-// but deliberately not jokey about the procedure itself.
-const TRANSCRIBING_WORDS = [
-  "Listening back",
-  "Decoding the doctor-speak",
-  "Tidying up the umms",
-  "Typing faster than you could",
-  "Almost there",
+// `checkins` arrives newest-first from App, which owns delivery timing.
+// This screen merges them with the parent's own notes into a single
+// feed, newest first, each entry tagged with where it came from. The
+// composer itself renders at the App level (see App.jsx), not nested
+// here, so its overlay isn't capped by this screen's own stacking
+// context and doesn't end up underneath the tab bar.
+const FILTERS = [
+  { key: "all", label: "All" },
+  { key: "checkin", label: "Check-ins" },
+  { key: "note", label: "Notes" },
 ];
 
-// Prototype stub: there is no transcription service wired up yet, so this
-// fakes the round trip with a delay and canned text. Swap for a real
-// speech-to-text call before this goes anywhere near a real visit.
-const FAKE_TRANSCRIPT =
-  "Dr. Cohen said the catheter went in without any trouble and Naya handled the sedation well. Recovery should be about an hour, and someone will come get us as soon as she's settled.";
-
-// `checkins` arrives newest-first from App, which owns delivery timing.
-// This screen is the full history, Home only shows the latest one.
-export default function Notes({ logEntries, currentStage, checkins, onAddLog }) {
-  const s = STAGES[currentStage];
-
-  const [noteText, setNoteText] = useState("");
-  const [recording, setRecording] = useState(false);
-  const [transcribing, setTranscribing] = useState(false);
-  const [wordIndex, setWordIndex] = useState(0);
-  const [micError, setMicError] = useState("");
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-
+export default function Notes({ logEntries, checkins, onOpenComposer }) {
   const [dismissed, setDismissed] = useState(() => new Set());
-  const visibleCheckins = checkins.filter((c) => !dismissed.has(c.key));
+  const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    if (!transcribing) return;
-    const t = setInterval(() => {
-      setWordIndex((i) => (i + 1) % TRANSCRIBING_WORDS.length);
-    }, 900);
-    return () => clearInterval(t);
-  }, [transcribing]);
+  const feed = useMemo(() => {
+    const fromCheckins = checkins.map((c) => ({
+      kind: "checkin",
+      key: c.key,
+      time: c.time,
+      appLabel: `${c.person} · ${c.roleShort}`,
+      tag: "Check-in",
+      tagVariant: "checkin",
+      text: c.text,
+    }));
+    const fromNotes = logEntries.map((e, i) => ({
+      kind: "note",
+      key: e.id || `log-${i}`,
+      time: e.time,
+      appLabel: "You",
+      tag: e.type === "transcript" ? "AI transcript" : "Note",
+      tagVariant: e.type === "transcript" ? "transcript" : "note",
+      text: e.text,
+      audioUrl: e.audioUrl,
+      stageLabel: e.stageLabel,
+    }));
+    return [...fromCheckins, ...fromNotes]
+      .filter((e) => !dismissed.has(e.key))
+      .filter((e) => filter === "all" || e.kind === filter)
+      .sort((a, b) => timeToMinutes(b.time) - timeToMinutes(a.time));
+  }, [checkins, logEntries, dismissed, filter]);
 
-  function writeNote() {
-    const text = noteText.trim();
-    if (!text) return;
-    onAddLog({ stageKey: s.key, stageLabel: s.label, time: formatNow(), type: "text", text });
-    setNoteText("");
-  }
-
-  async function startRecording() {
-    setMicError("");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
-      chunksRef.current = [];
-      mr.ondataavailable = (e) => chunksRef.current.push(e.data);
-      mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const audioUrl = URL.createObjectURL(blob);
-        stream.getTracks().forEach((t) => t.stop());
-
-        setTranscribing(true);
-        setWordIndex(0);
-        setTimeout(() => {
-          setTranscribing(false);
-          onAddLog({
-            stageKey: s.key,
-            stageLabel: s.label,
-            time: formatNow(),
-            type: "transcript",
-            text: FAKE_TRANSCRIPT,
-            audioUrl,
-          });
-        }, 4200);
-      };
-      mr.start();
-      mediaRecorderRef.current = mr;
-      setRecording(true);
-    } catch (err) {
-      setMicError("Microphone access is needed to record a note.");
-    }
-  }
-
-  function stopRecording() {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
-  }
+  const counts = useMemo(() => {
+    const visible = [...checkins.map((c) => ({ kind: "checkin", key: c.key })), ...logEntries.map((e, i) => ({ kind: "note", key: e.id || `log-${i}` }))].filter(
+      (e) => !dismissed.has(e.key)
+    );
+    return {
+      all: visible.length,
+      checkin: visible.filter((e) => e.kind === "checkin").length,
+      note: visible.filter((e) => e.kind === "note").length,
+    };
+  }, [checkins, logEntries, dismissed]);
 
   return (
     <div className="screen">
-      <div className="path-hero">
+      <div className="path-hero path-hero-plain">
         <div className="eyebrow">Updates &amp; notes</div>
         <div className="title headline">Everything from today</div>
         <div className="sub">
-          Check-ins from the team, plus anything you write or record yourself.
+          Check-ins from the team, plus anything you write or record yourself, together in one feed.
         </div>
       </div>
 
-      <div className="section-label" style={{ marginTop: 4 }}>
-        Check-ins
+      <div className="section-row">
+        <div className="section-label" style={{ margin: 0 }}>
+          Today
+        </div>
+        <button className="pencil-btn" aria-label="Add a note" onClick={onOpenComposer}>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+            />
+            <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.7" />
+          </svg>
+        </button>
       </div>
-      {visibleCheckins.length === 0 ? (
+
+      <div className="feed-filter-row">
+        {FILTERS.map((f) => (
+          <button
+            key={f.key}
+            className={`feed-filter-chip ${filter === f.key ? "on" : ""}`}
+            onClick={() => setFilter(f.key)}
+          >
+            {f.label}
+            <span className="feed-filter-count">{counts[f.key]}</span>
+          </button>
+        ))}
+      </div>
+
+      {feed.length === 0 ? (
         <div className="qa-scope-note">
-          No updates yet. The moment something happens, it'll show up here.
+          {filter === "all" &&
+            "Nothing yet. Check-ins from the team and anything you write or record will show up here together, newest first."}
+          {filter === "checkin" && "No check-ins yet. They'll show up here as the team sends them."}
+          {filter === "note" && "No notes yet. Tap the pencil to write or record one."}
         </div>
       ) : (
         <div className="notif-feed">
-          {visibleCheckins.map((c, i) => (
-            <NotifCard
-              key={c.key}
-              appLabel={`Alongside · ${c.stageLabel}`}
-              time={c.time}
-              text={c.text}
-              onDismiss={() => setDismissed((prev) => new Set(prev).add(c.key))}
-              style={{ animationDelay: `${i * 60}ms` }}
-            />
+          {feed.map((e, i) => (
+            <div key={e.key}>
+              <NotifCard
+                appLabel={e.appLabel}
+                time={e.time}
+                text={e.text}
+                tag={e.tag}
+                tagVariant={e.tagVariant}
+                onDismiss={() => setDismissed((prev) => new Set(prev).add(e.key))}
+                style={{ animationDelay: `${i * 60}ms` }}
+              />
+              {e.audioUrl && <audio className="note-audio" src={e.audioUrl} controls />}
+            </div>
           ))}
         </div>
-      )}
-
-      <div className="section-label">Your notes</div>
-      <div className="log-card">
-        <div className="log-label">Write, or record and let AI write it up</div>
-        <textarea
-          className="log-input"
-          rows={2}
-          placeholder="e.g. Dr. Cohen said the IV went in easily"
-          value={noteText}
-          onChange={(e) => setNoteText(e.target.value)}
-          disabled={transcribing}
-        />
-        <div className="note-actions">
-          <button className="log-btn" onClick={writeNote} disabled={transcribing}>
-            Save note
-          </button>
-          <button
-            className={`record-btn ${recording ? "recording" : ""}`}
-            onClick={recording ? stopRecording : startRecording}
-            disabled={transcribing}
-          >
-            <span className="record-dot" />
-            {recording ? "Stop recording" : "Record the team"}
-          </button>
-        </div>
-        {micError && <div className="mic-error">{micError}</div>}
-      </div>
-
-      {transcribing && (
-        <div className="transcribing-card" role="status" aria-live="polite">
-          <div className="transcribing-head">
-            <span className="transcribing-spark" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z"
-                  fill="var(--accent)"
-                />
-              </svg>
-            </span>
-            <span className="transcribing-word" key={wordIndex}>
-              {TRANSCRIBING_WORDS[wordIndex]}&hellip;
-            </span>
-          </div>
-          <div className="skeleton-line" style={{ width: "92%" }} />
-          <div className="skeleton-line" style={{ width: "78%" }} />
-          <div className="skeleton-line" style={{ width: "85%" }} />
-          <div className="skeleton-line" style={{ width: "45%" }} />
-        </div>
-      )}
-
-      {logEntries.length === 0 && !transcribing ? (
-        <div className="qa-scope-note">
-          Nothing logged yet. Notes you save on any stage will show up here, in
-          order, across the whole day.
-        </div>
-      ) : (
-        [...logEntries].reverse().map((e, i) => (
-          <div className="notes-screen-item" key={i}>
-            <div className="log-stage">
-              {e.stageLabel} · {e.time}
-              {e.type === "transcript" && (
-                <span className="transcript-tag">AI transcript</span>
-              )}
-            </div>
-            {e.type === "audio" ? (
-              <audio className="note-audio" src={e.audioUrl} controls />
-            ) : (
-              e.text
-            )}
-            {e.type === "transcript" && e.audioUrl && (
-              <audio className="note-audio" src={e.audioUrl} controls />
-            )}
-          </div>
-        ))
       )}
     </div>
   );

@@ -5,7 +5,7 @@ export default function Path({ currentStage, onOpenStage }) {
   return (
     <div className="screen">
       <div className="path-hero">
-        <div className="eyebrow">Naya's path</div>
+        <div className="eyebrow">Maya's path</div>
         <div className="title headline">Five stages, one at a time</div>
         <div className="sub">
           Each stage opens with whatever it actually needs, a video, a

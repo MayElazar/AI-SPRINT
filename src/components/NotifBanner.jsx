@@ -96,7 +96,7 @@ export default function NotifBanner({ item, onDone }) {
         </div>
         <div className="ios-notif-body">
           <div className="ios-notif-top">
-            <span className="ios-notif-app">Alongside · {item.stageLabel}</span>
+            <span className="ios-notif-app">{item.person} · {item.roleShort}</span>
             <span className="ios-notif-time">now</span>
           </div>
           <div className="ios-notif-text">{item.text}</div>

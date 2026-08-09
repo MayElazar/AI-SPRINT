@@ -8,7 +8,7 @@ import NotifCard from "../NotifCard.jsx";
 // Home shows only the latest check-in, replaced as new ones land. The
 // full history stays one tap away in Updates, so nothing is lost, it
 // just isn't stacked up on the home screen.
-export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins }) {
+export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins, onOpenMap }) {
   const [dismissed, setDismissed] = useState(() => new Set());
   const latest = checkins.find((c) => !dismissed.has(c.key)) || null;
 
@@ -18,17 +18,16 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
         <div className="section-label" style={{ margin: 0 }}>
           Right now
         </div>
-        <button className="bell-badge" aria-label="Notifications" onClick={onSeeAllCheckins}>
+        <button className="bell-badge" aria-label="Hospital map" onClick={onOpenMap}>
           <svg viewBox="0 0 24 24" fill="none">
             <path
-              d="M12 4a5 5 0 00-5 5v3.4c0 .6-.2 1.2-.6 1.7L5 16h14l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V9a5 5 0 00-5-5z"
+              d="M9 4L3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z"
               stroke="var(--text-soft)"
               strokeWidth="1.7"
               strokeLinejoin="round"
             />
-            <path d="M10 19a2 2 0 004 0" stroke="var(--text-soft)" strokeWidth="1.7" strokeLinecap="round" />
+            <path d="M9 4v13M15 7v13" stroke="var(--text-soft)" strokeWidth="1.7" />
           </svg>
-          {latest && <span className="bell-dot" />}
         </button>
       </div>
 
@@ -43,9 +42,11 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
               rather than swapping text inside the existing card. */}
           <NotifCard
             key={latest.key}
-            appLabel={`Alongside · ${latest.stageTitle}`}
+            appLabel={`${latest.person} · ${latest.roleShort}`}
             time={latest.time}
             text={latest.text}
+            tag="Check-in"
+            tagVariant="checkin"
             onDismiss={() => setDismissed((prev) => new Set(prev).add(latest.key))}
           />
           {checkins.length > 1 && (
@@ -56,7 +57,7 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
         </div>
       )}
 
-      <div className="section-label">Naya's path</div>
+      <div className="section-label">Maya's path</div>
       <StoryTray currentStage={currentStage} onOpenStory={onOpenStory} />
     </div>
   );

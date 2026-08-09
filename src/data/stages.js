@@ -7,7 +7,7 @@ export const STAGES = [
     key: "meetteam",
     label: "Meet the team",
     person: "Your care team",
-    role: "Dr. Cohen, Yael, and Galit",
+    role: "Dr. Bruckheimer, Yael, and Galit",
     avatar: "team",
     color: "purple",
     title: "Meet your care team",
@@ -15,7 +15,7 @@ export const STAGES = [
     offers: ["Checklist"],
     resource: null,
     checklist: [
-      "Dr. Cohen, pediatric cardiologist, leads today's procedure",
+      "Dr. Bruckheimer, pediatric cardiologist, leads today's procedure",
       "Yael, unit nurse, your point of contact for the whole day",
       "Galit, discharge nurse, walks you through going home at the end",
     ],
@@ -23,11 +23,23 @@ export const STAGES = [
     qa: [
       {
         q: "Will the doctor I meet today be the one doing the procedure?",
-        a: "Yes, Dr. Cohen leads Naya's procedure and is who you'll see throughout.",
+        a: "Yes, Dr. Bruckheimer leads Maya's procedure and is who you'll see throughout.",
       },
       {
         q: "Who do I go to if I have a question about today's plan?",
         a: "Yael, she's your point of contact for the whole day.",
+      },
+    ],
+    resources: [
+      {
+        type: "guide",
+        title: "Talking to Maya about today",
+        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+      },
+      {
+        type: "map",
+        title: "Where you're headed",
+        body: "Cath Lab unit, 3rd floor. The full map is under Hospital tour.",
       },
     ],
   },
@@ -59,6 +71,18 @@ export const STAGES = [
         a: "The cafeteria on the ground floor, open from 7am.",
       },
     ],
+    resources: [
+      {
+        type: "map",
+        title: "Hospital map",
+        body: "Cath Lab unit, waiting area, cafeteria, and the quiet room, all on one map.",
+      },
+      {
+        type: "guide",
+        title: "Talking to Maya about today",
+        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+      },
+    ],
   },
   {
     key: "checkedin",
@@ -79,7 +103,7 @@ export const STAGES = [
     transcript:
       "Hi, I'm Yael. I'll be with you throughout today. Right now our team is confirming your child's details and getting everything ready before the procedure begins.",
     checklist: [
-      "Bring Naya's insurance card and ID",
+      "Bring Maya's insurance card and ID",
       "Fasting since midnight, water only until 6am",
       "Arrive 30 minutes before your scheduled time",
     ],
@@ -94,12 +118,24 @@ export const STAGES = [
         a: "The family quiet room is past reception, on the same floor.",
       },
     ],
+    resources: [
+      {
+        type: "article",
+        title: "Fasting and arrival rules",
+        body: "What Maya can eat or drink, and exactly when to arrive.",
+      },
+      {
+        type: "guide",
+        title: "If Maya gets anxious waiting",
+        body: "A few things that actually help kids her age in a waiting room.",
+      },
+    ],
   },
   {
     key: "prep",
     label: "Prep",
-    person: "Dr. Cohen",
-    role: "Pediatric cardiologist, Naya's procedure",
+    person: "Dr. Bruckheimer",
+    role: "Pediatric cardiologist, Maya's procedure",
     avatar: "doctor",
     color: "coral",
     title: "In prep",
@@ -107,7 +143,7 @@ export const STAGES = [
     offers: ["Video"],
     resource: {
       type: "video",
-      label: "A video from Dr. Cohen",
+      label: "A video from Dr. Bruckheimer",
       body: "What prep involves",
     },
     transcript:
@@ -121,12 +157,24 @@ export const STAGES = [
         a: "Yes, until she's taken back for the procedure itself.",
       },
     ],
+    resources: [
+      {
+        type: "guide",
+        title: "What the IV line feels like",
+        body: "What to tell Maya before it happens, in plain, honest words.",
+      },
+      {
+        type: "map",
+        title: "Where you'll wait",
+        body: "The family waiting area, right outside the unit.",
+      },
+    ],
   },
   {
     key: "procedure",
     label: "Procedure",
-    person: "Dr. Cohen",
-    role: "Pediatric cardiologist, Naya's procedure",
+    person: "Dr. Bruckheimer",
+    role: "Pediatric cardiologist, Maya's procedure",
     avatar: "doctor",
     color: "pink",
     title: "In procedure",
@@ -134,18 +182,30 @@ export const STAGES = [
     offers: ["Video", "Check-ins"],
     resource: {
       type: "video",
-      label: "A video from Dr. Cohen",
+      label: "A video from Dr. Bruckheimer",
       body: "What's normal to feel right now",
     },
     transcript:
       "Your child is in the procedure room now. We're threading a small catheter through a blood vessel to the heart, guided by imaging the whole time, and she is fully monitored and asleep. Most parents say this wait is harder than the procedure itself, and that's completely normal. There's nothing you need to do right now except wait, and you'll know the moment there's an update.",
     checklist: [],
     checkins: [
-      { time: "11:42 AM", text: "Naya is settled and the procedure has started, on schedule." },
-      { time: "12:35 PM", text: "Still on track. No news is expected news right now." },
+      {
+        time: "11:42 AM",
+        text: "Maya is settled and the procedure has started, on schedule.",
+        person: "Noa K.",
+        role: "Care coordinator, covering check-ins during the procedure",
+      },
+      {
+        time: "12:35 PM",
+        text: "Still on track. No news is expected news right now.",
+        person: "Noa K.",
+        role: "Care coordinator, covering check-ins during the procedure",
+      },
       {
         time: "1:20 PM",
         text: "Running about 20 minutes past the typical window, this happens and isn't a concern on its own.",
+        person: "Noa K.",
+        role: "Care coordinator, covering check-ins during the procedure",
       },
     ],
     qa: [
@@ -156,6 +216,18 @@ export const STAGES = [
       {
         q: "Is it normal for this to run longer than expected?",
         a: "Yes, timing varies and a longer wait alone isn't a signal of a problem.",
+      },
+    ],
+    resources: [
+      {
+        type: "article",
+        title: "What to expect during the wait",
+        body: "Typical timing, what's normal, and when a delay is actually worth asking about.",
+      },
+      {
+        type: "map",
+        title: "Family waiting area",
+        body: "Right outside the unit, with charging points and a TV.",
       },
     ],
   },
@@ -178,7 +250,12 @@ export const STAGES = [
       "Your child is out of the procedure now, and we're watching closely as she wakes up. Some grogginess or fussiness at first is completely normal, and we'll let you know as soon as you can come in and see her.",
     checklist: [],
     checkins: [
-      { time: "1:52 PM", text: "Naya is out of the procedure and in recovery, vitals being monitored." },
+      {
+        time: "1:52 PM",
+        text: "Maya is out of the procedure and in recovery, vitals being monitored.",
+        person: "Yael",
+        role: "Unit nurse, your point of contact today",
+      },
     ],
     qa: [
       {
@@ -188,6 +265,13 @@ export const STAGES = [
       {
         q: "Is it normal for her to seem confused right after waking?",
         a: "Yes, grogginess and brief confusion are both expected.",
+      },
+    ],
+    resources: [
+      {
+        type: "guide",
+        title: "What waking up looks like",
+        body: "Grogginess and fussiness are normal, here's what actually helps.",
       },
     ],
   },
@@ -219,6 +303,13 @@ export const STAGES = [
       {
         q: "Who do I call if something comes up after we leave?",
         a: "The unit's after-hours line, printed on your discharge paperwork.",
+      },
+    ],
+    resources: [
+      {
+        type: "guide",
+        title: "Explaining recovery at home to Maya",
+        body: "Why she has to rest for a few days, in words a 4-year-old will accept.",
       },
     ],
   },

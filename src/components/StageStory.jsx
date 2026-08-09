@@ -1,117 +1,371 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Avatar from "./Avatar.jsx";
+import HospitalMap3D from "./HospitalMap3D.jsx";
 import { STAGES } from "../data/stages.js";
 
-// Full-screen story view for one stage: segmented progress bar across the
-// top (one segment per stage, matching Instagram's story-tray convention),
-// a Text/Video toggle, and the actual content underneath. In video mode the
-// clip is a full-bleed background layer (no letterboxing, no native
-// controls), the rest of the UI floats on top of it, Instagram-style.
-export default function StageStory({ stageIndex, currentStage, onClose, onNavigate }) {
-  const [mode, setMode] = useState("video"); // "video" | "text"
+const RESOURCE_ICON = {
+  map: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M9 4L3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="M9 4v13M15 7v13" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ),
+  guide: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 21s-7-4.35-9.5-8.5C.7 8.9 2.4 5 6 4.3c2.1-.4 4 .5 6 2.3 2-1.8 3.9-2.7 6-2.3 3.6.7 5.3 4.6 3.5 8.2C19 16.65 12 21 12 21z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
+  article: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="5" y="3.5" width="14" height="17" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
+const DRAG_THRESHOLD = 60;
+
+// "Meet the team" is photos, not footage, nothing is actually happening
+// yet for a video to capture. Dr. Bruckheimer has a real reference photo
+// already (app/src/assets/dr-cohen.png via Avatar); Yael and Galit still
+// use the generic illustrated avatar until real photos exist.
+const TEAM_MEMBERS = [
+  {
+    avatar: "doctor",
+    name: "Dr. Bruckheimer",
+    role: "Pediatric cardiologist",
+    caption: "Leads Maya's procedure today, and is who you'll see throughout.",
+  },
+  {
+    avatar: "nurse",
+    name: "Yael",
+    role: "Unit nurse",
+    caption: "Your point of contact for the whole day, from check-in through the wait.",
+  },
+  {
+    avatar: "nurse",
+    name: "Galit",
+    role: "Discharge nurse",
+    caption: "Walks you through going home at the end, so nothing gets missed.",
+  },
+];
+
+// Full-bleed video behind the whole screen (or a tinted placeholder for
+// stages without one yet), with a sheet that starts as a peek at the
+// bottom and slides up over the video to reveal the stage's text,
+// checklist, and resources, rather than a small contained player.
+export default function StageStory({ stageIndex, currentStage, onClose, onNavigate, onComplete }) {
+  const [expanded, setExpanded] = useState(false);
+  const dragging = useRef(false);
+  const startY = useRef(0);
+  const dragYRef = useRef(0);
+  const [dragY, setDragY] = useState(0);
+  const videoRef = useRef(null);
+  const [checkedItems, setCheckedItems] = useState(() => new Set());
+  const [map3dOpen, setMap3dOpen] = useState(false);
+  const [muted, setMuted] = useState(false);
+
+  function toggleChecklistItem(itemKey) {
+    setCheckedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemKey)) next.delete(itemKey);
+      else next.add(itemKey);
+      return next;
+    });
+  }
+
   const s = STAGES[stageIndex];
+  const isMeetTeam = s.key === "meetteam";
   const hasVideo = Boolean(s.videoUrl);
+  const isCurrent = stageIndex === currentStage;
+  const isLastStage = stageIndex === STAGES.length - 1;
+  const resources = s.resources || [];
+
+  // Pull the sheet up and the video pauses, it's covered anyway and
+  // shouldn't keep playing (or making sound, once it has any) behind
+  // the text. Push the sheet back down and it picks up again.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (expanded) {
+      video.pause();
+      return;
+    }
+    // Try with sound first, since opening the story is itself a real tap.
+    // Some browsers still block that, so fall back to muted autoplay and
+    // let the speaker button turn sound back on.
+    video.muted = muted;
+    video.play().catch(() => {
+      video.muted = true;
+      setMuted(true);
+      video.play().catch(() => {});
+    });
+  }, [expanded, hasVideo, stageIndex, muted]);
+
+  function onPointerDown(e) {
+    startY.current = e.clientY;
+    dragging.current = true;
+  }
+
+  function onPointerMove(e) {
+    if (!dragging.current) return;
+    dragYRef.current = e.clientY - startY.current;
+    setDragY(dragYRef.current);
+  }
+
+  function endDrag() {
+    if (!dragging.current) return;
+    dragging.current = false;
+    const dy = dragYRef.current;
+    if (!expanded && dy < -DRAG_THRESHOLD) setExpanded(true);
+    if (expanded && dy > DRAG_THRESHOLD) setExpanded(false);
+    dragYRef.current = 0;
+    setDragY(0);
+  }
 
   return (
     <div className="story-overlay">
-      {mode === "video" && hasVideo && (
-        <video
-          key={s.videoUrl}
-          className="story-video-bg"
-          src={s.videoUrl}
-          autoPlay
-          playsInline
-          loop
-        />
+      {isMeetTeam ? (
+        <div className={`story-video-placeholder tint-${s.color}`}>
+          <div className="story-team-strip">
+            {TEAM_MEMBERS.map((m) => (
+              <div className="story-team-avatar" key={m.name}>
+                <Avatar kind={m.avatar} alt={m.name} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : hasVideo ? (
+        <>
+          <video
+            key={s.videoUrl}
+            ref={videoRef}
+            className="story-video-bg"
+            src={s.videoUrl}
+            autoPlay
+            muted={muted}
+            playsInline
+            loop
+          />
+          <button
+            className="story-mute-btn"
+            onClick={() => setMuted((v) => !v)}
+            aria-label={muted ? "Unmute" : "Mute"}
+          >
+            {muted ? (
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 9v6h4l5 4V5L8 9H4z" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M16 9l5 6M21 9l-5 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 9v6h4l5 4V5L8 9H4z" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+        </>
+      ) : (
+        <div className={`story-video-placeholder tint-${s.color}`}>
+          <div className="story-video-placeholder-avatar">
+            <Avatar kind={s.avatar} alt={s.person} />
+          </div>
+        </div>
       )}
 
-      <div className="story-ui">
+      <div className="story-top-fade" />
+
+      <div className="story-top-ui">
         <div className="story-progress-row">
           {STAGES.map((st, i) => (
             <div className="story-progress-track" key={st.key}>
               <div
                 className="story-progress-fill"
-                style={{ width: i < stageIndex ? "100%" : i === stageIndex ? "60%" : "0%" }}
+                style={{ width: i <= stageIndex ? "100%" : "0%" }}
               />
             </div>
           ))}
         </div>
 
-        <div className="story-header">
-          <div className="story-header-avatar">
-            <Avatar kind={s.avatar} alt={s.person} />
-          </div>
-          <div className="story-header-text">
-            <div className="story-header-name">{s.person}</div>
-            <div className="story-header-role">{s.role}</div>
-          </div>
+        <div className="story-topbar">
+          <div className="story-topbar-title">{s.label}</div>
           <button className="story-close" onClick={onClose}>
             ✕
           </button>
         </div>
+      </div>
 
-        <div className="story-toggle">
-          <button
-            className={mode === "video" ? "on" : ""}
-            onClick={() => setMode("video")}
-            disabled={!hasVideo}
-          >
-            Video
-          </button>
-          <button className={mode === "text" ? "on" : ""} onClick={() => setMode("text")}>
-            Text
-          </button>
+      <div
+        className={`story-sheet ${expanded ? "expanded" : ""}`}
+        style={{
+          "--drag-y": `${dragY}px`,
+          transition: dragging.current ? "none" : "transform 0.32s cubic-bezier(0.23,1,0.32,1)",
+        }}
+      >
+        <div
+          className="story-sheet-handle-row"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+          onClick={() => !dragging.current && setExpanded((v) => !v)}
+        >
+          <div className="story-sheet-handle" />
         </div>
 
-        <div className="story-body">
-          {mode === "video" && !hasVideo && (
-            <div className="story-video-missing">
-              No video yet for this stage. Switch to Text.
+        <div className="story-sheet-peek">
+          <div className="story-person-row">
+            <div className="story-person-avatar">
+              <Avatar kind={s.avatar} alt={s.person} />
+            </div>
+            <div>
+              <div className="story-person-name">{s.person}</div>
+              <div className="story-person-role">{s.role}</div>
+            </div>
+          </div>
+          <div className="story-title-lg headline">{s.title}</div>
+          {!expanded && (
+            <div className="story-sheet-hint">
+              Swipe up for {isMeetTeam ? "the team" : "checklist"} &amp; resources ‹
+              {resources.length + (isMeetTeam ? 1 : s.checklist.length ? 1 : 0)}›
             </div>
           )}
-          {mode === "text" && (
-            <div className="story-text">
-              <div className="story-text-title headline">{s.title}</div>
-              {s.transcript && (
-                <>
-                  <div className="story-text-eyebrow">What {s.person} says in the video</div>
-                  <div className="story-text-sub">"{s.transcript}"</div>
-                </>
-              )}
-              {!s.transcript && <div className="story-text-sub">{s.sub}</div>}
-              {s.checklist.length > 0 && (
-                <>
-                  <div className="story-text-eyebrow" style={{ marginTop: 16 }}>
-                    Checklist
+        </div>
+
+        <div className="story-sheet-body">
+          {s.transcript ? (
+            <div className="story-quote">"{s.transcript}"</div>
+          ) : (
+            <div className="story-quote-sub">{s.sub}</div>
+          )}
+
+          {isMeetTeam && (
+            <>
+              <div className="section-label" style={{ marginTop: 18 }}>
+                Meet the team
+              </div>
+              <div className="resource-list">
+                {TEAM_MEMBERS.map((m) => (
+                  <div className="resource-item" key={m.name}>
+                    <div className="story-team-avatar-sm">
+                      <Avatar kind={m.avatar} alt={m.name} />
+                    </div>
+                    <div className="resource-item-body">
+                      <div className="resource-item-title">
+                        {m.name} · {m.role}
+                      </div>
+                      <div className="resource-item-sub">{m.caption}</div>
+                    </div>
                   </div>
-                  <ul className="checklist" style={{ marginTop: 8 }}>
-                    {s.checklist.map((c) => (
-                      <li key={c}>{c}</li>
-                    ))}
-                  </ul>
-                </>
-              )}
+                ))}
+              </div>
+            </>
+          )}
+
+          {s.checklist.length > 0 && !isMeetTeam && (
+            <>
+              <div className="section-label" style={{ marginTop: 18 }}>
+                Checklist
+              </div>
+              <div className="check-list">
+                {s.checklist.map((c) => {
+                  const itemKey = `${s.key}::${c}`;
+                  const checked = checkedItems.has(itemKey);
+                  return (
+                    <button
+                      key={c}
+                      className={`check-item ${checked ? "checked" : ""}`}
+                      onClick={() => toggleChecklistItem(itemKey)}
+                    >
+                      <span className="check-item-box" aria-hidden="true">
+                        {checked && (
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M5 12.5l4.5 4.5L19 7"
+                              stroke="#fff"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="check-item-text">{c}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {resources.length > 0 && (
+            <>
+              <div className="section-label" style={{ marginTop: 18 }}>
+                Resources for this stage
+              </div>
+              <div className="resource-list">
+                {resources.map((r) => {
+                  const isMap = r.type === "map";
+                  const Tag = isMap ? "button" : "div";
+                  return (
+                    <Tag
+                      className="resource-item"
+                      key={r.title}
+                      onClick={isMap ? () => setMap3dOpen(true) : undefined}
+                    >
+                      <div className={`resource-item-icon tint-${s.color}`}>
+                        {RESOURCE_ICON[r.type]}
+                      </div>
+                      <div className="resource-item-body">
+                        <div className="resource-item-title">{r.title}</div>
+                        <div className="resource-item-sub">{r.body}</div>
+                      </div>
+                      {isMap && <div className="path-chev">›</div>}
+                    </Tag>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {isCurrent && !isLastStage && (
+            <div className="story-complete-row">
+              <button className="story-complete-btn" onClick={onComplete}>
+                Mark "{s.label}" complete
+              </button>
             </div>
           )}
-        </div>
 
-        <div className="story-nav">
-          <button
-            className="story-nav-btn"
-            disabled={stageIndex === 0}
-            onClick={() => onNavigate(stageIndex - 1)}
-          >
-            ‹ Prev
-          </button>
-          <button
-            className="story-nav-btn"
-            disabled={stageIndex === STAGES.length - 1}
-            onClick={() => onNavigate(stageIndex + 1)}
-          >
-            Next ›
-          </button>
+          <div className="story-nav">
+            <button
+              className="story-nav-btn"
+              disabled={stageIndex === 0}
+              onClick={() => onNavigate(stageIndex - 1)}
+            >
+              ‹ Prev
+            </button>
+            <button
+              className="story-nav-btn"
+              disabled={stageIndex >= STAGES.length - 1}
+              onClick={() => onNavigate(stageIndex + 1)}
+            >
+              Next ›
+            </button>
+          </div>
         </div>
       </div>
+
+      {map3dOpen && <HospitalMap3D onClose={() => setMap3dOpen(false)} />}
     </div>
   );
 }

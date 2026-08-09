@@ -1,4 +1,4 @@
-import drCohen from "../assets/dr-cohen.png";
+import drBruckheimer from "../assets/dr-cohen.png";
 
 const NURSE_SVG = (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -18,7 +18,7 @@ const NURSE_SVG = (
 );
 
 // Generic "whole team" mark, used for the Meet the Team step, which
-// introduces Dr. Cohen, Yael, and Galit together rather than one person.
+// introduces Dr. Bruckheimer, Yael, and Galit together rather than one person.
 const TEAM_SVG = (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <circle cx="50" cy="50" r="50" fill="var(--accent-tint)" />
@@ -60,12 +60,12 @@ const TOUR_SVG = (
   </svg>
 );
 
-// avatarKind: "doctor" | "nurse" | "team" | "tour". Only Dr. Cohen has
+// avatarKind: "doctor" | "nurse" | "team" | "tour". Only Dr. Bruckheimer has
 // a real reference photo, see O-output/.../video-scripts for the open
 // item on Yael/Galit references.
 export default function Avatar({ kind, alt }) {
   if (kind === "doctor") {
-    return <img src={drCohen} alt={alt || "Dr. Cohen"} />;
+    return <img src={drBruckheimer} alt={alt || "Dr. Bruckheimer"} />;
   }
   if (kind === "team") {
     return TEAM_SVG;

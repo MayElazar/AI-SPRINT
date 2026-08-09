@@ -12,25 +12,12 @@ const HomeIcon = (
 const UpdatesIcon = (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M15.5 4.5l4 4L8 20H4v-4l11.5-11.5z"
+      d="M12 4a5 5 0 00-5 5v3.4c0 .6-.2 1.2-.6 1.7L5 16h14l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V9a5 5 0 00-5-5z"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinejoin="round"
-      strokeLinecap="round"
     />
-    <path d="M13.5 6.5l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
-const AskAiIcon = (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinejoin="round"
-    />
-    <path d="M18 15l0.9 2.1L21 18l-2.1 0.9L18 21l-0.9-2.1L15 18l2.1-0.9L18 15z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M10 19a2 2 0 004 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -44,7 +31,6 @@ const YouIcon = (
 const TABS = [
   { key: "home", label: "Home", icon: HomeIcon },
   { key: "updates", label: "Updates", icon: UpdatesIcon },
-  { key: "ask", label: "Ask AI", icon: AskAiIcon },
   { key: "you", label: "You", icon: YouIcon },
 ];
 

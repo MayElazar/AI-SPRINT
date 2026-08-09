@@ -85,7 +85,7 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog }
         <textarea
           className="log-input"
           rows={2}
-          placeholder="e.g. Dr. Cohen said the IV went in easily"
+          placeholder="e.g. Dr. Bruckheimer said the IV went in easily"
           value={logInput}
           onChange={(e) => setLogInput(e.target.value)}
         />
@@ -109,7 +109,7 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog }
       ))}
       <div className="qa-scope-note">
         <strong>Scoped on purpose:</strong> these answer logistics only, timing,
-        who to ask, what to bring. Nothing here explains or characterizes Naya's
+        who to ask, what to bring. Nothing here explains or characterizes Maya's
         specific medical situation, that stays with her care team.
       </div>
     </div>
