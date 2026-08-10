@@ -22,6 +22,17 @@ const S = {
   strokeLinejoin: "round",
 };
 
+// Calendar page with a check, the night-before prep.
+const DayBeforeIcon = (
+  <svg viewBox="0 0 24 24">
+    <rect x="3.25" y="4.75" width="17.5" height="15.5" rx="1.75" {...S} />
+    <path d="M3.25 9.25h17.5" {...S} />
+    <path d="M7.5 2.75v3.5" {...S} />
+    <path d="M16.5 2.75v3.5" {...S} />
+    <path d="m8.5 14.5 2 2 4-4" {...S} />
+  </svg>
+);
+
 // Two people side by side.
 const TeamIcon = (
   <svg viewBox="0 0 24 24">
@@ -98,6 +109,7 @@ const ReadyIcon = (
 );
 
 const ICONS = {
+  daybefore: DayBeforeIcon,
   meetteam: TeamIcon,
   tour: TourIcon,
   checkedin: CheckedInIcon,

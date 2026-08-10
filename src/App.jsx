@@ -4,6 +4,7 @@ import NotifBanner from "./components/NotifBanner.jsx";
 import Welcome from "./components/screens/Welcome.jsx";
 import Home from "./components/screens/Home.jsx";
 import StageDetail from "./components/screens/StageDetail.jsx";
+import ResourceDetail from "./components/screens/ResourceDetail.jsx";
 import Notes from "./components/screens/Notes.jsx";
 import You from "./components/screens/You.jsx";
 import TabBar from "./components/TabBar.jsx";
@@ -24,13 +25,14 @@ export default function App() {
   const [bootWordIndex, setBootWordIndex] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   const [openStageIndex, setOpenStageIndex] = useState(null);
+  const [openResource, setOpenResource] = useState(null); // { resource, color }
   const [storyIndex, setStoryIndex] = useState(null); // non-null while the story overlay is open
   const [logEntries, setLogEntries] = useState([]);
   const [mapOpen, setMapOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
 
-  const showTabBar = TAB_PHASES.includes(phase) || phase === "stage";
-  const activeTab = phase === "stage" ? "home" : phase;
+  const showTabBar = TAB_PHASES.includes(phase) || phase === "stage" || phase === "resource";
+  const activeTab = phase === "stage" || phase === "resource" ? "home" : phase;
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 3200);
@@ -126,10 +128,20 @@ export default function App() {
         <StageDetail
           stageIndex={openStageIndex}
           onBack={() => setPhase("home")}
-          logEntries={logEntries}
-          onAddLog={(entry) => setLogEntries((prev) => [...prev, entry])}
           onOpenStory={(i) => setStoryIndex(i)}
           onOpenMap={() => setMapOpen(true)}
+          onOpenResource={(resource, color) => {
+            setOpenResource({ resource, color });
+            setPhase("resource");
+          }}
+        />
+      )}
+
+      {phase === "resource" && openResource && (
+        <ResourceDetail
+          resource={openResource.resource}
+          color={openResource.color}
+          onBack={() => setPhase("stage")}
         />
       )}
 

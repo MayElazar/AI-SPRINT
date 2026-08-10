@@ -4,6 +4,49 @@
 
 export const STAGES = [
   {
+    key: "daybefore",
+    label: "The day before",
+    person: "Your care team",
+    role: "Getting everything ready for tomorrow",
+    avatar: "team",
+    color: "cyan",
+    title: "The day before",
+    sub: "A few things to sort out tonight, so tomorrow morning is one less thing to think about.",
+    offers: ["Checklist"],
+    resource: null,
+    checklist: [
+      "Confirm tomorrow's arrival time and where to check in",
+      "Pack a bag: a comfort item, phone charger, something for the wait",
+      "Talk to Maya about tomorrow, in simple, honest words",
+      "Try to get a good night's sleep, yours matters too",
+    ],
+    checkins: [],
+    qa: [
+      {
+        q: "What should I tell Maya about tomorrow?",
+        a: "Simple, honest words work best, the guide below has age-appropriate specifics.",
+      },
+      {
+        q: "What if our plans change overnight?",
+        a: "Call the unit's scheduling line, printed on your appointment letter.",
+      },
+    ],
+    resources: [
+      {
+        type: "guide",
+        title: "Talking to Maya about tomorrow",
+        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+        full: "Keep it simple and honest: tomorrow you're going to the hospital so the doctors can look at her heart and help it work even better. Avoid words like \"shot\" or \"surgery\" that can spike anxiety on their own, and never promise something won't hurt, if she asks, it's fine to say some parts might feel a little strange but someone will always be with her. One or two short conversations tend to land better for a 4-year-old than one big buildup.",
+      },
+      {
+        type: "article",
+        title: "Fasting and arrival rules",
+        body: "What Maya can eat or drink, and exactly when to arrive.",
+        full: "Maya can eat and drink normally until midnight the night before. After that, water only, and nothing at all starting 6 hours before her scheduled time. Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+      },
+    ],
+  },
+  {
     key: "meetteam",
     label: "Meet the team",
     person: "Your care team",
@@ -35,6 +78,7 @@ export const STAGES = [
         type: "guide",
         title: "Talking to Maya about today",
         body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+        full: "The same honest, simple approach that worked last night still applies now that you're here: name what's happening in plain words, and let her meet the people helping her before anything starts. If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
       },
       {
         type: "map",
@@ -86,6 +130,7 @@ export const STAGES = [
         type: "guide",
         title: "Talking to Maya about today",
         body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+        full: "The same honest, simple approach that worked last night still applies now that you're here: name what's happening in plain words, and let her meet the people helping her before anything starts. If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
       },
     ],
   },
@@ -128,11 +173,13 @@ export const STAGES = [
         type: "article",
         title: "Fasting and arrival rules",
         body: "What Maya can eat or drink, and exactly when to arrive.",
+        full: "Maya can eat and drink normally until midnight the night before. After that, water only, and nothing at all starting 6 hours before her scheduled time. Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
       },
       {
         type: "guide",
         title: "If Maya gets anxious waiting",
         body: "A few things that actually help kids her age in a waiting room.",
+        full: "A few things that tend to actually help: a familiar comfort item from home, short simple games rather than a long video, and a calm, matter-of-fact tone from you, kids pick up on parental anxiety fast. The quiet room is available anytime either of you needs a few minutes away from the main waiting area.",
       },
     ],
   },
@@ -168,6 +215,7 @@ export const STAGES = [
         type: "guide",
         title: "What the IV line feels like",
         body: "What to tell Maya before it happens, in plain, honest words.",
+        full: "It's a quick pinch, similar to a blood draw, and numbing cream can be used beforehand if there's time to ask for it. Telling Maya \"it'll feel like a quick pinch, then it's over\" is more honest, and more reassuring in the end, than promising it won't hurt at all.",
       },
       {
         type: "map",
@@ -230,6 +278,7 @@ export const STAGES = [
         type: "article",
         title: "What to expect during the wait",
         body: "Typical timing, what's normal, and when a delay is actually worth asking about.",
+        full: "Most procedures run 2 to 3 hours, and it's normal, even expected, for that to feel longer than the procedure itself does for your child. Timing can vary by 20 minutes or more without anything being wrong, someone will always come find you the moment there's an update, so there's no need to go looking.",
       },
       {
         type: "map",
@@ -280,6 +329,7 @@ export const STAGES = [
         type: "guide",
         title: "What waking up looks like",
         body: "Grogginess and fussiness are normal, here's what actually helps.",
+        full: "Some grogginess, fussiness, or brief confusion right after waking up is completely normal and usually passes within the first 15 to 20 minutes. You'll be brought in to see her as soon as she's settled, and seeing a familiar face tends to help more than anything else at that point.",
       },
     ],
   },
@@ -323,6 +373,7 @@ export const STAGES = [
         type: "guide",
         title: "Explaining recovery at home to Maya",
         body: "Why she has to rest for a few days, in words a 4-year-old will accept.",
+        full: "A simple way to frame it for a 4-year-old: her body did some hard work today and now needs a few quiet days to feel strong again, like resting after being really tired. Naming the specific things she can't do yet, like running or swimming, tends to land better and cause fewer arguments than a vague \"take it easy.\"",
       },
     ],
   },

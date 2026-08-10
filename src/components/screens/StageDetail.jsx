@@ -1,24 +1,81 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "../Avatar.jsx";
 import { STAGES } from "../../data/stages.js";
+import drBruckheimerPhoto from "../../assets/dr-cohen.png";
+import yaelPhoto from "../../assets/yael.png";
+import galitPhoto from "../../assets/galit.png";
 
-export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog, onOpenStory, onOpenMap }) {
+// Stills for the video hero's `poster`, so a stage screen shows a real
+// photo at rest instead of a plain black box before playback starts.
+const POSTER_PHOTOS = {
+  doctor: drBruckheimerPhoto,
+  yael: yaelPhoto,
+  galit: galitPhoto,
+};
+
+const RESOURCE_ICON = {
+  map: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M9 4L3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="M9 4v13M15 7v13" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ),
+  guide: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 21s-7-4.35-9.5-8.5C.7 8.9 2.4 5 6 4.3c2.1-.4 4 .5 6 2.3 2-1.8 3.9-2.7 6-2.3 3.6.7 5.3 4.6 3.5 8.2C19 16.65 12 21 12 21z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
+  article: (
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="5" y="3.5" width="14" height="17" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8.5 8h7M8.5 12h7M8.5 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
+const TEAM_MEMBERS = [
+  {
+    avatar: "doctor",
+    photo: drBruckheimerPhoto,
+    name: "Dr. Bruckheimer",
+    role: "Pediatric cardiologist",
+    caption: "Leads Maya's procedure today, and is who you'll see throughout.",
+  },
+  {
+    avatar: "yael",
+    photo: yaelPhoto,
+    name: "Yael",
+    role: "Unit nurse",
+    caption: "Your point of contact for the whole day, from check-in through the wait.",
+  },
+  {
+    avatar: "galit",
+    photo: galitPhoto,
+    name: "Galit",
+    role: "Discharge nurse",
+    caption: "Walks you through going home at the end, so nothing gets missed.",
+  },
+];
+
+export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap, onOpenResource }) {
   const s = STAGES[stageIndex];
-  const [logInput, setLogInput] = useState("");
+  const isMeetTeam = s.key === "meetteam";
   const [checkedItems, setCheckedItems] = useState(() => new Set());
+  const [teamPhotoIndex, setTeamPhotoIndex] = useState(0);
 
-  const entriesForStage = logEntries.filter((e) => e.stageKey === s.key);
-
-  function saveLog() {
-    const text = logInput.trim();
-    if (!text) return;
-    const time = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    onAddLog({ stageKey: s.key, stageLabel: s.label, text, time });
-    setLogInput("");
-  }
+  useEffect(() => {
+    setTeamPhotoIndex(0);
+  }, [stageIndex]);
 
   function toggleChecklistItem(itemKey) {
     setCheckedItems((prev) => {
@@ -29,28 +86,78 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog, 
     });
   }
 
+  function handleTeamPhotoTap(e) {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const tappedLeftHalf = e.clientX - rect.left < rect.width / 2;
+    setTeamPhotoIndex((i) => {
+      const count = TEAM_MEMBERS.length;
+      return tappedLeftHalf ? (i - 1 + count) % count : (i + 1) % count;
+    });
+  }
+
   return (
     <div className="screen">
       <div className="back-row">
         <button className="back-btn" onClick={onBack}>
           ←
         </button>
-        <div className="back-title">Stage {stageIndex + 1} of 5</div>
+        <div className="back-title">Stage {stageIndex + 1} of {STAGES.length}</div>
+        <button className="bell-badge" aria-label="Hospital map" onClick={onOpenMap}>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M9 4L3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z"
+              stroke="var(--text-soft)"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+            />
+            <path d="M9 4v13M15 7v13" stroke="var(--text-soft)" strokeWidth="1.7" />
+          </svg>
+        </button>
       </div>
 
       <div className={`stage-hero tint-${s.color}`} onClick={() => onOpenStory(stageIndex)}>
-        {s.videoUrl ? (
-          <video className="stage-hero-video" src={s.videoUrl} muted playsInline preload="metadata" />
+        {isMeetTeam ? (
+          <>
+            <img
+              key={TEAM_MEMBERS[teamPhotoIndex].name}
+              className="stage-hero-team-photo"
+              src={TEAM_MEMBERS[teamPhotoIndex].photo}
+              alt={TEAM_MEMBERS[teamPhotoIndex].name}
+              onClick={handleTeamPhotoTap}
+            />
+            <div className="stage-hero-team-dots">
+              {TEAM_MEMBERS.map((m, i) => (
+                <button
+                  key={m.name}
+                  className={`stage-hero-team-dot ${i === teamPhotoIndex ? "on" : ""}`}
+                  onClick={(e) => { e.stopPropagation(); setTeamPhotoIndex(i); }}
+                  aria-label={`Show ${m.name}`}
+                />
+              ))}
+            </div>
+          </>
+        ) : s.videoUrl ? (
+          <video
+            className="stage-hero-video"
+            src={s.videoUrl}
+            poster={POSTER_PHOTOS[s.avatar]}
+            muted
+            playsInline
+            preload="metadata"
+          />
         ) : (
           <div className="stage-hero-avatar">
             <Avatar kind={s.avatar} alt={s.person} />
           </div>
         )}
-        <button className="stage-hero-play" aria-label="Play" onClick={(e) => { e.stopPropagation(); onOpenStory(stageIndex); }}>
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
-          </svg>
-        </button>
+        {!isMeetTeam && s.videoUrl && (
+          <button className="stage-hero-play" aria-label="Play" onClick={(e) => { e.stopPropagation(); onOpenStory(stageIndex); }}>
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
+            </svg>
+          </button>
+        )}
         <button
           className="stage-hero-expand"
           aria-label="Expand"
@@ -69,107 +176,87 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog, 
       </div>
 
       <div className="stage-hero-welcome headline">{s.title}</div>
+      <div className="stage-hero-sub">{s.sub}</div>
 
-      <button className="stage-feature-card" onClick={onOpenMap}>
-        <div className="stage-feature-label">Hospital Map</div>
-        <div className="stage-map-preview">
-          <svg className="stage-map-lines" viewBox="0 0 300 60" preserveAspectRatio="none">
-            <path d="M40 20h220M40 40h140" stroke="var(--border)" strokeWidth="3" strokeLinecap="round" />
-          </svg>
-          <span className="stage-map-pin" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 22s7-7.58 7-13a7 7 0 1 0-14 0c0 5.42 7 13 7 13z"
-                fill="var(--accent-deep)"
-              />
-              <circle cx="12" cy="9" r="2.6" fill="#fff" />
-            </svg>
-          </span>
-        </div>
-      </button>
-
-      {s.checklist.length > 0 && (
+      {isMeetTeam ? (
         <div className="stage-feature-card stage-feature-card-static">
-          <div className="stage-feature-label">Checklist</div>
-          <div className="check-list">
-            {s.checklist.map((c) => {
-              const itemKey = `${s.key}::${c}`;
-              const checked = checkedItems.has(itemKey);
+          <div className="stage-feature-label">Meet the team</div>
+          <div className="resource-list">
+            {TEAM_MEMBERS.map((m) => (
+              <div className="resource-item" key={m.name}>
+                <div className="story-team-avatar-sm">
+                  <img src={m.photo} alt={m.name} />
+                </div>
+                <div className="resource-item-body">
+                  <div className="resource-item-title">
+                    {m.name} · {m.role}
+                  </div>
+                  <div className="resource-item-sub">{m.caption}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        s.checklist.length > 0 && (
+          <div className="stage-feature-card stage-feature-card-static">
+            <div className="stage-feature-label">Checklist</div>
+            <div className="check-list">
+              {s.checklist.map((c) => {
+                const itemKey = `${s.key}::${c}`;
+                const checked = checkedItems.has(itemKey);
+                return (
+                  <button
+                    key={c}
+                    className={`check-item ${checked ? "checked" : ""}`}
+                    onClick={() => toggleChecklistItem(itemKey)}
+                  >
+                    <span className="check-item-box" aria-hidden="true">
+                      {checked && (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path
+                            d="M5 12.5l4.5 4.5L19 7"
+                            stroke="#fff"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="check-item-text">{c}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )
+      )}
+
+      {(s.resources || []).length > 0 && (
+        <div className="stage-feature-card stage-feature-card-static">
+          <div className="stage-feature-label">Resources</div>
+          <div className="resource-list">
+            {s.resources.map((r) => {
+              const isMap = r.type === "map";
               return (
                 <button
-                  key={c}
-                  className={`check-item ${checked ? "checked" : ""}`}
-                  onClick={() => toggleChecklistItem(itemKey)}
+                  className="resource-item"
+                  key={r.title}
+                  onClick={isMap ? onOpenMap : () => onOpenResource(r, s.color)}
                 >
-                  <span className="check-item-box" aria-hidden="true">
-                    {checked && (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M5 12.5l4.5 4.5L19 7"
-                          stroke="#fff"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                  <span className="check-item-text">{c}</span>
+                  <div className={`resource-item-icon tint-${s.color}`}>{RESOURCE_ICON[r.type]}</div>
+                  <div className="resource-item-body">
+                    <div className="resource-item-title">{r.title}</div>
+                    <div className="resource-item-sub">{r.body}</div>
+                  </div>
+                  <div className="resource-item-chev">›</div>
                 </button>
               );
             })}
           </div>
         </div>
       )}
-
-      <div className="stage-person">
-        <div className="path-avatar">
-          <Avatar kind={s.avatar} alt={s.person} />
-        </div>
-        <div>
-          <div className="stage-person-name">{s.person}</div>
-          <div className="stage-person-role">{s.role}</div>
-        </div>
-      </div>
-
-      <div className="stage-title headline">{s.title}</div>
-      <div className="stage-sub">{s.sub}</div>
-
-      {s.checkins.length > 0 && (
-        <>
-          <div className="section-label" style={{ marginTop: 0 }}>
-            Check-ins so far, not a live feed
-          </div>
-          <div className="checkin-feed">
-            {s.checkins.map((c) => (
-              <div className="checkin-item" key={c.time}>
-                <div className="checkin-time">{c.time}</div>
-                {c.text}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      <div className="log-card">
-        <div className="log-label">Log what you heard</div>
-        <textarea
-          className="log-input"
-          rows={2}
-          placeholder="e.g. Dr. Bruckheimer said the IV went in easily"
-          value={logInput}
-          onChange={(e) => setLogInput(e.target.value)}
-        />
-        <button className="log-btn" onClick={saveLog}>
-          Save note
-        </button>
-        {entriesForStage.map((e, i) => (
-          <div className="log-entry" key={i}>
-            <div className="log-stage">{e.time}</div>
-            {e.text}
-          </div>
-        ))}
-      </div>
 
       <div className="section-label">Quick answers</div>
       {s.qa.map((item) => (
@@ -178,11 +265,6 @@ export default function StageDetail({ stageIndex, onBack, logEntries, onAddLog, 
           <div className="qa-a">{item.a}</div>
         </div>
       ))}
-      <div className="qa-scope-note">
-        <strong>Scoped on purpose:</strong> these answer logistics only, timing,
-        who to ask, what to bring. Nothing here explains or characterizes Maya's
-        specific medical situation, that stays with her care team.
-      </div>
     </div>
   );
 }
