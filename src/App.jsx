@@ -115,7 +115,7 @@ export default function App() {
       {phase === "home" && (
         <Home
           currentStage={currentStage}
-          onOpenStory={(i) => setStoryIndex(i)}
+          onOpenStory={openStage}
           checkins={deliveredCheckins}
           onSeeAllCheckins={() => setPhase("updates")}
           onOpenMap={() => setMapOpen(true)}
@@ -128,6 +128,8 @@ export default function App() {
           onBack={() => setPhase("home")}
           logEntries={logEntries}
           onAddLog={(entry) => setLogEntries((prev) => [...prev, entry])}
+          onOpenStory={(i) => setStoryIndex(i)}
+          onOpenMap={() => setMapOpen(true)}
         />
       )}
 
