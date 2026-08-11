@@ -14,6 +14,8 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
 
   return (
     <div className="screen">
+      <div className="home-welcome">Hi Michal and David</div>
+
       <div className="home-topbar">
         <div className="section-label" style={{ margin: 0 }}>
           Right now

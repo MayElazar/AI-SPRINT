@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // Shown while a recording is being turned into text. Light in tone,
 // but deliberately not jokey about the procedure itself.
@@ -31,7 +31,11 @@ export default function NoteComposer({ onClose, onSave }) {
   const chunksRef = useRef([]);
   const inputRef = useRef(null);
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so the focus call fires as part of the
+  // same tap that opened the composer, that's what lets mobile Safari treat
+  // it as still coming from a user gesture and actually raise the keyboard,
+  // instead of silently no-opping like it does after any extra delay.
+  useLayoutEffect(() => {
     inputRef.current?.focus();
   }, []);
 
@@ -149,6 +153,7 @@ export default function NoteComposer({ onClose, onSave }) {
           value={text}
           onChange={handleTextChange}
           disabled={transcribing}
+          autoFocus
         />
         {text.trim() ? (
           <button className="wa-send-btn" onClick={handleSend} disabled={transcribing} aria-label="Send">

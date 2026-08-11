@@ -1527,6 +1527,14 @@ button.resource-item {
 /* Home top bar: "Right now" label plus a bell affordance with an
    unread-style red dot, pinned to the very top of the screen rather
    than buried next to the Check-ins section. */
+.home-welcome {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
 .home-topbar {
   display: flex;
   align-items: center;
