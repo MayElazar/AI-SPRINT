@@ -736,48 +736,6 @@ button:focus-visible {
   height: 18px;
 }
 
-/* The sheet: a peek at the bottom by default, dragged or tapped open to
-   cover the video with a scrollable, light-themed content area. */
-.story-sheet {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 78%;
-  transform: translateY(calc(100% - 168px + var(--drag-y, 0px)));
-  background: var(--bg);
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  color: var(--text);
-}
-
-.story-sheet.expanded {
-  transform: translateY(var(--drag-y, 0px));
-}
-
-.story-sheet-handle-row {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0 4px;
-  cursor: grab;
-  touch-action: none;
-}
-
-.story-sheet-handle {
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border);
-}
-
-.story-sheet-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 20px calc(90px + env(safe-area-inset-bottom));
-}
-
 .story-quote-sub {
   font-size: 14px;
   line-height: 1.6;
@@ -1016,23 +974,6 @@ button.resource-item {
   color: var(--text-soft);
   font-size: 18px;
   flex-shrink: 0;
-}
-
-.story-complete-row {
-  margin-top: 18px;
-}
-
-.story-complete-btn {
-  width: 100%;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: 14px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 10px 24px rgba(20, 40, 80, 0.18);
 }
 
 .story-nav {

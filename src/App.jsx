@@ -101,10 +101,6 @@ export default function App() {
     setCurrentStage((prev) => Math.max(prev, i));
   }
 
-  function completeStage() {
-    setCurrentStage((s) => Math.min(s + 1, STAGES.length - 1));
-  }
-
   if (booting) {
     return (
       <div className="app-shell">
@@ -173,22 +169,7 @@ export default function App() {
       {showTabBar && <TabBar active={activeTab} onNavigate={(dest) => setPhase(dest)} />}
 
       {storyIndex !== null && (
-        <StageStory
-          stageIndex={storyIndex}
-          currentStage={currentStage}
-          onClose={() => setStoryIndex(null)}
-          onNavigate={(i) => {
-            if (i < 0 || i >= STAGES.length) return;
-            setStoryIndex(i);
-            setCurrentStage((prev) => Math.max(prev, i));
-          }}
-          onComplete={() => {
-            completeStage();
-            setStoryIndex(null);
-          }}
-          checkins={deliveredCheckins}
-          onSeeAllCheckins={() => setPhase("updates")}
-        />
+        <StageStory stageIndex={storyIndex} onClose={() => setStoryIndex(null)} />
       )}
 
       {mapOpen && <HospitalMap3D onClose={() => setMapOpen(false)} />}
