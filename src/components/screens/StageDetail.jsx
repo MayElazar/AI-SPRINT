@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Avatar from "../Avatar.jsx";
+import { useEffect, useRef, useState } from "react";
+import NotifCard from "../NotifCard.jsx";
 import { STAGES } from "../../data/stages.js";
 import drBruckheimerPhoto from "../../assets/dr-cohen.png";
 import yaelPhoto from "../../assets/yael.png";
@@ -43,39 +43,45 @@ const RESOURCE_ICON = {
   ),
 };
 
-const TEAM_MEMBERS = [
-  {
-    avatar: "doctor",
-    photo: drBruckheimerPhoto,
-    name: "Dr. Bruckheimer",
-    role: "Pediatric cardiologist",
-    caption: "Leads Maya's procedure today, and is who you'll see throughout.",
-  },
-  {
-    avatar: "yael",
-    photo: yaelPhoto,
-    name: "Yael",
-    role: "Unit nurse",
-    caption: "Your point of contact for the whole day, from check-in through the wait.",
-  },
-  {
-    avatar: "galit",
-    photo: galitPhoto,
-    name: "Galit",
-    role: "Discharge nurse",
-    caption: "Walks you through going home at the end, so nothing gets missed.",
-  },
-];
-
-export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap, onOpenResource }) {
+export default function StageDetail({
+  stageIndex,
+  onBack,
+  onOpenStory,
+  onOpenMap,
+  onOpenResource,
+  onOpenGame,
+  onNavigate,
+  checkins,
+  onSeeAllCheckins,
+}) {
   const s = STAGES[stageIndex];
-  const isMeetTeam = s.key === "meetteam";
   const [checkedItems, setCheckedItems] = useState(() => new Set());
-  const [teamPhotoIndex, setTeamPhotoIndex] = useState(0);
+  const [dismissed, setDismissed] = useState(() => new Set());
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    setTeamPhotoIndex(0);
+    window.scrollTo(0, 0);
   }, [stageIndex]);
+
+  function togglePlay(e) {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    if (playing) {
+      video.pause();
+      setPlaying(false);
+    } else {
+      video.play().catch(() => {});
+      setPlaying(true);
+    }
+  }
+
+  // Only what's actually been delivered so far shows here, same as
+  // Home, this isn't a live feed, so a stage with no updates yet just
+  // hasn't gotten there in the timeline, it's not a bug.
+  const stageCheckins = checkins.filter((c) => c.stageKey === s.key);
+  const latestCheckin = stageCheckins.find((c) => !dismissed.has(c.key)) || null;
 
   function toggleChecklistItem(itemKey) {
     setCheckedItems((prev) => {
@@ -83,16 +89,6 @@ export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap
       if (next.has(itemKey)) next.delete(itemKey);
       else next.add(itemKey);
       return next;
-    });
-  }
-
-  function handleTeamPhotoTap(e) {
-    e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
-    const tappedLeftHalf = e.clientX - rect.left < rect.width / 2;
-    setTeamPhotoIndex((i) => {
-      const count = TEAM_MEMBERS.length;
-      return tappedLeftHalf ? (i - 1 + count) % count : (i + 1) % count;
     });
   }
 
@@ -116,121 +112,119 @@ export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap
         </button>
       </div>
 
-      <div className={`stage-hero tint-${s.color}`} onClick={() => onOpenStory(stageIndex)}>
-        {isMeetTeam ? (
-          <>
-            <img
-              key={TEAM_MEMBERS[teamPhotoIndex].name}
-              className="stage-hero-team-photo"
-              src={TEAM_MEMBERS[teamPhotoIndex].photo}
-              alt={TEAM_MEMBERS[teamPhotoIndex].name}
-              onClick={handleTeamPhotoTap}
-            />
-            <div className="stage-hero-team-dots">
-              {TEAM_MEMBERS.map((m, i) => (
-                <button
-                  key={m.name}
-                  className={`stage-hero-team-dot ${i === teamPhotoIndex ? "on" : ""}`}
-                  onClick={(e) => { e.stopPropagation(); setTeamPhotoIndex(i); }}
-                  aria-label={`Show ${m.name}`}
-                />
-              ))}
-            </div>
-          </>
-        ) : s.videoUrl ? (
+      {s.videoUrl && (
+        <div className={`stage-hero tint-${s.color}`}>
           <video
+            ref={videoRef}
             className="stage-hero-video"
             src={s.videoUrl}
             poster={POSTER_PHOTOS[s.avatar]}
             muted
             playsInline
             preload="metadata"
+            onEnded={() => setPlaying(false)}
+            onClick={togglePlay}
           />
-        ) : (
-          <div className="stage-hero-avatar">
-            <Avatar kind={s.avatar} alt={s.person} />
-          </div>
-        )}
-        {!isMeetTeam && s.videoUrl && (
-          <button className="stage-hero-play" aria-label="Play" onClick={(e) => { e.stopPropagation(); onOpenStory(stageIndex); }}>
+          {!playing && (
+            <button className="stage-hero-play" aria-label="Play" onClick={togglePlay}>
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
+              </svg>
+            </button>
+          )}
+          <button
+            className="stage-hero-expand"
+            aria-label="Expand"
+            onClick={(e) => { e.stopPropagation(); onOpenStory(stageIndex); }}
+          >
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
+              <path
+                d="M9 4H4v5M15 20h5v-5M4 4l6 6M20 20l-6-6"
+                stroke="#fff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
-        )}
-        <button
-          className="stage-hero-expand"
-          aria-label="Expand"
-          onClick={(e) => { e.stopPropagation(); onOpenStory(stageIndex); }}
-        >
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M9 4H4v5M15 20h5v-5M4 4l6 6M20 20l-6-6"
-              stroke="#fff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
+        </div>
+      )}
 
       <div className="stage-hero-welcome headline">{s.title}</div>
       <div className="stage-hero-sub">{s.sub}</div>
 
-      {isMeetTeam ? (
+      {latestCheckin && (
         <div className="stage-feature-card stage-feature-card-static">
-          <div className="stage-feature-label">Meet the team</div>
-          <div className="resource-list">
-            {TEAM_MEMBERS.map((m) => (
-              <div className="resource-item" key={m.name}>
-                <div className="story-team-avatar-sm">
-                  <img src={m.photo} alt={m.name} />
-                </div>
-                <div className="resource-item-body">
-                  <div className="resource-item-title">
+          <div className="stage-feature-label">Latest update</div>
+          <NotifCard
+            key={latestCheckin.key}
+            appLabel={`${latestCheckin.person} · ${latestCheckin.roleShort}`}
+            time={latestCheckin.time}
+            text={latestCheckin.text}
+            tag="Check-in"
+            tagVariant="checkin"
+            onDismiss={() => setDismissed((prev) => new Set(prev).add(latestCheckin.key))}
+          />
+          {stageCheckins.length > 1 && (
+            <button className="see-all-checkins" onClick={onSeeAllCheckins}>
+              See all {stageCheckins.length} updates ›
+            </button>
+          )}
+        </div>
+      )}
+
+      {s.checklist.length > 0 && (
+        <div className="stage-feature-card stage-feature-card-static">
+          <div className="stage-feature-label">{s.checklistLabel || "Checklist"}</div>
+          {s.checklistIntro && <div className="stage-checklist-intro">{s.checklistIntro}</div>}
+          <div className="check-list">
+            {s.checklist.map((c) => {
+              const itemKey = `${s.key}::${c}`;
+              const checked = checkedItems.has(itemKey);
+              return (
+                <button
+                  key={c}
+                  className={`check-item ${checked ? "checked" : ""}`}
+                  onClick={() => toggleChecklistItem(itemKey)}
+                >
+                  <span className="check-item-box" aria-hidden="true">
+                    {checked && (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M5 12.5l4.5 4.5L19 7"
+                          stroke="#fff"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="check-item-text">{c}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {(s.team || []).length > 0 && (
+        <div className="stage-feature-card stage-feature-card-static">
+          <div className="stage-feature-label">Meet your team today</div>
+          <div className="team-card-list">
+            {s.team.map((m) => (
+              <div className="team-card" key={m.name}>
+                <img className="team-card-photo" src={m.photo} alt={m.name} />
+                <div className="team-card-body">
+                  <div className="team-card-name">
                     {m.name} · {m.role}
                   </div>
-                  <div className="resource-item-sub">{m.caption}</div>
+                  <div className="team-card-caption">{m.caption}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      ) : (
-        s.checklist.length > 0 && (
-          <div className="stage-feature-card stage-feature-card-static">
-            <div className="stage-feature-label">Checklist</div>
-            <div className="check-list">
-              {s.checklist.map((c) => {
-                const itemKey = `${s.key}::${c}`;
-                const checked = checkedItems.has(itemKey);
-                return (
-                  <button
-                    key={c}
-                    className={`check-item ${checked ? "checked" : ""}`}
-                    onClick={() => toggleChecklistItem(itemKey)}
-                  >
-                    <span className="check-item-box" aria-hidden="true">
-                      {checked && (
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <path
-                            d="M5 12.5l4.5 4.5L19 7"
-                            stroke="#fff"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </span>
-                    <span className="check-item-text">{c}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )
       )}
 
       {(s.resources || []).length > 0 && (
@@ -258,6 +252,17 @@ export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap
         </div>
       )}
 
+      {s.game && (
+        <button className="stage-feature-card stage-game-card" onClick={onOpenGame}>
+          <div className="stage-game-card-icon">🧩</div>
+          <div className="resource-item-body">
+            <div className="resource-item-title">A game for Maya</div>
+            <div className="resource-item-sub">Help her build a heart, piece by piece.</div>
+          </div>
+          <div className="resource-item-chev">›</div>
+        </button>
+      )}
+
       <div className="section-label">Quick answers</div>
       {s.qa.map((item) => (
         <div className="qa-card" key={item.q}>
@@ -265,6 +270,23 @@ export default function StageDetail({ stageIndex, onBack, onOpenStory, onOpenMap
           <div className="qa-a">{item.a}</div>
         </div>
       ))}
+
+      <div className="story-nav stage-detail-nav">
+        <button
+          className="story-nav-btn"
+          disabled={stageIndex === 0}
+          onClick={() => onNavigate(stageIndex - 1)}
+        >
+          ‹ Back
+        </button>
+        <button
+          className="story-nav-btn"
+          disabled={stageIndex >= STAGES.length - 1}
+          onClick={() => onNavigate(stageIndex + 1)}
+        >
+          Next ›
+        </button>
+      </div>
     </div>
   );
 }

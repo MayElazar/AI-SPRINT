@@ -2,10 +2,15 @@
 // the actual Schneider discharge instructions Dr. Bruckheimer sent (2026-08-06).
 // See O-output/01-research-report-pediatric-communication/ for sources.
 
+import drBruckheimerPhoto from "../assets/dr-cohen.png";
+import yaelPhoto from "../assets/yael.png";
+import galitPhoto from "../assets/galit.png";
+
 export const STAGES = [
   {
     key: "daybefore",
     label: "The day before",
+    game: true,
     person: "Your care team",
     role: "Getting everything ready for tomorrow",
     avatar: "team",
@@ -15,9 +20,13 @@ export const STAGES = [
     offers: ["Checklist"],
     resource: null,
     checklist: [
+      "Fasting after 8:00 PM tonight",
+      "Clear liquids only until 6:00 AM",
+      "Bring insurance card and ID",
+      "Bring a list of current medications",
+      "Bring a comfort item, like a favorite stuffed animal",
+      "Wear comfortable clothing, easy to change out of",
       "Confirm tomorrow's arrival time and where to check in",
-      "Pack a bag: a comfort item, phone charger, something for the wait",
-      "Talk to Maya about tomorrow, in simple, honest words",
       "Try to get a good night's sleep, yours matters too",
     ],
     checkins: [],
@@ -36,31 +45,71 @@ export const STAGES = [
         type: "guide",
         title: "Talking to Maya about tomorrow",
         body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
-        full: "Keep it simple and honest: tomorrow you're going to the hospital so the doctors can look at her heart and help it work even better. Avoid words like \"shot\" or \"surgery\" that can spike anxiety on their own, and never promise something won't hurt, if she asks, it's fine to say some parts might feel a little strange but someone will always be with her. One or two short conversations tend to land better for a 4-year-old than one big buildup.",
+        full: [
+          "Keep it simple: \"the doctors are fixing a small part of your heart.\"",
+          "It's okay if Maya asks the same question more than once.",
+          "Avoid words like \"cut\" or \"needle\" right before bed.",
+          "Answer honestly, even \"I don't know, let's ask tomorrow\" is a fine answer.",
+          "Remind her that you'll be there the whole time, that's the part kids worry about most.",
+          "Let her pack her own comfort item, having a job to do helps her feel in control.",
+        ],
       },
       {
         type: "article",
         title: "Fasting and arrival rules",
         body: "What Maya can eat or drink, and exactly when to arrive.",
-        full: "Maya can eat and drink normally until midnight the night before. After that, water only, and nothing at all starting 6 hours before her scheduled time. Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+        full: [
+          "Maya can eat and drink normally until midnight the night before.",
+          "After that, water only, and nothing at all starting 6 hours before her scheduled time.",
+          "Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+        ],
       },
     ],
   },
   {
-    key: "meetteam",
-    label: "Meet the team",
-    person: "Your care team",
-    role: "Dr. Bruckheimer, Yael, and Galit",
-    avatar: "team",
-    color: "purple",
-    title: "Meet your care team",
-    sub: "Before today starts, a quick introduction to who's with you.",
-    offers: ["Checklist"],
-    resource: null,
+    key: "arrival",
+    label: "Arrival & admission",
+    person: "Yael",
+    role: "Unit nurse, your point of contact today",
+    avatar: "yael",
+    color: "gold",
+    team: [
+      {
+        photo: drBruckheimerPhoto,
+        name: "Dr. Bruckheimer",
+        role: "Pediatric cardiologist",
+        caption: "Leads Maya's procedure today, and is who you'll see throughout.",
+      },
+      {
+        photo: yaelPhoto,
+        name: "Yael",
+        role: "Unit nurse",
+        caption: "Your point of contact for the whole day, from check-in through the wait.",
+      },
+      {
+        photo: galitPhoto,
+        name: "Galit",
+        role: "Discharge nurse",
+        caption: "Walks you through going home at the end, so nothing gets missed.",
+      },
+    ],
+    title: "Arrival & admission",
+    sub: "Meeting your team, a quick tour of the unit, and getting checked in, all before things get moving.",
+    offers: ["Video", "Checklist"],
+    resource: {
+      type: "video",
+      label: "A video from Yael",
+      body: "Getting oriented for today",
+    },
+    videoUrl: "/videos/checkedin.mp4",
+    transcript:
+      "Hi, I'm Yael. I'll be with you throughout today. Right now our team is confirming your child's details and getting everything ready before the procedure begins.",
+    checklistLabel: "What to bring",
     checklist: [
-      "Dr. Bruckheimer, pediatric cardiologist, leads today's procedure",
-      "Yael, unit nurse, your point of contact for the whole day",
-      "Galit, discharge nurse, walks you through going home at the end",
+      "Insurance card and ID",
+      "List of Maya's current medications",
+      "Favorite toy or blanket",
+      "Something for you: a book, headphones, whatever helps",
     ],
     checkins: [],
     qa: [
@@ -69,55 +118,16 @@ export const STAGES = [
         a: "Yes, Dr. Bruckheimer leads Maya's procedure and is who you'll see throughout.",
       },
       {
-        q: "Who do I go to if I have a question about today's plan?",
-        a: "Yael, she's your point of contact for the whole day.",
-      },
-    ],
-    resources: [
-      {
-        type: "guide",
-        title: "Talking to Maya about today",
-        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
-        full: "The same honest, simple approach that worked last night still applies now that you're here: name what's happening in plain words, and let her meet the people helping her before anything starts. If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
-      },
-      {
-        type: "map",
-        title: "Where you're headed",
-        body: "Cath Lab unit, 3rd floor. The full map is under Hospital tour.",
-      },
-    ],
-  },
-  {
-    key: "tour",
-    label: "Hospital tour",
-    person: "Yael",
-    role: "Unit nurse, your point of contact today",
-    avatar: "tour",
-    color: "cyan",
-    title: "A quick tour",
-    sub: "Where everything is before today gets moving: the unit, the waiting area, the cafeteria.",
-    offers: ["Video", "Checklist"],
-    resource: {
-      type: "video",
-      label: "A video from Yael",
-      body: "A walk through the unit",
-    },
-    videoUrl: "/videos/tour.mp4",
-    checklist: [
-      "Cath Lab unit, 3rd floor, where you'll check in and wait",
-      "Family waiting area, right outside the unit, with charging points and a TV",
-      "Cafeteria, ground floor, open from 7am",
-      "Quiet room, past reception on the same floor, if you need a few minutes alone",
-    ],
-    checkins: [],
-    qa: [
-      {
         q: "Where do I wait during the procedure itself?",
         a: "The family waiting area right outside the unit, Yael will point it out.",
       },
       {
-        q: "Is there somewhere to get food nearby?",
-        a: "The cafeteria on the ground floor, open from 7am.",
+        q: "Who do I ask if something changes before we start?",
+        a: "Yael, she's your point of contact for the whole day.",
+      },
+      {
+        q: "Where do I go if I need a few minutes alone?",
+        a: "The family quiet room is past reception, on the same floor.",
       },
     ],
     resources: [
@@ -130,97 +140,32 @@ export const STAGES = [
         type: "guide",
         title: "Talking to Maya about today",
         body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
-        full: "The same honest, simple approach that worked last night still applies now that you're here: name what's happening in plain words, and let her meet the people helping her before anything starts. If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
+        full: [
+          "The same honest, simple approach that worked last night still applies now that you're here.",
+          "Name what's happening in plain words, and let her meet the people helping her before anything starts.",
+          "If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
+        ],
       },
-    ],
-  },
-  {
-    key: "checkedin",
-    label: "Checked in",
-    person: "Yael",
-    role: "Unit nurse, your point of contact today",
-    avatar: "yael",
-    color: "gold",
-    title: "Checked in",
-    sub: "Getting oriented for today, before things get moving.",
-    offers: ["Video", "Checklist"],
-    resource: {
-      type: "video",
-      label: "A video from Yael",
-      body: "Getting oriented for today",
-    },
-    videoUrl: "/videos/checkedin.mp4",
-    transcript:
-      "Hi, I'm Yael. I'll be with you throughout today. Right now our team is confirming your child's details and getting everything ready before the procedure begins.",
-    checklist: [
-      "Bring Maya's insurance card and ID",
-      "Fasting since midnight, water only until 6am",
-      "Arrive 30 minutes before your scheduled time",
-    ],
-    checkins: [],
-    qa: [
-      {
-        q: "Who do I ask if something changes before we start?",
-        a: "Yael, she's your point of contact for the whole day.",
-      },
-      {
-        q: "Where do I go if I need a few minutes alone?",
-        a: "The family quiet room is past reception, on the same floor.",
-      },
-    ],
-    resources: [
       {
         type: "article",
         title: "Fasting and arrival rules",
         body: "What Maya can eat or drink, and exactly when to arrive.",
-        full: "Maya can eat and drink normally until midnight the night before. After that, water only, and nothing at all starting 6 hours before her scheduled time. Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+        full: [
+          "Maya can eat and drink normally until midnight the night before.",
+          "After that, water only, and nothing at all starting 6 hours before her scheduled time.",
+          "Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+        ],
       },
       {
         type: "guide",
         title: "If Maya gets anxious waiting",
         body: "A few things that actually help kids her age in a waiting room.",
-        full: "A few things that tend to actually help: a familiar comfort item from home, short simple games rather than a long video, and a calm, matter-of-fact tone from you, kids pick up on parental anxiety fast. The quiet room is available anytime either of you needs a few minutes away from the main waiting area.",
-      },
-    ],
-  },
-  {
-    key: "prep",
-    label: "Prep",
-    person: "Dr. Bruckheimer",
-    role: "Pediatric cardiologist, Maya's procedure",
-    avatar: "doctor",
-    color: "coral",
-    title: "In prep",
-    sub: "IV line, final checks, a word with the anesthesia team.",
-    offers: ["Video"],
-    resource: {
-      type: "video",
-      label: "A video from Dr. Bruckheimer",
-      body: "What prep involves",
-    },
-    videoUrl: "/videos/prep.mp4",
-    transcript:
-      "I will explain what we are planning to do and what you can expect during the procedure. Our team will be with your child throughout every step.",
-    checklist: [],
-    checkins: [],
-    qa: [
-      { q: "How long does prep usually take?", a: "Usually 30 to 45 minutes." },
-      {
-        q: "Will I be able to stay with her for this part?",
-        a: "Yes, until she's taken back for the procedure itself.",
-      },
-    ],
-    resources: [
-      {
-        type: "guide",
-        title: "What the IV line feels like",
-        body: "What to tell Maya before it happens, in plain, honest words.",
-        full: "It's a quick pinch, similar to a blood draw, and numbing cream can be used beforehand if there's time to ask for it. Telling Maya \"it'll feel like a quick pinch, then it's over\" is more honest, and more reassuring in the end, than promising it won't hurt at all.",
-      },
-      {
-        type: "map",
-        title: "Where you'll wait",
-        body: "The family waiting area, right outside the unit.",
+        full: [
+          "A familiar comfort item from home helps more than most toys bought for the occasion.",
+          "Short simple games work better than a long video.",
+          "Keep a calm, matter-of-fact tone, kids pick up on parental anxiety fast.",
+          "The quiet room is available anytime either of you needs a few minutes away from the main waiting area.",
+        ],
       },
     ],
   },
@@ -232,7 +177,7 @@ export const STAGES = [
     avatar: "doctor",
     color: "pink",
     title: "In procedure",
-    sub: "Typically 2 to 3 hours. This is where periodic check-ins replace a live feed.",
+    sub: "Typically 2 to 3 hours.",
     offers: ["Video", "Check-ins"],
     resource: {
       type: "video",
@@ -278,7 +223,12 @@ export const STAGES = [
         type: "article",
         title: "What to expect during the wait",
         body: "Typical timing, what's normal, and when a delay is actually worth asking about.",
-        full: "Most procedures run 2 to 3 hours, and it's normal, even expected, for that to feel longer than the procedure itself does for your child. Timing can vary by 20 minutes or more without anything being wrong, someone will always come find you the moment there's an update, so there's no need to go looking.",
+        full: [
+          "Most procedures run 2 to 3 hours.",
+          "It's normal, even expected, for that to feel longer than the procedure itself does for your child.",
+          "Timing can vary by 20 minutes or more without anything being wrong.",
+          "Someone will always come find you the moment there's an update, so there's no need to go looking.",
+        ],
       },
       {
         type: "map",
@@ -329,7 +279,11 @@ export const STAGES = [
         type: "guide",
         title: "What waking up looks like",
         body: "Grogginess and fussiness are normal, here's what actually helps.",
-        full: "Some grogginess, fussiness, or brief confusion right after waking up is completely normal and usually passes within the first 15 to 20 minutes. You'll be brought in to see her as soon as she's settled, and seeing a familiar face tends to help more than anything else at that point.",
+        full: [
+          "Some grogginess, fussiness, or brief confusion right after waking up is completely normal.",
+          "It usually passes within the first 15 to 20 minutes.",
+          "You'll be brought in to see her as soon as she's settled, seeing a familiar face tends to help more than anything else at that point.",
+        ],
       },
     ],
   },
@@ -373,7 +327,11 @@ export const STAGES = [
         type: "guide",
         title: "Explaining recovery at home to Maya",
         body: "Why she has to rest for a few days, in words a 4-year-old will accept.",
-        full: "A simple way to frame it for a 4-year-old: her body did some hard work today and now needs a few quiet days to feel strong again, like resting after being really tired. Naming the specific things she can't do yet, like running or swimming, tends to land better and cause fewer arguments than a vague \"take it easy.\"",
+        full: [
+          "Her body did some hard work today and now needs a few quiet days to feel strong again, like resting after being really tired.",
+          "Name the specific things she can't do yet, like running or swimming.",
+          "That tends to land better and cause fewer arguments than a vague \"take it easy.\"",
+        ],
       },
     ],
   },

@@ -33,46 +33,12 @@ const DayBeforeIcon = (
   </svg>
 );
 
-// Two people side by side.
-const TeamIcon = (
-  <svg viewBox="0 0 24 24">
-    <circle cx="9" cy="7.5" r="3.25" {...S} />
-    <path d="M3.25 20.25a5.75 5.75 0 0 1 11.5 0" {...S} />
-    <path d="M16 4.6a3.25 3.25 0 0 1 0 5.8" {...S} />
-    <path d="M17.4 14.9a5.75 5.75 0 0 1 3.35 5.35" {...S} />
-  </svg>
-);
-
-// Map pin over a folded map.
-const TourIcon = (
-  <svg viewBox="0 0 24 24">
-    <path d="M2.75 6.4 8 4.25v10.4L2.75 16.8V6.4Z" {...S} />
-    <path d="M8 4.25 13.25 6.4" {...S} />
-    <path d="M21.25 8.6v8.2L16 18.95V17" {...S} />
-    <path d="M8 14.65v4.3l3.6-1.45" {...S} />
-    <path d="M17.5 14.5c1.6-2 3-3.5 3-5.4a3 3 0 1 0-6 0c0 1.9 1.4 3.4 3 5.4Z" {...S} />
-    <circle cx="17.5" cy="9.1" r="1.1" {...S} />
-  </svg>
-);
-
-// Clipboard with a check.
-const CheckedInIcon = (
+// Clipboard with a check, arrival and admission.
+const ArrivalIcon = (
   <svg viewBox="0 0 24 24">
     <path d="M9 4.25H6.75a1.5 1.5 0 0 0-1.5 1.5v13.5a1.5 1.5 0 0 0 1.5 1.5h10.5a1.5 1.5 0 0 0 1.5-1.5V5.75a1.5 1.5 0 0 0-1.5-1.5H15" {...S} />
     <rect x="9" y="2.25" width="6" height="4" rx="1.25" {...S} />
     <path d="m9 13.5 2.1 2.1 4.2-4.2" {...S} />
-  </svg>
-);
-
-// IV drip bag on a stand.
-const PrepIcon = (
-  <svg viewBox="0 0 24 24">
-    <rect x="4.75" y="2.75" width="6.5" height="9" rx="1.75" {...S} />
-    <path d="M4.75 6.25h6.5" {...S} />
-    <path d="M8 11.75v3.5a2.5 2.5 0 0 0 2.5 2.5h1.75" {...S} />
-    <path d="M14.5 15.75h4.75" {...S} />
-    <path d="M16.9 21.25v-9" {...S} />
-    <circle cx="13.4" cy="17.75" r="1.4" {...S} />
   </svg>
 );
 
@@ -110,15 +76,12 @@ const ReadyIcon = (
 
 const ICONS = {
   daybefore: DayBeforeIcon,
-  meetteam: TeamIcon,
-  tour: TourIcon,
-  checkedin: CheckedInIcon,
-  prep: PrepIcon,
+  arrival: ArrivalIcon,
   procedure: ProcedureIcon,
   recovery: RecoveryIcon,
   ready: ReadyIcon,
 };
 
 export default function StageIcon({ stageKey }) {
-  return ICONS[stageKey] || ICONS.checkedin;
+  return ICONS[stageKey] || ICONS.arrival;
 }

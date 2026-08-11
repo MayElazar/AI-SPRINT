@@ -30,17 +30,29 @@ const RESOURCE_ICON = {
 
 export default function ResourceDetail({ resource, color, onBack }) {
   return (
-    <div className="screen">
-      <div className="back-row">
-        <button className="back-btn" onClick={onBack}>
-          ←
-        </button>
-        <div className="back-title">Resource</div>
-      </div>
+    <div className="resource-sheet-overlay" onClick={onBack}>
+      <div className="resource-sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="resource-sheet-handle" />
 
-      <div className={`resource-detail-icon tint-${color}`}>{RESOURCE_ICON[resource.type]}</div>
-      <div className="resource-detail-title headline">{resource.title}</div>
-      <div className="resource-detail-body">{resource.full || resource.body}</div>
+        <div className="back-row">
+          <button className="back-btn" onClick={onBack}>
+            ←
+          </button>
+          <div className="back-title">Resource</div>
+        </div>
+
+        <div className={`resource-detail-icon tint-${color}`}>{RESOURCE_ICON[resource.type]}</div>
+        <div className="resource-detail-title headline">{resource.title}</div>
+        {Array.isArray(resource.full) ? (
+          <ul className="resource-detail-list">
+            {resource.full.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        ) : (
+          <div className="resource-detail-body">{resource.full || resource.body}</div>
+        )}
+      </div>
     </div>
   );
 }

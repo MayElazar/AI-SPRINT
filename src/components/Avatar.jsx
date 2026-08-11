@@ -43,26 +43,7 @@ const TEAM_SVG = (
   </svg>
 );
 
-// Hospital tour mark: a simple map pin over a floor-plan corner,
-// standing in for "walk the unit" before a real photo/illustration
-// exists for it.
-const TOUR_SVG = (
-  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="50" fill="var(--cyan-tint)" />
-    <path
-      d="M28 66V34h34v18H50v14z"
-      fill="none"
-      stroke="var(--cyan-tint-text)"
-      strokeWidth="2.5"
-      strokeLinejoin="round"
-    />
-    <circle cx="66" cy="56" r="12" fill="var(--surface)" stroke="var(--cyan-tint-text)" strokeWidth="2.5" />
-    <circle cx="66" cy="53.5" r="3" fill="var(--cyan-tint-text)" />
-    <path d="M66 56.5c-3.5 0-5 2.2-5 4.5h10c0-2.3-1.5-4.5-5-4.5z" fill="var(--cyan-tint-text)" />
-  </svg>
-);
-
-// avatarKind: "doctor" | "yael" | "galit" | "nurse" | "team" | "tour".
+// avatarKind: "doctor" | "yael" | "galit" | "nurse" | "team".
 // Dr. Bruckheimer, Yael, and Galit all have real reference photos now;
 // "nurse" stays as a generic illustrated fallback for any unnamed staff.
 export default function Avatar({ kind, alt }) {
@@ -77,9 +58,6 @@ export default function Avatar({ kind, alt }) {
   }
   if (kind === "team") {
     return TEAM_SVG;
-  }
-  if (kind === "tour") {
-    return TOUR_SVG;
   }
   return NURSE_SVG;
 }

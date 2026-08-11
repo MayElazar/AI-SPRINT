@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import LogoLoader from "./components/LogoLoader.jsx";
+import alongsideLogo from "./assets/alongside-logo.svg";
+import schneiderLogoMarkup from "./assets/schneider-logo.svg?raw";
 import NotifBanner from "./components/NotifBanner.jsx";
 import Welcome from "./components/screens/Welcome.jsx";
 import Home from "./components/screens/Home.jsx";
@@ -11,13 +12,18 @@ import TabBar from "./components/TabBar.jsx";
 import StageStory from "./components/StageStory.jsx";
 import HospitalMap3D from "./components/HospitalMap3D.jsx";
 import NoteComposer from "./components/NoteComposer.jsx";
+import HeartGame from "./components/HeartGame.jsx";
 import { STAGES } from "./data/stages.js";
 
 // phase: "welcome" | "home" | "stage" | "updates" | "you"
 const TAB_PHASES = ["home", "updates", "you"];
 
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
-const PUSH_INTERVAL_MS = 6000;
+// First check-in lands 3s after the procedure stage starts, every one
+// after that is 20s apart, this is prototype pacing for a demo, not a
+// real estimate of how often updates would actually arrive.
+const FIRST_PUSH_DELAY_MS = 3000;
+const PUSH_INTERVAL_MS = 20000;
 
 export default function App() {
   const [phase, setPhase] = useState("welcome");
@@ -30,9 +36,10 @@ export default function App() {
   const [logEntries, setLogEntries] = useState([]);
   const [mapOpen, setMapOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
 
-  const showTabBar = TAB_PHASES.includes(phase) || phase === "stage" || phase === "resource";
-  const activeTab = phase === "stage" || phase === "resource" ? "home" : phase;
+  const showTabBar = TAB_PHASES.includes(phase) || phase === "stage";
+  const activeTab = phase === "stage" ? "home" : phase;
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 3200);
@@ -54,6 +61,7 @@ export default function App() {
       STAGES.slice(0, currentStage + 1).flatMap((st) =>
         st.checkins.map((c) => ({
           ...c,
+          stageKey: st.key,
           stageLabel: st.label,
           stageTitle: st.title,
           person: c.person || st.person,
@@ -70,14 +78,14 @@ export default function App() {
   useEffect(() => {
     if (booting) return;
     if (deliveredCount >= checkinsChrono.length) return;
-    // Every check-in, including the first one right after a stage opens
-    // up, waits the same real interval, so updates read as arriving one
-    // at a time rather than dumping the whole stage's history at once.
+    // First check-in arrives quickly (3s), so a demo doesn't sit and
+    // wait, every one after that is spaced further apart (20s).
+    const delay = deliveredCount === 0 ? FIRST_PUSH_DELAY_MS : PUSH_INTERVAL_MS;
     const t = setTimeout(() => {
       const next = checkinsChrono[deliveredCount];
       setBannerQueue((q) => [...q, next]);
       setDeliveredCount((n) => n + 1);
-    }, PUSH_INTERVAL_MS);
+    }, delay);
     return () => clearTimeout(t);
   }, [booting, deliveredCount, checkinsChrono]);
 
@@ -90,6 +98,7 @@ export default function App() {
   function openStage(i) {
     setOpenStageIndex(i);
     setPhase("stage");
+    setCurrentStage((prev) => Math.max(prev, i));
   }
 
   function completeStage() {
@@ -100,11 +109,16 @@ export default function App() {
     return (
       <div className="app-shell">
         <div className="boot-splash">
-          <LogoLoader size={104} />
-          <div className="boot-label">Alongside</div>
+          <img className="boot-logo-wordmark" src={alongsideLogo} alt="Alongside" />
           <div className="boot-word" key={bootWordIndex}>
             {BOOT_WORDS[bootWordIndex]}&hellip;
           </div>
+          <div
+            className="boot-schneider-logo"
+            role="img"
+            aria-label="Schneider Children's Medical Center"
+            dangerouslySetInnerHTML={{ __html: schneiderLogoMarkup }}
+          />
         </div>
       </div>
     );
@@ -130,18 +144,18 @@ export default function App() {
           onBack={() => setPhase("home")}
           onOpenStory={(i) => setStoryIndex(i)}
           onOpenMap={() => setMapOpen(true)}
-          onOpenResource={(resource, color) => {
-            setOpenResource({ resource, color });
-            setPhase("resource");
+          onOpenResource={(resource, color) => setOpenResource({ resource, color })}
+          onOpenGame={() => setGameOpen(true)}
+          onNavigate={(i) => {
+            if (i < 0 || i >= STAGES.length) return;
+            setOpenStageIndex(i);
+            // Prototype behaviour: browsing forward to a stage counts as
+            // reaching it, so its check-ins start arriving, browsing back
+            // to look at something earlier doesn't undo progress.
+            setCurrentStage((prev) => Math.max(prev, i));
           }}
-        />
-      )}
-
-      {phase === "resource" && openResource && (
-        <ResourceDetail
-          resource={openResource.resource}
-          color={openResource.color}
-          onBack={() => setPhase("stage")}
+          checkins={deliveredCheckins}
+          onSeeAllCheckins={() => setPhase("updates")}
         />
       )}
 
@@ -164,16 +178,30 @@ export default function App() {
           currentStage={currentStage}
           onClose={() => setStoryIndex(null)}
           onNavigate={(i) => {
-            if (i >= 0 && i < STAGES.length) setStoryIndex(i);
+            if (i < 0 || i >= STAGES.length) return;
+            setStoryIndex(i);
+            setCurrentStage((prev) => Math.max(prev, i));
           }}
           onComplete={() => {
             completeStage();
             setStoryIndex(null);
           }}
+          checkins={deliveredCheckins}
+          onSeeAllCheckins={() => setPhase("updates")}
         />
       )}
 
       {mapOpen && <HospitalMap3D onClose={() => setMapOpen(false)} />}
+
+      {gameOpen && <HeartGame onClose={() => setGameOpen(false)} />}
+
+      {openResource && (
+        <ResourceDetail
+          resource={openResource.resource}
+          color={openResource.color}
+          onBack={() => setOpenResource(null)}
+        />
+      )}
 
       {composerOpen && (
         <NoteComposer

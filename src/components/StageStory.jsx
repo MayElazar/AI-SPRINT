@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Avatar from "./Avatar.jsx";
+import NotifCard from "./NotifCard.jsx";
 import HospitalMap3D from "./HospitalMap3D.jsx";
 import { STAGES } from "../data/stages.js";
-import drBruckheimerPhoto from "../assets/dr-cohen.png";
-import yaelPhoto from "../assets/yael.png";
-import galitPhoto from "../assets/galit.png";
 
 const RESOURCE_ICON = {
   map: (
@@ -38,38 +36,19 @@ const RESOURCE_ICON = {
 
 const DRAG_THRESHOLD = 60;
 
-// "Meet the team" is photos, not footage, nothing is actually happening
-// yet for a video to capture. All three now have real reference photos
-// via Avatar (dr-cohen.png, yael.png, galit.png).
-const TEAM_MEMBERS = [
-  {
-    avatar: "doctor",
-    photo: drBruckheimerPhoto,
-    name: "Dr. Bruckheimer",
-    role: "Pediatric cardiologist",
-    caption: "Leads Maya's procedure today, and is who you'll see throughout.",
-  },
-  {
-    avatar: "yael",
-    photo: yaelPhoto,
-    name: "Yael",
-    role: "Unit nurse",
-    caption: "Your point of contact for the whole day, from check-in through the wait.",
-  },
-  {
-    avatar: "galit",
-    photo: galitPhoto,
-    name: "Galit",
-    role: "Discharge nurse",
-    caption: "Walks you through going home at the end, so nothing gets missed.",
-  },
-];
-
 // Full-bleed video behind the whole screen (or a tinted placeholder for
 // stages without one yet), with a sheet that starts as a peek at the
 // bottom and slides up over the video to reveal the stage's text,
 // checklist, and resources, rather than a small contained player.
-export default function StageStory({ stageIndex, currentStage, onClose, onNavigate, onComplete }) {
+export default function StageStory({
+  stageIndex,
+  currentStage,
+  onClose,
+  onNavigate,
+  onComplete,
+  checkins,
+  onSeeAllCheckins,
+}) {
   const [expanded, setExpanded] = useState(false);
   const dragging = useRef(false);
   const startY = useRef(0);
@@ -79,22 +58,7 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
   const [checkedItems, setCheckedItems] = useState(() => new Set());
   const [map3dOpen, setMap3dOpen] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [teamPhotoIndex, setTeamPhotoIndex] = useState(0);
-
-  // Reset the carousel to the first person whenever a fresh visit to
-  // "Meet the team" starts, rather than remembering the last photo shown.
-  useEffect(() => {
-    setTeamPhotoIndex(0);
-  }, [stageIndex]);
-
-  function handleTeamPhotoTap(e) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const tappedLeftHalf = e.clientX - rect.left < rect.width / 2;
-    setTeamPhotoIndex((i) => {
-      const count = TEAM_MEMBERS.length;
-      return tappedLeftHalf ? (i - 1 + count) % count : (i + 1) % count;
-    });
-  }
+  const [dismissed, setDismissed] = useState(() => new Set());
 
   function toggleChecklistItem(itemKey) {
     setCheckedItems((prev) => {
@@ -106,11 +70,12 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
   }
 
   const s = STAGES[stageIndex];
-  const isMeetTeam = s.key === "meetteam";
   const hasVideo = Boolean(s.videoUrl);
   const isCurrent = stageIndex === currentStage;
   const isLastStage = stageIndex === STAGES.length - 1;
   const resources = s.resources || [];
+  const stageCheckins = checkins.filter((c) => c.stageKey === s.key);
+  const latestCheckin = stageCheckins.find((c) => !dismissed.has(c.key)) || null;
 
   // Pull the sheet up and the video pauses, it's covered anyway and
   // shouldn't keep playing (or making sound, once it has any) behind
@@ -156,27 +121,7 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
 
   return (
     <div className="story-overlay">
-      {isMeetTeam ? (
-        <>
-          <img
-            key={TEAM_MEMBERS[teamPhotoIndex].name}
-            className="story-video-bg story-team-photo"
-            src={TEAM_MEMBERS[teamPhotoIndex].photo}
-            alt={TEAM_MEMBERS[teamPhotoIndex].name}
-            onClick={handleTeamPhotoTap}
-          />
-          <div className="story-team-dots">
-            {TEAM_MEMBERS.map((m, i) => (
-              <button
-                key={m.name}
-                className={`story-team-dot ${i === teamPhotoIndex ? "on" : ""}`}
-                onClick={() => setTeamPhotoIndex(i)}
-                aria-label={`Show ${m.name}`}
-              />
-            ))}
-          </div>
-        </>
-      ) : hasVideo ? (
+      {hasVideo ? (
         <>
           <video
             key={s.videoUrl}
@@ -217,19 +162,7 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
       <div className="story-top-fade" />
 
       <div className="story-top-ui">
-        <div className="story-progress-row">
-          {STAGES.map((st, i) => (
-            <div className="story-progress-track" key={st.key}>
-              <div
-                className="story-progress-fill"
-                style={{ width: i <= stageIndex ? "100%" : "0%" }}
-              />
-            </div>
-          ))}
-        </div>
-
         <div className="story-topbar">
-          <div className="story-topbar-title">{s.label}</div>
           <button className="story-close" onClick={onClose}>
             ✕
           </button>
@@ -254,56 +187,30 @@ export default function StageStory({ stageIndex, currentStage, onClose, onNaviga
           <div className="story-sheet-handle" />
         </div>
 
-        <div className="story-sheet-peek">
-          <div className="story-person-row">
-            <div className="story-person-avatar">
-              <Avatar kind={s.avatar} alt={s.person} />
-            </div>
-            <div>
-              <div className="story-person-name">{s.person}</div>
-              <div className="story-person-role">{s.role}</div>
-            </div>
-          </div>
-          <div className="story-title-lg headline">{s.title}</div>
-          {!expanded && (
-            <div className="story-sheet-hint">
-              Swipe up for {isMeetTeam ? "the team" : "checklist"} &amp; resources ‹
-              {resources.length + (isMeetTeam ? 1 : s.checklist.length ? 1 : 0)}›
-            </div>
-          )}
-        </div>
-
         <div className="story-sheet-body">
-          {s.transcript ? (
-            <div className="story-quote">"{s.transcript}"</div>
-          ) : (
-            <div className="story-quote-sub">{s.sub}</div>
-          )}
-
-          {isMeetTeam && (
+          {latestCheckin && (
             <>
               <div className="section-label" style={{ marginTop: 18 }}>
-                Meet the team
+                Latest update
               </div>
-              <div className="resource-list">
-                {TEAM_MEMBERS.map((m) => (
-                  <div className="resource-item" key={m.name}>
-                    <div className="story-team-avatar-sm">
-                      <Avatar kind={m.avatar} alt={m.name} />
-                    </div>
-                    <div className="resource-item-body">
-                      <div className="resource-item-title">
-                        {m.name} · {m.role}
-                      </div>
-                      <div className="resource-item-sub">{m.caption}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <NotifCard
+                key={latestCheckin.key}
+                appLabel={`${latestCheckin.person} · ${latestCheckin.roleShort}`}
+                time={latestCheckin.time}
+                text={latestCheckin.text}
+                tag="Check-in"
+                tagVariant="checkin"
+                onDismiss={() => setDismissed((prev) => new Set(prev).add(latestCheckin.key))}
+              />
+              {stageCheckins.length > 1 && (
+                <button className="see-all-checkins" onClick={onSeeAllCheckins}>
+                  See all {stageCheckins.length} updates ›
+                </button>
+              )}
             </>
           )}
 
-          {s.checklist.length > 0 && !isMeetTeam && (
+          {s.checklist.length > 0 && (
             <>
               <div className="section-label" style={{ marginTop: 18 }}>
                 Checklist

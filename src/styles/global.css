@@ -42,6 +42,80 @@ button:focus-visible {
   overflow-x: hidden;
 }
 
+/* Device frame: an invisible wrapper on a real phone (the app already
+   is the whole screen there), but on anything wide enough to show it,
+   the prototype sits inside an actual phone mockup, bezel, notch,
+   home indicator, so it reads as "an app" rather than a browser tab. */
+.device-notch,
+.device-home-indicator {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  body {
+    background: #e4e7ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 16px;
+  }
+
+  .device-frame {
+    position: relative;
+    width: 412px;
+    height: 868px;
+    background: #0b0b0f;
+    border-radius: 56px;
+    padding: 14px;
+    box-shadow:
+      0 40px 80px rgba(15, 15, 25, 0.35),
+      0 2px 0 rgba(255, 255, 255, 0.06) inset;
+    flex-shrink: 0;
+    /* Any transform makes this the containing block for `position:
+       fixed` descendants (every full-screen overlay in the app), so
+       they're clipped to the phone frame instead of the real viewport. */
+    transform: translateZ(0);
+    overflow: hidden;
+  }
+
+  .device-frame .app-shell {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    border-radius: 40px;
+    overflow-y: auto;
+  }
+
+  .device-notch {
+    display: block;
+    position: absolute;
+    z-index: 500;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 132px;
+    height: 28px;
+    background: #0b0b0f;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .device-home-indicator {
+    display: block;
+    position: absolute;
+    z-index: 500;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 128px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
+
 /* Soft mesh-gradient background, fixed behind all screens, deep blue as the
    main hue and cyan as the secondary, matching the current accent tokens. */
 .app-shell::before {
@@ -300,19 +374,18 @@ button:focus-visible {
    than sitting cropped inside a bounded card. */
 .welcome-hero-wrap {
   position: relative;
-  height: 300px;
+  height: 330px;
   margin-bottom: 22px;
 }
 
 .welcome-hero-backdrop {
   position: absolute;
-  top: 6px;
-  right: 4px;
-  width: 210px;
-  height: 240px;
-  border-radius: 28px;
+  top: -22px;
+  left: -32px;
+  right: -32px;
+  height: 350px;
+  border-radius: 32px;
   background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
-  transform: rotate(9deg);
   box-shadow: var(--shadow-card);
 }
 
@@ -379,10 +452,8 @@ button:focus-visible {
 }
 
 .welcome-note {
-  background: var(--teal-tint);
   color: var(--text);
-  border-radius: var(--radius-card);
-  padding: 16px 18px;
+  padding: 0;
   font-size: 13.5px;
   line-height: 1.6;
   text-align: left;
@@ -390,7 +461,7 @@ button:focus-visible {
 }
 
 .welcome-note strong {
-  color: var(--teal);
+  color: #000;
 }
 
 /* Home, "right now" card */
@@ -597,52 +668,6 @@ button:focus-visible {
   object-fit: cover;
 }
 
-.story-team-photo {
-  cursor: pointer;
-}
-
-.story-team-dots {
-  position: absolute;
-  z-index: 1;
-  bottom: 184px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 7px;
-}
-
-.story-team-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-pill);
-  border: none;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.45);
-  cursor: pointer;
-  transition: width 0.2s ease, background 0.2s ease;
-}
-
-.story-team-dot.on {
-  width: 20px;
-  background: #fff;
-}
-
-.story-team-avatar-sm {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.story-team-avatar-sm img,
-.story-team-avatar-sm svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .story-video-placeholder.tint-purple { background: linear-gradient(160deg, var(--raw-purple-strong), var(--accent-deep)); }
 .story-video-placeholder.tint-cyan { background: linear-gradient(160deg, var(--raw-cyan), var(--raw-deep-blue)); }
 .story-video-placeholder.tint-gold { background: linear-gradient(160deg, var(--raw-gold), #a9791a); }
@@ -666,35 +691,10 @@ button:focus-visible {
   padding: 12px 14px 0;
 }
 
-.story-progress-row {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-
-.story-progress-track {
-  flex: 1;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.28);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.story-progress-fill {
-  height: 100%;
-  background: #fff;
-}
-
 .story-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.story-topbar-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+  justify-content: flex-end;
 }
 
 .story-close {
@@ -772,65 +772,10 @@ button:focus-visible {
   background: var(--border);
 }
 
-.story-sheet-peek {
-  padding: 4px 20px 16px;
-  flex-shrink: 0;
-}
-
-.story-sheet-hint {
-  font-size: 12px;
-  color: var(--text-soft);
-  margin-top: 8px;
-}
-
 .story-sheet-body {
   flex: 1;
   overflow-y: auto;
-  padding: 0 20px calc(90px + env(safe-area-inset-bottom));
-}
-
-.story-person-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.story-person-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.story-person-avatar img,
-.story-person-avatar svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.story-person-name {
-  font-size: 13.5px;
-  font-weight: 700;
-}
-
-.story-person-role {
-  font-size: 11.5px;
-  color: var(--text-soft);
-}
-
-.story-title-lg {
-  font-size: 21px;
-  font-weight: 700;
-}
-
-.story-quote {
-  font-size: 14px;
-  line-height: 1.6;
-  font-style: italic;
-  color: var(--text-soft);
+  padding: 20px 20px calc(90px + env(safe-area-inset-bottom));
 }
 
 .story-quote-sub {
@@ -953,6 +898,63 @@ button.resource-item {
   height: 24px;
 }
 
+/* A resource opens as a bottom sheet over the stage screen, always on
+   a dedicated white "page", deliberately fixed rather than following
+   the app's light/dark theme, like a printed handout would be
+   regardless of what's behind it. */
+.resource-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(20, 24, 38, 0.4);
+  animation: resource-backdrop-in 0.25s ease-out;
+}
+
+@keyframes resource-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.resource-sheet {
+  width: 100%;
+  max-height: 86vh;
+  overflow-y: auto;
+  background: #fff;
+  color: #293754;
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px calc(40px + 20px);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  animation: resource-sheet-up 0.32s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes resource-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.resource-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+  margin: 0 auto 14px;
+}
+
+.resource-sheet .back-title,
+.resource-sheet .resource-detail-body,
+.resource-sheet .resource-detail-list li {
+  color: #293754;
+}
+
+.resource-sheet .back-btn {
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
 .resource-detail-icon.tint-purple { background: var(--purple-tint); color: var(--purple-tint-text); }
 .resource-detail-icon.tint-cyan { background: var(--cyan-tint); color: var(--cyan-tint-text); }
 .resource-detail-icon.tint-gold { background: var(--gold-tint); color: var(--gold-tint-text); }
@@ -969,6 +971,33 @@ button.resource-item {
   font-size: 14.5px;
   color: var(--text);
   line-height: 1.65;
+}
+
+.resource-detail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resource-detail-list li {
+  display: flex;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.resource-detail-list li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-deep);
+  margin-top: 8px;
 }
 
 .resource-item-title {
@@ -1027,6 +1056,10 @@ button.resource-item {
 .story-nav-btn:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.stage-detail-nav {
+  margin-top: 24px;
 }
 
 /* Path */
@@ -1333,61 +1366,6 @@ button.resource-item {
   object-fit: cover;
 }
 
-.stage-hero-avatar {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stage-hero-avatar img,
-.stage-hero-avatar svg {
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  overflow: hidden;
-  object-fit: cover;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-}
-
-.stage-hero-team-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  cursor: pointer;
-}
-
-.stage-hero-team-dots {
-  position: absolute;
-  z-index: 1;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 7px;
-}
-
-.stage-hero-team-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-pill);
-  border: none;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.45);
-  cursor: pointer;
-  transition: width 0.2s ease, background 0.2s ease;
-}
-
-.stage-hero-team-dot.on {
-  width: 20px;
-  background: #fff;
-}
-
 .stage-hero-play {
   position: absolute;
   top: 50%;
@@ -1461,10 +1439,78 @@ button.resource-item {
   cursor: default;
 }
 
+.stage-game-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--purple-tint), var(--gold-tint));
+}
+
+.stage-game-card-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.team-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.team-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-card-photo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.team-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.team-card-caption {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
+
 .stage-feature-label {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
+}
+
+.stage-checklist-intro {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin: -2px 0 12px;
+  line-height: 1.5;
 }
 
 .resource-card {
@@ -1895,49 +1941,80 @@ button.resource-item {
   padding: 4px 0;
 }
 
-.note-compose-done {
-  background: none;
-  border: none;
-  color: var(--accent-deep);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 4px 0;
+.note-compose-spacer {
+  width: 46px;
 }
 
-.note-compose-done:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.note-compose-text {
+.wa-compose-body {
   flex: 1;
-  border: none;
-  background: none;
+  padding: 8px 16px;
+  overflow-y: auto;
+}
+
+.wa-recording-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-soft);
+  padding: 10px 2px;
+}
+
+.wa-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.wa-input {
+  flex: 1;
   resize: none;
-  padding: 4px 20px;
-  font-size: 15.5px;
-  line-height: 1.6;
+  border: none;
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 11px 16px;
+  font-size: 15px;
+  line-height: 1.4;
   color: var(--text);
   font-family: inherit;
+  max-height: 160px;
 }
 
-.note-compose-text:focus {
+.wa-input:focus {
   outline: none;
 }
 
-.note-compose-text::placeholder {
+.wa-input::placeholder {
   color: var(--text-soft);
 }
 
-.note-compose-toolbar {
-  padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--border);
+.wa-mic-btn,
+.wa-send-btn {
   flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.note-compose-toolbar .record-btn {
-  width: 100%;
+.wa-mic-btn svg,
+.wa-send-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+.wa-mic-btn.recording {
+  background: #ff5a7a;
+  animation: record-pulse 1.4s ease-in-out infinite;
 }
 
 .qa-card {
@@ -2327,14 +2404,6 @@ button.resource-item {
   color: #fff;
 }
 
-/* ============================================================
-   Logo loader: the reference puzzle SVG the user supplied, recolored
-   to Schneider's brand hues. Motion is native SVG SMIL baked into the
-   markup itself (see LogoLoader.jsx), not CSS, so there's nothing to
-   animate here.
-   ============================================================ */
-.logo-loader svg { overflow: visible; }
-
 .boot-splash {
   position: fixed;
   inset: 0;
@@ -2348,12 +2417,60 @@ button.resource-item {
   gap: 10px;
   background: var(--bg);
 }
-.boot-splash .boot-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-soft);
-  letter-spacing: 0.02em;
+
+.boot-splash .boot-schneider-logo {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
 }
+
+.boot-splash .boot-schneider-logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The logo's text glyphs are drawn as many small paths in a handful of
+   navy shades (the shading gives the letterforms depth); the puzzle
+   icon uses its own distinct hues and is left untouched. Only the text
+   shades are swapped to white in dark mode. */
+.boot-schneider-logo :is(
+  [fill="#0A428C"], [fill="#104D97"], [fill="#134790"], [fill="#2E5594"],
+  [fill="#37609C"], [fill="#3F5B97"], [fill="#4A689D"]
+) {
+  transition: fill 0.15s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .boot-schneider-logo :is(
+    [fill="#0A428C"], [fill="#104D97"], [fill="#134790"], [fill="#2E5594"],
+    [fill="#37609C"], [fill="#3F5B97"], [fill="#4A689D"]
+  ) { fill: #fff; }
+}
+:root[data-theme="dark"] .boot-schneider-logo :is(
+  [fill="#0A428C"], [fill="#104D97"], [fill="#134790"], [fill="#2E5594"],
+  [fill="#37609C"], [fill="#3F5B97"], [fill="#4A689D"]
+) { fill: #fff; }
+
+:root[data-theme="light"] .boot-schneider-logo [fill="#0A428C"] { fill: #0A428C; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#104D97"] { fill: #104D97; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#134790"] { fill: #134790; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#2E5594"] { fill: #2E5594; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#37609C"] { fill: #37609C; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#3F5B97"] { fill: #3F5B97; }
+:root[data-theme="light"] .boot-schneider-logo [fill="#4A689D"] { fill: #4A689D; }
+.boot-splash .boot-logo-wordmark {
+  width: 168px;
+  height: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .boot-splash .boot-logo-wordmark { filter: invert(1) brightness(1.35); }
+}
+:root[data-theme="dark"] .boot-splash .boot-logo-wordmark { filter: invert(1) brightness(1.35); }
+:root[data-theme="light"] .boot-splash .boot-logo-wordmark { filter: none; }
 .boot-splash .boot-word {
   font-size: 12px;
   font-weight: 600;
@@ -2693,4 +2810,166 @@ button.resource-item {
   border-radius: 50%;
   background: #ff5a7a;
   flex-shrink: 0;
+}
+
+/* ============================================================
+   Heart game: a tap-to-place puzzle for Maya, four chambers, four
+   colorful pieces, no wrong answers. Lives as a full overlay like
+   the map and the story view.
+   ============================================================ */
+.heart-game-overlay {
+  position: fixed;
+  inset: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px calc(30px + 20px);
+}
+
+.heart-game-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.heart-game-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.heart-game-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  border: none;
+  color: var(--text-soft);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.heart-game-board {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+}
+
+.heart-game-stage {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 124 / 140;
+}
+
+.heart-game-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.heart-game-piece {
+  position: absolute;
+  border-radius: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transform-origin: center;
+}
+
+.heart-game-piece.pop {
+  animation: heart-piece-pop 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes heart-piece-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.heart-game-piece-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  padding: 0 4px;
+  line-height: 1.2;
+}
+
+.heart-game-hint {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+.heart-game-tray {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.heart-game-tray-piece {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease;
+}
+
+.heart-game-tray-piece:active {
+  transform: scale(0.9);
+}
+
+.heart-game-celebrate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg);
+  animation: heart-celebrate-in 0.3s ease-out;
+}
+
+@keyframes heart-celebrate-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.heart-game-celebrate-emoji {
+  font-size: 44px;
+}
+
+.heart-game-celebrate-text {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.heart-game-again {
+  margin-top: 10px;
+  background: var(--accent-deep);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
 }
