@@ -217,15 +217,8 @@ export const STAGES = [
     color: "green",
     title: "In recovery",
     sub: "Out of the procedure, being watched as she wakes.",
-    offers: ["Video", "Check-ins"],
-    resource: {
-      type: "video",
-      label: "A video from Yael",
-      body: "What waking up looks like",
-    },
-    videoUrl: "/videos/recovery.mp4",
-    transcript:
-      "Your child is out of the procedure now, and we're watching closely as she wakes up. Some grogginess or fussiness at first is completely normal, and we'll let you know as soon as you can come in and see her.",
+    offers: ["Check-ins"],
+    resource: null,
     checklist: [],
     checkins: [
       {
@@ -260,12 +253,12 @@ export const STAGES = [
   },
   {
     key: "ready",
-    label: "Ready",
+    label: "Discharge",
     person: "Galit",
     role: "Discharge nurse",
     avatar: "galit",
     color: "gold",
-    title: "Ready for home",
+    title: "Discharge",
     sub: "The last stage. Instructions get written down as Galit covers them.",
     offers: ["Video", "Checklist"],
     resource: {

@@ -518,7 +518,7 @@ button:focus-visible {
 .path-cards {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   margin-bottom: 4px;
 }
 
@@ -1533,6 +1533,7 @@ button.resource-item {
   font-size: 22px;
   font-weight: 700;
   color: var(--text);
+  margin-top: 18px;
   margin-bottom: 16px;
 }
 
