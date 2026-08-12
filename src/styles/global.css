@@ -146,7 +146,7 @@ button:focus-visible {
   /* Extra bottom padding clears the now-fixed tab bar (~54px tall,
      20px offset) so content never scrolls in underneath it. Screens
      without a tab bar just get a bit of harmless extra whitespace. */
-  padding: 22px 20px calc(40px + 74px + 20px);
+  padding: 32px 20px calc(48px + 74px + 20px);
 }
 
 /* Onboarding + arrival */
