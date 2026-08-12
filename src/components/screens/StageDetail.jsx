@@ -239,10 +239,10 @@ export default function StageDetail({
 
       {s.game && (
         <button className="stage-feature-card stage-game-card" onClick={onOpenGame}>
-          <div className="stage-game-card-icon">🧩</div>
+          <div className="stage-game-card-icon">🏃</div>
           <div className="resource-item-body">
             <div className="resource-item-title">A game for Maya</div>
-            <div className="resource-item-sub">Help her build a heart, piece by piece.</div>
+            <div className="resource-item-sub">Run the halls and catch hearts along the way.</div>
           </div>
           <div className="resource-item-chev">›</div>
         </button>

@@ -12,7 +12,7 @@ import TabBar from "./components/TabBar.jsx";
 import StageStory from "./components/StageStory.jsx";
 import HospitalMap3D from "./components/HospitalMap3D.jsx";
 import NoteComposer from "./components/NoteComposer.jsx";
-import HeartGame from "./components/HeartGame.jsx";
+import HeartRunner from "./components/HeartRunner.jsx";
 import { STAGES } from "./data/stages.js";
 
 // phase: "welcome" | "home" | "stage" | "updates" | "you"
@@ -183,7 +183,7 @@ export default function App() {
 
       {mapOpen && <HospitalMap3D onClose={() => setMapOpen(false)} />}
 
-      {gameOpen && <HeartGame onClose={() => setGameOpen(false)} />}
+      {gameOpen && <HeartRunner onClose={() => setGameOpen(false)} />}
 
       {openResource && (
         <ResourceDetail
