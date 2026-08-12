@@ -8,13 +8,19 @@ import NotifCard from "../NotifCard.jsx";
 // Home shows only the latest check-in, replaced as new ones land. The
 // full history stays one tap away in Updates, so nothing is lost, it
 // just isn't stacked up on the home screen.
-export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins, onOpenMap }) {
+export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins, onOpenMap, liveLabel }) {
   const [dismissed, setDismissed] = useState(() => new Set());
   const latest = checkins.find((c) => !dismissed.has(c.key)) || null;
 
   return (
     <div className="screen">
       <div className="home-welcome">Hi Michal and David</div>
+      {liveLabel && (
+        <div className="home-live-pill">
+          <span className="home-live-dot" aria-hidden="true" />
+          {liveLabel}
+        </div>
+      )}
 
       <div className="home-topbar">
         <div className="section-label" style={{ margin: 0 }}>

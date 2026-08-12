@@ -1546,6 +1546,25 @@ button.resource-item {
   margin-bottom: 16px;
 }
 
+.home-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--mint-tint, #eafaf3);
+  color: #1f7a5c;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  margin: -8px 0 16px;
+}
+.home-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2fbf71;
+}
+
 .home-topbar {
   display: flex;
   align-items: center;
@@ -3064,4 +3083,295 @@ button.resource-item {
   font-size: 13.5px;
   line-height: 1.55;
   color: var(--plum-soft);
+}
+
+/* ============================================================
+   Staff dashboard (/staff): same tokens, fonts, and component
+   patterns as the family app (radius-card, shadow-card, accent,
+   etc, all from tokens.css) but its own full-width layout, no
+   phone-frame mockup, meant for a desk or tablet rather than a
+   parent's phone screen.
+   ============================================================ */
+.staff-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.staff-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.staff-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.staff-brand-mark {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--accent-deep);
+}
+.staff-brand-tag {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  background: var(--accent-tint);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+.staff-link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+
+.staff-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.staff-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.staff-h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+.staff-sub {
+  color: var(--text-soft);
+  font-size: 14.5px;
+  margin: 0;
+}
+
+.staff-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 11px 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+.staff-btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  box-shadow: none;
+}
+
+.staff-empty {
+  color: var(--text-soft);
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-card);
+  padding: 26px;
+  text-align: center;
+}
+
+.staff-family-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.staff-family-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.staff-family-name {
+  font-weight: 700;
+  font-size: 15.5px;
+}
+.staff-family-meta {
+  color: var(--text-soft);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.staff-stage-chip {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-tint);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+}
+
+.staff-card {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px 22px;
+  margin-bottom: 16px;
+}
+.staff-card-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+.staff-card-hint {
+  color: var(--text-soft);
+  font-size: 13.5px;
+  margin: 0 0 12px;
+}
+
+.staff-link-row {
+  display: flex;
+  gap: 8px;
+}
+.staff-link-input {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--text-soft);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.staff-stage-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.staff-stage-btn {
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.staff-stage-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.staff-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.staff-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+.staff-field input,
+.staff-textarea,
+.staff-input-inline {
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.staff-textarea {
+  resize: vertical;
+  width: 100%;
+}
+.staff-form-row {
+  display: flex;
+  gap: 10px;
+}
+.staff-input-inline {
+  flex: 1;
+  min-width: 0;
+}
+.staff-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.staff-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.staff-feed-item {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.staff-feed-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.staff-feed-meta {
+  font-size: 12.5px;
+  color: var(--text-soft);
+  margin-bottom: 3px;
+}
+.staff-feed-text {
+  font-size: 14.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .staff-topbar,
+  .staff-main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .staff-form-row {
+    flex-direction: column;
+  }
 }

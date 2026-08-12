@@ -14,6 +14,7 @@ import HospitalMap3D from "./components/HospitalMap3D.jsx";
 import NoteComposer from "./components/NoteComposer.jsx";
 import HeartRunner from "./components/HeartRunner.jsx";
 import { STAGES } from "./data/stages.js";
+import * as familyStore from "./lib/familyStore.js";
 
 // phase: "welcome" | "home" | "stage" | "updates" | "you"
 const TAB_PHASES = ["home", "updates", "you"];
@@ -21,9 +22,16 @@ const TAB_PHASES = ["home", "updates", "you"];
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
 // First check-in lands 3s after the procedure stage starts, every one
 // after that is 20s apart, this is prototype pacing for a demo, not a
-// real estimate of how often updates would actually arrive.
+// real estimate of how often updates would actually arrive. Only used
+// when there's no ?family= link, when this app is standing in for the
+// scripted walkthrough rather than following a real staff-linked case.
 const FIRST_PUSH_DELAY_MS = 3000;
 const PUSH_INTERVAL_MS = 20000;
+
+// A ?family=<id> link (generated from the staff app) switches this app
+// from the scripted demo timeline to following that family's real
+// record in familyStore: staff-set stage, staff-posted check-ins, live.
+const familyId = new URLSearchParams(window.location.search).get("family");
 
 export default function App() {
   const [phase, setPhase] = useState("welcome");
@@ -37,9 +45,32 @@ export default function App() {
   const [mapOpen, setMapOpen] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
+  const [liveFamily, setLiveFamily] = useState(() => (familyId ? familyStore.getFamily(familyId) : null));
 
   const showTabBar = TAB_PHASES.includes(phase) || phase === "stage";
   const activeTab = phase === "stage" ? "home" : phase;
+
+  // Live mode: re-read the family record whenever the staff app changes
+  // it, in another tab (the normal case) or, thanks to familyStore's own
+  // change event, this same tab too.
+  useEffect(() => {
+    if (!familyId) return;
+    return familyStore.subscribe(() => setLiveFamily(familyStore.getFamily(familyId)));
+  }, []);
+
+  // Staff is the source of truth for the stage in live mode, so this
+  // follows their record directly instead of the "only ever moves
+  // forward as you browse" rule the scripted demo uses below.
+  useEffect(() => {
+    if (familyId && liveFamily) setCurrentStage(liveFamily.currentStageIndex || 0);
+  }, [liveFamily]);
+
+  function bumpStage(i) {
+    // In live mode the stage is staff-authoritative, browsing a stage
+    // locally shouldn't also silently fast-forward the shared record.
+    if (familyId) return;
+    setCurrentStage((prev) => Math.max(prev, i));
+  }
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 3200);
@@ -56,21 +87,34 @@ export default function App() {
 
   // Check-in delivery lives here, not in Home, so a banner can slide in
   // over whichever screen you happen to be on, the way a phone does.
-  const checkinsChrono = useMemo(
-    () =>
-      STAGES.slice(0, currentStage + 1).flatMap((st) =>
-        st.checkins.map((c) => ({
+  // In live mode these come from the staff-authored record instead of
+  // the stages' own scripted, fictional-timestamp lists.
+  const checkinsChrono = useMemo(() => {
+    if (familyId) {
+      return (liveFamily?.checkins || []).map((c) => {
+        const st = STAGES[c.stageIndex] || STAGES[0];
+        return {
           ...c,
           stageKey: st.key,
           stageLabel: st.label,
           stageTitle: st.title,
-          person: c.person || st.person,
-          roleShort: (c.role || st.role).split(",")[0],
-          key: `${st.key}-${c.time}`,
-        }))
-      ),
-    [currentStage]
-  );
+          roleShort: (c.role || st.role || "").split(",")[0],
+          key: c.id,
+        };
+      });
+    }
+    return STAGES.slice(0, currentStage + 1).flatMap((st) =>
+      st.checkins.map((c) => ({
+        ...c,
+        stageKey: st.key,
+        stageLabel: st.label,
+        stageTitle: st.title,
+        person: c.person || st.person,
+        roleShort: (c.role || st.role).split(",")[0],
+        key: `${st.key}-${c.time}`,
+      }))
+    );
+  }, [currentStage, liveFamily]);
 
   const [deliveredCount, setDeliveredCount] = useState(0);
   const [bannerQueue, setBannerQueue] = useState([]);
@@ -86,6 +130,14 @@ export default function App() {
   useEffect(() => {
     if (booting) return;
     if (deliveredCount >= checkinsChrono.length) return;
+    if (familyId) {
+      // Live mode: a staff update is a real push, it shows up right
+      // away rather than on the scripted demo's delay.
+      const next = checkinsChrono[checkinsChrono.length - 1];
+      setBannerQueue((q) => [...q, next]);
+      setDeliveredCount(checkinsChrono.length);
+      return;
+    }
     // First check-in arrives quickly (3s), so a demo doesn't sit and
     // wait, every one after that is spaced further apart (20s).
     const delay = deliveredCount === 0 ? FIRST_PUSH_DELAY_MS : PUSH_INTERVAL_MS;
@@ -106,7 +158,7 @@ export default function App() {
   function openStage(i) {
     setOpenStageIndex(i);
     setPhase("stage");
-    setCurrentStage((prev) => Math.max(prev, i));
+    bumpStage(i);
   }
 
   if (booting) {
@@ -139,6 +191,7 @@ export default function App() {
           checkins={deliveredCheckins}
           onSeeAllCheckins={() => setPhase("updates")}
           onOpenMap={() => setMapOpen(true)}
+          liveLabel={liveFamily ? `Connected to ${liveFamily.patientName}'s care team` : null}
         />
       )}
 
@@ -154,8 +207,9 @@ export default function App() {
             setOpenStageIndex(i);
             // Prototype behaviour: browsing forward to a stage counts as
             // reaching it, so its check-ins start arriving, browsing back
-            // to look at something earlier doesn't undo progress.
-            setCurrentStage((prev) => Math.max(prev, i));
+            // to look at something earlier doesn't undo progress. (Live
+            // mode skips this, the staff record is authoritative there.)
+            bumpStage(i);
           }}
           checkins={deliveredCheckins}
           onSeeAllCheckins={() => setPhase("updates")}
