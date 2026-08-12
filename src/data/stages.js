@@ -240,6 +240,17 @@ export const STAGES = [
     ],
     resources: [
       {
+        type: "article",
+        title: "What's happening right now",
+        body: "What the team's doing, where to go, and how long it takes.",
+        full: [
+          "Maya is in the recovery bay, being watched closely as the sedation wears off, vitals are checked regularly the whole time.",
+          "This usually takes 15 to 20 minutes from when she arrives in recovery.",
+          "You don't need to go looking for her, Yael or another team member will come get you from the family waiting area as soon as she's settled and ready for you.",
+          "The recovery bay is just past the Cath Lab unit, it's marked on the hospital map if you want to see exactly where.",
+        ],
+      },
+      {
         type: "guide",
         title: "What waking up looks like",
         body: "Grogginess and fussiness are normal, here's what actually helps.",
