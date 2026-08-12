@@ -129,26 +129,6 @@ export const STAGES = [
       },
       {
         type: "guide",
-        title: "Talking to Maya about today",
-        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
-        full: [
-          "The same honest, simple approach that worked last night still applies now that you're here.",
-          "Name what's happening in plain words, and let her meet the people helping her before anything starts.",
-          "If she asks a question you don't know the answer to, it's fine to say \"let's ask,\" the team would rather answer her directly than have you guess.",
-        ],
-      },
-      {
-        type: "article",
-        title: "Fasting and arrival rules",
-        body: "What Maya can eat or drink, and exactly when to arrive.",
-        full: [
-          "Maya can eat and drink normally until midnight the night before.",
-          "After that, water only, and nothing at all starting 6 hours before her scheduled time.",
-          "Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
-        ],
-      },
-      {
-        type: "guide",
         title: "If Maya gets anxious waiting",
         body: "A few things that actually help kids her age in a waiting room.",
         full: [
