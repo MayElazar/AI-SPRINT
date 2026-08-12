@@ -30,16 +30,7 @@ export const STAGES = [
       "Try to get a good night's sleep, yours matters too",
     ],
     checkins: [],
-    qa: [
-      {
-        q: "What should I tell Maya about tomorrow?",
-        a: "Simple, honest words work best, the guide below has age-appropriate specifics.",
-      },
-      {
-        q: "What if our plans change overnight?",
-        a: "Call the unit's scheduling line, printed on your appointment letter.",
-      },
-    ],
+    qa: [],
     resources: [
       {
         type: "guide",

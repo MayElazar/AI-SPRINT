@@ -263,13 +263,17 @@ export default function StageDetail({
         </button>
       )}
 
-      <div className="section-label">Quick answers</div>
-      {s.qa.map((item) => (
-        <div className="qa-card" key={item.q}>
-          <div className="qa-q">{item.q}</div>
-          <div className="qa-a">{item.a}</div>
-        </div>
-      ))}
+      {s.qa.length > 0 && (
+        <>
+          <div className="section-label">Quick answers</div>
+          {s.qa.map((item) => (
+            <div className="qa-card" key={item.q}>
+              <div className="qa-q">{item.q}</div>
+              <div className="qa-a">{item.a}</div>
+            </div>
+          ))}
+        </>
+      )}
 
       <div className="story-nav stage-detail-nav">
         <button
