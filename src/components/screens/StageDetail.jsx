@@ -47,7 +47,6 @@ export default function StageDetail({
   stageIndex,
   onBack,
   onOpenStory,
-  onOpenMap,
   onOpenResource,
   onOpenGame,
   onNavigate,
@@ -99,17 +98,6 @@ export default function StageDetail({
           ←
         </button>
         <div className="back-title">Stage {stageIndex + 1} of {STAGES.length}</div>
-        <button className="bell-badge" aria-label="Hospital map" onClick={onOpenMap}>
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M9 4L3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4z"
-              stroke="var(--text-soft)"
-              strokeWidth="1.7"
-              strokeLinejoin="round"
-            />
-            <path d="M9 4v13M15 7v13" stroke="var(--text-soft)" strokeWidth="1.7" />
-          </svg>
-        </button>
       </div>
 
       {s.videoUrl && (
@@ -231,23 +219,20 @@ export default function StageDetail({
         <div className="stage-feature-card stage-feature-card-static">
           <div className="stage-feature-label">Resources</div>
           <div className="resource-list">
-            {s.resources.map((r) => {
-              const isMap = r.type === "map";
-              return (
-                <button
-                  className="resource-item"
-                  key={r.title}
-                  onClick={isMap ? onOpenMap : () => onOpenResource(r, s.color)}
-                >
-                  <div className={`resource-item-icon tint-${s.color}`}>{RESOURCE_ICON[r.type]}</div>
-                  <div className="resource-item-body">
-                    <div className="resource-item-title">{r.title}</div>
-                    <div className="resource-item-sub">{r.body}</div>
-                  </div>
-                  <div className="resource-item-chev">›</div>
-                </button>
-              );
-            })}
+            {s.resources.map((r) => (
+              <button
+                className="resource-item"
+                key={r.title}
+                onClick={() => onOpenResource(r, s.color)}
+              >
+                <div className={`resource-item-icon tint-${s.color}`}>{RESOURCE_ICON[r.type]}</div>
+                <div className="resource-item-body">
+                  <div className="resource-item-title">{r.title}</div>
+                  <div className="resource-item-sub">{r.body}</div>
+                </div>
+                <div className="resource-item-chev">›</div>
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -139,7 +139,6 @@ export default function App() {
           stageIndex={openStageIndex}
           onBack={() => setPhase("home")}
           onOpenStory={(i) => setStoryIndex(i)}
-          onOpenMap={() => setMapOpen(true)}
           onOpenResource={(resource, color) => setOpenResource({ resource, color })}
           onOpenGame={() => setGameOpen(true)}
           onNavigate={(i) => {
