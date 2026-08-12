@@ -114,6 +114,7 @@ button:focus-visible {
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.4);
   }
+
 }
 
 /* Soft mesh-gradient background, fixed behind all screens, deep blue as the
@@ -2561,6 +2562,16 @@ button.resource-item {
   z-index: 90;
   padding: 10px 14px 0;
   pointer-events: none;
+}
+
+/* The device-frame's notch sits at top:14px, height 28px, z-index 500,
+   above the banner's own 90, comes later in the cascade below wins on
+   the tie, so this has to live after the base rule, not just inside
+   the earlier device-frame media block, to actually take effect. */
+@media (min-width: 640px) {
+  .notif-banner-layer {
+    padding-top: 46px;
+  }
 }
 
 .notif-banner {
