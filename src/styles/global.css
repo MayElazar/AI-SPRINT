@@ -146,7 +146,7 @@ button:focus-visible {
   /* Extra bottom padding clears the now-fixed tab bar (~54px tall,
      20px offset) so content never scrolls in underneath it. Screens
      without a tab bar just get a bit of harmless extra whitespace. */
-  padding: 32px 20px calc(48px + 74px + 20px);
+  padding: 32px 20px calc(48px + 74px + 32px);
 }
 
 /* Onboarding + arrival */
@@ -155,6 +155,10 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.welcome-screen {
+  padding-top: 0;
 }
 
 .onb-hero {
@@ -2029,7 +2033,7 @@ button.resource-item {
   left: 0;
   right: 0;
   max-width: 480px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(32px + env(safe-area-inset-bottom));
   z-index: 5;
   margin: 0 auto;
   width: fit-content;

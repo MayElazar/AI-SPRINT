@@ -2,7 +2,7 @@ import welcomeDoctor from "../../assets/welcome-doctor.png";
 
 export default function Welcome({ onViewPath }) {
   return (
-    <div className="screen">
+    <div className="screen welcome-screen">
       <div className="onb-wrap">
         <div>
           <div className="welcome-hero-wrap">
