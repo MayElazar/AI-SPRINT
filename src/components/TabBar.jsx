@@ -35,7 +35,7 @@ const TABS = [
   { key: "you", label: "You", icon: YouIcon },
 ];
 
-export default function TabBar({ active, onNavigate }) {
+export default function TabBar({ active, onNavigate, hasUnseenUpdates }) {
   return (
     <div className="tab-bar">
       {TABS.map((t) => (
@@ -46,6 +46,9 @@ export default function TabBar({ active, onNavigate }) {
           onClick={() => onNavigate(t.key)}
         >
           {t.icon}
+          {t.key === "updates" && hasUnseenUpdates && (
+            <span className="tab-btn-dot" aria-hidden="true" />
+          )}
         </button>
       ))}
     </div>

@@ -74,6 +74,14 @@ export default function App() {
 
   const [deliveredCount, setDeliveredCount] = useState(0);
   const [bannerQueue, setBannerQueue] = useState([]);
+  // How many check-ins the user has actually seen in Updates, so the tab's
+  // bell can carry a red dot for ones that arrived while they were elsewhere.
+  const [seenCount, setSeenCount] = useState(0);
+  const hasUnseenUpdates = deliveredCount > seenCount;
+
+  useEffect(() => {
+    if (phase === "updates") setSeenCount(deliveredCount);
+  }, [phase, deliveredCount]);
 
   useEffect(() => {
     if (booting) return;
@@ -165,7 +173,9 @@ export default function App() {
 
       {phase === "you" && <You />}
 
-      {showTabBar && <TabBar active={activeTab} onNavigate={(dest) => setPhase(dest)} />}
+      {showTabBar && (
+        <TabBar active={activeTab} onNavigate={(dest) => setPhase(dest)} hasUnseenUpdates={hasUnseenUpdates} />
+      )}
 
       {storyIndex !== null && (
         <StageStory stageIndex={storyIndex} onClose={() => setStoryIndex(null)} />
