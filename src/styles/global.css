@@ -159,6 +159,11 @@ button:focus-visible {
 
 .welcome-screen {
   padding-top: 0;
+  /* No tab bar on this screen, so match its bottom spacing (32px off
+     the edge) directly instead of inheriting .screen's tab-bar
+     clearance padding, which would leave the button floating with a
+     much bigger gap than the tab bar ever has. */
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
 
 .onb-hero {
