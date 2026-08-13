@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { answerQuestion, SUGGESTED_QUESTIONS, getStageQuickQuestions } from "../../lib/askAssistant.js";
+import { answerQuestion, SUGGESTED_QUESTIONS } from "../../lib/askAssistant.js";
 
 const GREETING =
   "Hi, I'm your AI assistant for questions that come up during today's visit. For anything about Maya's care, her care team is always the best answer, I'll point you to them for that.";
@@ -42,28 +42,10 @@ export default function Ask({ onBack, currentStage, onOpenMap }) {
     if (link.action === "map") onOpenMap();
   }
 
-  // A tap on one of today's staff-vetted Quick answers skips the
-  // classifier entirely and replies with that exact vetted text, it's
-  // already been approved, there's nothing to guess at.
-  function sendKnownAnswer(item) {
-    if (thinking) return;
-    setMessages((prev) => [...prev, makeMessage("user", item.q)]);
-    setThinking(true);
-    setTimeout(() => {
-      setMessages((prev) => [...prev, makeMessage("assistant", item.a)]);
-      setThinking(false);
-    }, 500);
-  }
-
   function handleSubmit(e) {
     e.preventDefault();
     send(input);
   }
-
-  const stageQuickQuestions = getStageQuickQuestions(currentStage);
-  const quickQuestions = stageQuickQuestions
-    ? stageQuickQuestions.map((item) => ({ ...item, known: true }))
-    : SUGGESTED_QUESTIONS.map((q) => ({ q, known: false }));
 
   const showSuggestions = messages.length === 1 && !thinking;
 
@@ -73,14 +55,13 @@ export default function Ask({ onBack, currentStage, onOpenMap }) {
         <button className="back-btn" onClick={onBack} aria-label="Back">
           ←
         </button>
-        <div className="back-title">Ask</div>
+        <div className="back-title">Ask AI</div>
       </div>
 
       <div className="path-hero path-hero-plain" style={{ marginTop: 0 }}>
-        <div className="eyebrow">Ask</div>
-        <div className="title headline">Quick questions, answered here</div>
+        <div className="title headline">Ask AI</div>
         <div className="sub">
-          Logistics and using the app only, anything about Maya's care goes through her team.
+          Answers logistics and app questions. Anything about Maya's care goes to her team.
         </div>
       </div>
 
@@ -111,16 +92,9 @@ export default function Ask({ onBack, currentStage, onOpenMap }) {
 
       {showSuggestions && (
         <div className="chat-suggestions">
-          {stageQuickQuestions && (
-            <div className="chat-suggestions-label">Already answered for today</div>
-          )}
-          {quickQuestions.map((item) => (
-            <button
-              key={item.q}
-              className="chat-suggestion-chip"
-              onClick={() => (item.known ? sendKnownAnswer(item) : send(item.q))}
-            >
-              {item.q}
+          {SUGGESTED_QUESTIONS.map((q) => (
+            <button key={q} className="chat-suggestion-chip" onClick={() => send(q)}>
+              {q}
             </button>
           ))}
         </div>

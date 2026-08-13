@@ -47,7 +47,13 @@ export default function StoryTray({ currentStage, completedStages, onToggleCompl
             </div>
             <div className={`path-card ${status}`}>
               <button className="path-card-body" onClick={() => onOpenStory(i)}>
-                <div className="path-card-title">{s.label}</div>
+                <div className="path-card-top">
+                  <div className="path-card-title">{s.label}</div>
+                  <div className={`path-card-status ${status}`}>
+                    {done ? "Completed" : i === currentStage ? "Happening now" : "Up next"}
+                  </div>
+                </div>
+                <div className="path-card-sub">{s.sub}</div>
               </button>
               <div className="path-card-chev">›</div>
             </div>

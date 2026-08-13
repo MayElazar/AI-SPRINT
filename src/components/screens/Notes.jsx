@@ -74,10 +74,7 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
         <div className="sub">Check-ins from the team, plus anything you write or record.</div>
       </div>
 
-      <div className="section-row">
-        <div className="section-label" style={{ margin: 0 }}>
-          Today
-        </div>
+      <div className="updates-toolbar">
         <button className="pencil-btn" onClick={onOpenComposer}>
           <svg viewBox="0 0 24 24" fill="none">
             <path

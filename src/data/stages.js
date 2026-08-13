@@ -20,7 +20,7 @@ export const STAGES = [
     offers: ["Checklist"],
     resource: null,
     instructions: [
-      "Maya should fast, no food, starting at 8:00 PM tonight",
+      "Maya needs to fast, no food, starting at 8:00 PM tonight",
       "Give clear liquids only after that, and nothing at all after 6:00 AM tomorrow",
       "Bring Maya's insurance card and a photo ID",
       "Bring a written list of Maya's current medications",
@@ -157,14 +157,7 @@ export const STAGES = [
     offers: ["Checklist"],
     resource: null,
     checklist: [],
-    checkins: [
-      {
-        time: "10:50 AM",
-        text: "Maya's in her gown. The anesthesia team is meeting with you both now.",
-        person: "Pre-op nurse",
-        role: "Getting Maya ready for the procedure room",
-      },
-    ],
+    checkins: [],
     qa: [
       {
         q: "Can I stay with Maya until she's asleep?",
@@ -213,7 +206,7 @@ export const STAGES = [
     avatar: "doctor",
     color: "pink",
     title: "In procedure",
-    sub: "Typically 2 to 3 hours.",
+    sub: "Maya's procedure itself, typically 2 to 3 hours.",
     offers: ["Video", "Check-ins"],
     resource: {
       type: "video",
@@ -224,20 +217,7 @@ export const STAGES = [
     transcript:
       "Your child is in the procedure room now. We're threading a small catheter through a blood vessel to the heart, guided by imaging the whole time, and she is fully monitored and asleep. Most parents say this wait is harder than the procedure itself, and that's completely normal. There's nothing you need to do right now except wait, and you'll know the moment there's an update.",
     checklist: [],
-    checkins: [
-      {
-        time: "11:42 AM",
-        text: "Procedure started on schedule. Maya is settled.",
-        person: "Noa K.",
-        role: "Care coordinator, covering check-ins during the procedure",
-      },
-      {
-        time: "1:20 PM",
-        text: "Running about 20 minutes behind schedule. This is normal, not a concern.",
-        person: "Noa K.",
-        role: "Care coordinator, covering check-ins during the procedure",
-      },
-    ],
+    checkins: [],
     qa: [
       {
         q: "Will someone find me the moment it's done, or should I go looking?",
@@ -275,18 +255,11 @@ export const STAGES = [
     avatar: "yael",
     color: "green",
     title: "In recovery",
-    sub: "Out of the procedure, being watched as she wakes.",
+    sub: "Waking up from sedation, watched closely the whole time.",
     offers: ["Check-ins"],
     resource: null,
     checklist: [],
-    checkins: [
-      {
-        time: "1:52 PM",
-        text: "Maya's out of the procedure and in recovery. Vitals are being monitored.",
-        person: "Yael",
-        role: "Unit nurse, your point of contact today",
-      },
-    ],
+    checkins: [],
     qa: [
       {
         q: "When can I actually see her?",

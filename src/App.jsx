@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import alongsideLogo from "./assets/alongside-logo.svg";
 import schneiderLogoMarkup from "./assets/schneider-logo.svg?raw";
 import NotifBanner from "./components/NotifBanner.jsx";
@@ -23,13 +23,35 @@ import * as familyStore from "./lib/familyStore.js";
 const TAB_PHASES = ["home", "updates", "you"];
 
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
-// First check-in lands 3s after the procedure stage starts, every one
-// after that is 20s apart, this is prototype pacing for a demo, not a
-// real estimate of how often updates would actually arrive. Only used
-// when there's no ?family= link, when this app is standing in for the
-// scripted walkthrough rather than following a real staff-linked case.
-const FIRST_PUSH_DELAY_MS = 3000;
-const PUSH_INTERVAL_MS = 20000;
+
+// A curated two-check-in beat for a live product demo: both from Yael,
+// triggered together (see the effect below) the moment Arrival &
+// admission is marked complete, 10s apart, rather than simulating a
+// real arrival cadence. Deliberately not pushed as a NotifBanner, they
+// only ever show up in Home's "Right now" card and the Updates feed.
+const ARRIVAL_TRIGGER_CHECKIN_1 = {
+  key: "arrival-trigger-1",
+  time: "10:45 AM",
+  text: "Procedure is running 20 minutes behind schedule. Normal, not a concern.",
+  person: "Yael",
+  role: "Unit nurse, your point of contact today",
+  roleShort: "Unit nurse",
+  stageKey: "procedure",
+  stageLabel: "Procedure",
+  stageTitle: "In procedure",
+};
+const ARRIVAL_TRIGGER_CHECKIN_2 = {
+  key: "arrival-trigger-2",
+  time: "11:25 AM",
+  text: "Maya's out of the procedure and in recovery. Vitals are being monitored.",
+  person: "Yael",
+  role: "Unit nurse, your point of contact today",
+  roleShort: "Unit nurse",
+  stageKey: "recovery",
+  stageLabel: "Recovery",
+  stageTitle: "In recovery",
+};
+const ARRIVAL_TRIGGER_DELAY_MS = 10000;
 
 // A ?family=<id> link (generated from the staff app) switches this app
 // from the scripted demo timeline to following that family's real
@@ -42,9 +64,10 @@ export default function App() {
   const [bootWordIndex, setBootWordIndex] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   // Separate from currentStage on purpose: currentStage tracks how far
-  // the timeline has progressed (drives check-in delivery), completion
-  // is a family-controlled checkbox that doesn't move just from opening
-  // a stage, so it needs its own state.
+  // the timeline has progressed, completion is a family-controlled
+  // checkbox that doesn't move just from opening a stage, so it needs
+  // its own state. Marking Arrival & admission complete is also what
+  // triggers the demo check-in beat below.
   const [completedStages, setCompletedStages] = useState(() => new Set());
   const [openStageIndex, setOpenStageIndex] = useState(null);
   const [openResource, setOpenResource] = useState(null); // { resource, color }
@@ -93,75 +116,76 @@ export default function App() {
     return () => clearInterval(interval);
   }, [booting]);
 
-  // Check-in delivery lives here, not in Home, so a banner can slide in
-  // over whichever screen you happen to be on, the way a phone does.
-  // In live mode these come from the staff-authored record instead of
-  // the stages' own scripted, fictional-timestamp lists.
-  const checkinsChrono = useMemo(() => {
-    if (familyId) {
-      return (liveFamily?.checkins || []).map((c) => {
-        const st = STAGES[c.stageIndex] || STAGES[0];
-        return {
-          ...c,
-          stageKey: st.key,
-          stageLabel: st.label,
-          stageTitle: st.title,
-          roleShort: (c.role || st.role || "").split(",")[0],
-          key: c.id,
-        };
-      });
-    }
-    return STAGES.slice(0, currentStage + 1).flatMap((st) =>
-      st.checkins.map((c) => ({
+  // Live mode: staff-authored check-ins from familyStore, chronological.
+  const liveCheckins = useMemo(() => {
+    if (!familyId) return [];
+    return (liveFamily?.checkins || []).map((c) => {
+      const st = STAGES[c.stageIndex] || STAGES[0];
+      return {
         ...c,
         stageKey: st.key,
         stageLabel: st.label,
         stageTitle: st.title,
-        person: c.person || st.person,
-        roleShort: (c.role || st.role).split(",")[0],
-        key: `${st.key}-${c.time}`,
-      }))
-    );
-  }, [currentStage, liveFamily]);
+        roleShort: (c.role || st.role || "").split(",")[0],
+        key: c.id,
+      };
+    });
+  }, [liveFamily]);
 
-  const [deliveredCount, setDeliveredCount] = useState(0);
+  // Demo mode: a curated two-check-in beat (see the constants above),
+  // triggered once by marking Arrival & admission complete, not a
+  // timer or currentStage. Resets if that box gets unchecked, so the
+  // beat can be replayed for another walkthrough.
+  const [triggeredCheckins, setTriggeredCheckins] = useState([]);
+  const arrivalIndex = useMemo(() => STAGES.findIndex((s) => s.key === "arrival"), []);
+  const arrivalDoneRef = useRef(false);
+  const triggerTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (familyId) return;
+    const arrivalDone = completedStages.has(arrivalIndex);
+    if (arrivalDone && !arrivalDoneRef.current) {
+      arrivalDoneRef.current = true;
+      clearTimeout(triggerTimeoutRef.current);
+      setTriggeredCheckins([ARRIVAL_TRIGGER_CHECKIN_1]);
+      triggerTimeoutRef.current = setTimeout(() => {
+        setTriggeredCheckins([ARRIVAL_TRIGGER_CHECKIN_1, ARRIVAL_TRIGGER_CHECKIN_2]);
+      }, ARRIVAL_TRIGGER_DELAY_MS);
+    } else if (!arrivalDone && arrivalDoneRef.current) {
+      arrivalDoneRef.current = false;
+      clearTimeout(triggerTimeoutRef.current);
+      setTriggeredCheckins([]);
+    }
+  }, [completedStages, familyId, arrivalIndex]);
+
+  useEffect(() => () => clearTimeout(triggerTimeoutRef.current), []);
+
+  const checkinsChrono = familyId ? liveCheckins : triggeredCheckins;
+
   const [bannerQueue, setBannerQueue] = useState([]);
   // How many check-ins the user has actually seen in Updates, so the tab's
   // bell can carry a red dot for ones that arrived while they were elsewhere.
   const [seenCount, setSeenCount] = useState(0);
-  const hasUnseenUpdates = deliveredCount > seenCount;
+  const hasUnseenUpdates = checkinsChrono.length > seenCount;
 
   useEffect(() => {
-    if (phase === "updates") setSeenCount(deliveredCount);
-  }, [phase, deliveredCount]);
+    if (phase === "updates") setSeenCount(checkinsChrono.length);
+  }, [phase, checkinsChrono.length]);
 
+  // Only live mode ever pushes a NotifBanner, a staff update is a real
+  // push. The demo beat above is deliberately not one, see its own
+  // comment, it only ever shows up in Home and Updates.
+  const bannerDeliveredCountRef = useRef(0);
   useEffect(() => {
-    if (booting) return;
-    if (deliveredCount >= checkinsChrono.length) return;
-    if (familyId) {
-      // Live mode: a staff update is a real push, it shows up right
-      // away rather than on the scripted demo's delay.
-      const next = checkinsChrono[checkinsChrono.length - 1];
-      setBannerQueue((q) => [...q, next]);
-      setDeliveredCount(checkinsChrono.length);
-      return;
-    }
-    // First check-in arrives quickly (3s), so a demo doesn't sit and
-    // wait, every one after that is spaced further apart (20s).
-    const delay = deliveredCount === 0 ? FIRST_PUSH_DELAY_MS : PUSH_INTERVAL_MS;
-    const t = setTimeout(() => {
-      const next = checkinsChrono[deliveredCount];
-      setBannerQueue((q) => [...q, next]);
-      setDeliveredCount((n) => n + 1);
-    }, delay);
-    return () => clearTimeout(t);
-  }, [booting, deliveredCount, checkinsChrono]);
+    if (booting || !familyId) return;
+    if (liveCheckins.length <= bannerDeliveredCountRef.current) return;
+    const next = liveCheckins[liveCheckins.length - 1];
+    setBannerQueue((q) => [...q, next]);
+    bannerDeliveredCountRef.current = liveCheckins.length;
+  }, [booting, familyId, liveCheckins]);
 
   // Newest first, for the persistent stack on Home.
-  const deliveredCheckins = useMemo(
-    () => checkinsChrono.slice(0, deliveredCount).slice().reverse(),
-    [checkinsChrono, deliveredCount]
-  );
+  const deliveredCheckins = useMemo(() => checkinsChrono.slice().reverse(), [checkinsChrono]);
 
   function toggleStageComplete(i) {
     setCompletedStages((prev) => {

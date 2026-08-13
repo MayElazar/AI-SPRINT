@@ -140,17 +140,12 @@ export function answerQuestion(text, currentStageIndex = 0) {
   };
 }
 
+// Fixed, permanent suggestion chips for a live product demo, rather
+// than switching to whatever the current stage's own staff-vetted
+// "Quick answers" are (see stages.js `qa`), which used to replace
+// these once you moved past the first stage.
 export const SUGGESTED_QUESTIONS = [
   "Where is room L203?",
   "What do I need to bring tomorrow for the procedure?",
   "Who is the discharge nurse?",
 ];
-
-// The current stage's own staff-vetted "Quick answers" (see StageDetail),
-// surfaced as tappable questions inside the chat too. These already went
-// through a person, so tapping one answers straight from that content
-// instead of through the keyword classifier above.
-export function getStageQuickQuestions(currentStageIndex = 0) {
-  const stage = STAGES[currentStageIndex];
-  return stage && stage.qa && stage.qa.length > 0 ? stage.qa : null;
-}

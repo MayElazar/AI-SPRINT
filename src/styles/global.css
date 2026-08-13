@@ -643,6 +643,13 @@ button:focus-visible {
   cursor: pointer;
 }
 
+.path-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .path-card-title {
   font-size: 15px;
   font-weight: 700;
@@ -651,6 +658,21 @@ button:focus-visible {
 
 .path-card.current .path-card-title {
   color: var(--accent-deep);
+}
+
+.path-card-status {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.path-card-status.current {
+  color: var(--accent-deep);
+}
+
+.path-card-status.done {
+  color: var(--available);
 }
 
 .path-card-sub {
@@ -1199,7 +1221,7 @@ button.resource-item {
 .path-hero-plain {
   background: none;
   color: var(--text);
-  padding: 4px 0 18px;
+  padding: 4px 0 14px;
 }
 
 .path-hero-plain::before {
@@ -2020,11 +2042,11 @@ button.resource-item {
   margin: 18px 0 10px;
 }
 
-.section-row {
+.updates-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin: 18px 0 10px;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .feed-filter-row {
@@ -2270,6 +2292,38 @@ button.resource-item {
   color: var(--accent-deep);
 }
 
+/* Home's "Right now" when empty: a light, low-weight placeholder
+   rather than a solid filled card, so absence of an update doesn't
+   visually compete with a real check-in card. */
+.home-empty-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-card);
+  padding: 13px 15px;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.home-empty-now-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-empty-now-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* Empty state for Updates & notes, an inviting card with a direct way
    in rather than just a line of grey text, since the pencil button up
    top is easy to miss on a first visit. */
@@ -2513,7 +2567,7 @@ button.resource-item {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(78px + env(safe-area-inset-bottom));
+  bottom: calc(90px + env(safe-area-inset-bottom));
   width: 100%;
   max-width: 440px;
   display: flex;
@@ -2521,16 +2575,6 @@ button.resource-item {
   flex-wrap: wrap;
   gap: 8px;
   padding: 0 20px;
-}
-
-.chat-suggestions-label {
-  flex-basis: 100%;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 2px;
 }
 
 .chat-suggestion-chip {
@@ -2551,7 +2595,7 @@ button.resource-item {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(32px + env(safe-area-inset-bottom));
   width: 100%;
   max-width: 440px;
   display: flex;
