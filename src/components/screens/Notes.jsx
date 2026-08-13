@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import NotifCard from "../NotifCard.jsx";
+import EmptyState from "../EmptyState.jsx";
 
 // "11:42 AM" -> 702, so check-ins (fixed fictional times from stages.js)
 // and notes (real wall-clock times) can be merged into one true order
@@ -74,21 +75,6 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
         <div className="sub">Check-ins from the team, plus anything you write or record.</div>
       </div>
 
-      <div className="updates-toolbar">
-        <button className="pencil-btn" onClick={onOpenComposer}>
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
-              stroke="currentColor"
-              strokeWidth="1.9"
-              strokeLinejoin="round"
-            />
-            <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.9" />
-          </svg>
-          Write
-        </button>
-      </div>
-
       <div className="feed-filter-row">
         {FILTERS.map((f) => (
           <button
@@ -103,32 +89,15 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
       </div>
 
       {feed.length === 0 ? (
-        filter === "note" ? (
-          <div className="notes-empty-state">
-            <div className="notes-empty-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                />
-                <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-            </div>
-            <div className="notes-empty-title">Nothing you've written yet</div>
-            <div className="notes-empty-sub">Write it down, or record it and we'll type it up.</div>
-            <button className="notes-empty-cta" onClick={onOpenComposer}>
-              Write your first update
-            </button>
-          </div>
-        ) : (
-          <div className="qa-scope-note">
-            {filter === "checkin"
-              ? "No check-ins yet. They'll show up here as the team sends them."
-              : "Nothing yet. Check-ins and anything you write will show up here."}
-          </div>
-        )
+        <EmptyState
+          text={
+            filter === "checkin"
+              ? "No check-ins yet, they'll show up here as the team sends them."
+              : filter === "note"
+              ? "Nothing you've written yet, tap below to add one."
+              : "Nothing yet, check-ins and anything you write will show up here."
+          }
+        />
       ) : (
         <div className="notif-feed">
           {feed.map((e, i) => (
@@ -147,6 +116,20 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
           ))}
         </div>
       )}
+
+      <button className="pencil-btn write-fab" onClick={onOpenComposer}>
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M9 3v18" stroke="currentColor" strokeWidth="1.8" />
+          <path
+            d="M12.5 8h4M12.5 11.5h4M12.5 15h2.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+        Add a new update
+      </button>
     </div>
   );
 }

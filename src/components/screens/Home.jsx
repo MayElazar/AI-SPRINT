@@ -1,6 +1,7 @@
 import { useState } from "react";
 import StoryTray from "../StoryTray.jsx";
 import NotifCard from "../NotifCard.jsx";
+import EmptyState from "../EmptyState.jsx";
 
 // `checkins` arrives newest-first from App, which owns delivery timing
 // so banners can slide in over any screen.
@@ -9,7 +10,6 @@ import NotifCard from "../NotifCard.jsx";
 // full history stays one tap away in Updates, so nothing is lost, it
 // just isn't stacked up on the home screen.
 export default function Home({
-  currentStage,
   completedStages,
   onToggleComplete,
   onOpenStory,
@@ -33,7 +33,7 @@ export default function Home({
 
       <div className="home-topbar">
         <div className="section-label" style={{ margin: 0 }}>
-          Right now
+          Updates
         </div>
         <button className="bell-badge" aria-label="Hospital map" onClick={onOpenMap}>
           <svg viewBox="0 0 24 24" fill="none">
@@ -49,19 +49,7 @@ export default function Home({
       </div>
 
       {!latest ? (
-        <div className="home-empty-now">
-          <span className="home-empty-now-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-          No updates yet, they'll show up here as they come in.
-        </div>
+        <EmptyState text="No updates yet, they'll show up here as they come in." />
       ) : (
         <div className="latest-checkin">
           {/* Keyed so a new check-in re-runs the slide-in animation
@@ -85,7 +73,6 @@ export default function Home({
 
       <div className="section-label">Maya's path</div>
       <StoryTray
-        currentStage={currentStage}
         completedStages={completedStages}
         onToggleComplete={onToggleComplete}
         onOpenStory={onOpenStory}

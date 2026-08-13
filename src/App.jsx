@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import alongsideLogo from "./assets/alongside-logo.svg";
 import schneiderLogoMarkup from "./assets/schneider-logo.svg?raw";
 import NotifBanner from "./components/NotifBanner.jsx";
+import SmsIntro from "./components/screens/SmsIntro.jsx";
 import Welcome from "./components/screens/Welcome.jsx";
 import Home from "./components/screens/Home.jsx";
 import StageDetail from "./components/screens/StageDetail.jsx";
@@ -17,10 +18,8 @@ import HeartRunner from "./components/HeartRunner.jsx";
 import { STAGES } from "./data/stages.js";
 import * as familyStore from "./lib/familyStore.js";
 
-// phase: "welcome" | "home" | "stage" | "updates" | "ask" | "you"
-// "ask" has no tab bar of its own, same as "welcome", it's reached via
-// the Ask tab button and uses its own back arrow + input bar instead.
-const TAB_PHASES = ["home", "updates", "you"];
+// phase: "sms" | "welcome" | "home" | "stage" | "updates" | "ask" | "you"
+const TAB_PHASES = ["home", "updates", "ask", "you"];
 
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
 
@@ -51,7 +50,7 @@ const ARRIVAL_TRIGGER_CHECKIN_2 = {
   stageLabel: "Recovery",
   stageTitle: "In recovery",
 };
-const ARRIVAL_TRIGGER_DELAY_MS = 10000;
+const ARRIVAL_TRIGGER_DELAY_MS = 4000;
 
 // A ?family=<id> link (generated from the staff app) switches this app
 // from the scripted demo timeline to following that family's real
@@ -59,7 +58,7 @@ const ARRIVAL_TRIGGER_DELAY_MS = 10000;
 const familyId = new URLSearchParams(window.location.search).get("family");
 
 export default function App() {
-  const [phase, setPhase] = useState("welcome");
+  const [phase, setPhase] = useState("sms");
   const [booting, setBooting] = useState(true);
   const [bootWordIndex, setBootWordIndex] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
@@ -223,11 +222,12 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      {phase === "sms" && <SmsIntro onOpenApp={() => setPhase("welcome")} />}
+
       {phase === "welcome" && <Welcome onViewPath={() => setPhase("home")} />}
 
       {phase === "home" && (
         <Home
-          currentStage={currentStage}
           completedStages={completedStages}
           onToggleComplete={toggleStageComplete}
           onOpenStory={openStage}
@@ -271,9 +271,7 @@ export default function App() {
         />
       )}
 
-      {phase === "ask" && (
-        <Ask onBack={() => setPhase("home")} currentStage={currentStage} onOpenMap={() => setMapOpen(true)} />
-      )}
+      {phase === "ask" && <Ask currentStage={currentStage} onOpenMap={() => setMapOpen(true)} />}
 
       {phase === "you" && <You />}
 

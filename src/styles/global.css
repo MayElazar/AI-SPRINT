@@ -2042,11 +2042,24 @@ button.resource-item {
   margin: 18px 0 10px;
 }
 
-.updates-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 12px;
+/* Fixed above the tab bar, centered, so it stays reachable without
+   taking a row of its own at the top of the screen, and reads as the
+   screen's one clear primary action. */
+.write-fab {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(116px + env(safe-area-inset-bottom));
+  z-index: 5;
+  height: 52px;
+  padding: 0 26px 0 20px;
+  font-size: 15px;
+  box-shadow: var(--glass-shadow), 0 8px 20px rgba(68, 58, 107, 0.35);
+}
+
+.write-fab svg {
+  width: 19px;
+  height: 19px;
 }
 
 .feed-filter-row {
@@ -2126,7 +2139,7 @@ button.resource-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(12px + env(safe-area-inset-top)) 16px 10px;
+  padding: calc(40px + env(safe-area-inset-top)) 16px 10px;
   flex-shrink: 0;
 }
 
@@ -2324,64 +2337,6 @@ button.resource-item {
   height: 14px;
 }
 
-/* Empty state for Updates & notes, an inviting card with a direct way
-   in rather than just a line of grey text, since the pencil button up
-   top is easy to miss on a first visit. */
-.notes-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-card);
-  padding: 32px 24px 26px;
-  margin-top: 4px;
-}
-
-.notes-empty-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--accent-tint);
-  color: var(--accent-deep);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 14px;
-}
-
-.notes-empty-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.notes-empty-title {
-  font-size: 15.5px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-
-.notes-empty-sub {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text-soft);
-  max-width: 280px;
-  margin-bottom: 18px;
-}
-
-.notes-empty-cta {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 12px 22px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 /* Notes */
 .notes-screen-item {
   background: var(--surface);
@@ -2482,7 +2437,7 @@ button.resource-item {
 
 /* Ask AI, chat presentation over a scoped, logistics-only backend */
 .ask-screen {
-  padding-bottom: 120px;
+  padding-bottom: calc(190px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
 }
@@ -2567,7 +2522,7 @@ button.resource-item {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(90px + env(safe-area-inset-bottom));
+  bottom: calc(174px + env(safe-area-inset-bottom));
   width: 100%;
   max-width: 440px;
   display: flex;
@@ -2595,7 +2550,7 @@ button.resource-item {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(32px + env(safe-area-inset-bottom));
+  bottom: calc(116px + env(safe-area-inset-bottom));
   width: 100%;
   max-width: 440px;
   display: flex;
@@ -3089,7 +3044,7 @@ button.resource-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(24px + env(safe-area-inset-top)) 16px 10px;
+  padding: calc(40px + env(safe-area-inset-top)) 16px 10px;
   flex-shrink: 0;
 }
 
@@ -3119,6 +3074,38 @@ button.resource-item {
 .map3d-canvas canvas {
   display: block;
   touch-action: none;
+}
+
+/* Tracks the 3D "you are here" pin's projected screen position every
+   frame (see the animate loop), since a WebGL canvas can't render
+   real DOM text of its own for the pin to carry a readable label. */
+.map3d-here-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #004c9a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 76, 154, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 3;
+}
+
+.map3d-here-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
 }
 
 .map3d-tip {
@@ -3766,4 +3753,146 @@ button.resource-item {
   .staff-form-row {
     flex-direction: column;
   }
+}
+
+/* Mocked native Messages thread, the screen before the app itself.
+   Deliberately plain/native-looking rather than branded, so it reads
+   as a real text message rather than more Alongside UI. */
+.sms-screen {
+  min-height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.sms-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: calc(14px + env(safe-area-inset-top)) 14px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sms-back {
+  width: 22px;
+  font-size: 26px;
+  line-height: 1;
+  color: #0a84ff;
+  font-weight: 400;
+}
+
+.sms-info {
+  width: 22px;
+  text-align: center;
+  font-size: 15px;
+  color: #0a84ff;
+}
+
+.sms-contact {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.sms-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #9aa3b0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sms-contact-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sms-contact-sub {
+  font-size: 10.5px;
+  color: var(--text-soft);
+}
+
+.sms-thread {
+  flex: 1;
+  padding: 18px 14px;
+  overflow-y: auto;
+}
+
+.sms-date-label {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+.sms-bubble-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.sms-bubble {
+  max-width: 82%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 13px;
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  font-size: 15px;
+  line-height: 1.42;
+  box-shadow: var(--shadow-sm);
+}
+
+.sms-link {
+  display: inline;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: #0a84ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.sms-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sms-input-pill {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.sms-mic {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: #0a84ff;
+}
+
+.sms-mic svg {
+  width: 100%;
+  height: 100%;
 }

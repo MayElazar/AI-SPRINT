@@ -130,12 +130,20 @@ function doorPoint(r) {
 }
 
 const ROUTE_COLOR = 0xff5a7a;
+// Reception is the entrance every route starts from, so it doubles as
+// the "you are here" point. The waiting area is highlighted by default
+// on open, since "where do I wait" is the question most families
+// actually have walking in.
+const YOU_ARE_HERE_KEY = "reception";
+const DEFAULT_ROUTE_KEY = "waiting";
+const HERE_COLOR = 0x004c9a;
 
 export default function HospitalMap3D({ onClose }) {
   const mountRef = useRef(null);
   const controlsRef = useRef(null);
   const routeRef = useRef({});
-  const [selectedKey, setSelectedKey] = useState(null);
+  const hereLabelRef = useRef(null);
+  const [selectedKey, setSelectedKey] = useState(DEFAULT_ROUTE_KEY);
   const [autoRotate, setAutoRotate] = useState(true);
 
   useEffect(() => {
@@ -551,6 +559,40 @@ export default function HospitalMap3D({ onClose }) {
 
     scene.add(buildingGroup);
 
+    // ---------- "you are here" pin, at Reception, the entrance ----------
+    const hereRoom = ROOMS.find((r) => r.key === YOU_ARE_HERE_KEY);
+    const hereGroup = new THREE.Group();
+    const hereMat = new THREE.MeshStandardMaterial({
+      color: HERE_COLOR,
+      emissive: HERE_COLOR,
+      emissiveIntensity: 0.4,
+      roughness: 0.3,
+    });
+    const pinHeight = 0.55;
+    const pinBaseY = WALL_HEIGHT + 0.85;
+    const hereSphere = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 20), hereMat);
+    hereSphere.position.set(hereRoom.x, pinBaseY + pinHeight, hereRoom.z);
+    hereGroup.add(hereSphere);
+    const hereCone = new THREE.Mesh(new THREE.ConeGeometry(0.14, pinHeight, 18), hereMat);
+    hereCone.position.set(hereRoom.x, pinBaseY + pinHeight / 2, hereRoom.z);
+    hereGroup.add(hereCone);
+    // A stem down to the floor, so the pin visibly marks a spot rather
+    // than just floating near the room.
+    const hereStem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, pinBaseY, 6),
+      new THREE.MeshBasicMaterial({ color: HERE_COLOR, transparent: true, opacity: 0.35 })
+    );
+    hereStem.position.set(hereRoom.x, pinBaseY / 2, hereRoom.z);
+    hereGroup.add(hereStem);
+    const hereRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.05, 0.32, 32),
+      new THREE.MeshBasicMaterial({ color: HERE_COLOR, side: THREE.DoubleSide, transparent: true, opacity: 0.55 })
+    );
+    hereRing.rotation.x = -Math.PI / 2;
+    hereRing.position.set(hereRoom.x, 0.025, hereRoom.z);
+    hereGroup.add(hereRing);
+    scene.add(hereGroup);
+
     // ---------- route from Reception to the selected room ----------
     const doorPoints = {};
     ROOMS.forEach((r) => {
@@ -661,6 +703,26 @@ export default function HospitalMap3D({ onClose }) {
         m.position.y = WALL_HEIGHT + 0.55 + Math.sin(t * 2 + m.position.x) * 0.05;
       });
 
+      // Pulse the "you are here" ring on a loop, and keep its DOM label
+      // pinned to the pin's projected screen position as the camera
+      // orbits, since a canvas can't render real DOM text itself.
+      const pulse = (Math.sin(t * 2.2) + 1) / 2;
+      hereRing.scale.setScalar(1 + pulse * 0.7);
+      hereRing.material.opacity = 0.6 - pulse * 0.35;
+      if (hereLabelRef.current) {
+        const screenPos = hereSphere.position.clone().project(camera);
+        if (screenPos.z < 1) {
+          const w = mount.clientWidth;
+          const h = mount.clientHeight;
+          const x = (screenPos.x * 0.5 + 0.5) * w;
+          const y = (-screenPos.y * 0.5 + 0.5) * h;
+          hereLabelRef.current.style.opacity = "1";
+          hereLabelRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -135%)`;
+        } else {
+          hereLabelRef.current.style.opacity = "0";
+        }
+      }
+
       // Walk the route marker along the highlighted path on a loop.
       const rs = routeRef.current;
       if (rs.marker && rs.waypoints && rs.waypoints.length > 1) {
@@ -741,6 +803,10 @@ export default function HospitalMap3D({ onClose }) {
 
       <div className="map3d-canvas-wrap">
         <div className="map3d-canvas" ref={mountRef} />
+        <div className="map3d-here-label" ref={hereLabelRef}>
+          <span className="map3d-here-dot" aria-hidden="true" />
+          You are here
+        </div>
         <div className="map3d-tip">
           <div className="map3d-tip-title">Tip</div>
           <div>Drag to rotate</div>
@@ -760,7 +826,7 @@ export default function HospitalMap3D({ onClose }) {
       <div className="map3d-body">
         <div className="qa-scope-note">
           {selectedKey
-            ? "Route highlighted on the map, from Reception. Tap the room again to collapse it."
+            ? `You are here at Reception. The highlighted path leads to ${ROOMS.find((r) => r.key === selectedKey)?.label}, tap that room again to collapse it.`
             : "Tap any glowing dot on the map, or a room below, to see how to get there."}
         </div>
 

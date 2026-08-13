@@ -8,12 +8,18 @@ import { STAGES } from "../data/stages.js";
 // checkmark badge appears), tapping the rest of the card opens it.
 // Completion is its own state (see App's completedStages), not
 // something visiting a stage sets automatically.
-export default function StoryTray({ currentStage, completedStages, onToggleComplete, onOpenStory }) {
+export default function StoryTray({ completedStages, onToggleComplete, onOpenStory }) {
+  // "Happening now" belongs to whichever stage comes right after the
+  // furthest one marked complete, not wherever the family happens to
+  // be browsing, so it only moves when a stage actually gets checked off.
+  const maxCompleted = completedStages.size > 0 ? Math.max(...completedStages) : -1;
+  const happeningIndex = maxCompleted + 1;
+
   return (
     <div className="path-stepper">
       {STAGES.map((s, i) => {
         const done = completedStages.has(i);
-        const status = done ? "done" : i === currentStage ? "current" : "upcoming";
+        const status = done ? "done" : i === happeningIndex ? "current" : "upcoming";
         const isLast = i === STAGES.length - 1;
         return (
           <div key={s.key} className="stepper-row">
@@ -50,7 +56,7 @@ export default function StoryTray({ currentStage, completedStages, onToggleCompl
                 <div className="path-card-top">
                   <div className="path-card-title">{s.label}</div>
                   <div className={`path-card-status ${status}`}>
-                    {done ? "Completed" : i === currentStage ? "Happening now" : "Up next"}
+                    {done ? "Completed" : i === happeningIndex ? "Happening now" : "Up next"}
                   </div>
                 </div>
                 <div className="path-card-sub">{s.sub}</div>

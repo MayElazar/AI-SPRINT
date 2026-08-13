@@ -11,7 +11,7 @@ export default function Welcome({ onViewPath }) {
         <div className="welcome-text-block">
           <div className="welcome-eyebrow">Alongside · Schneider's Hospital</div>
           <div className="welcome-greeting">Hi Michal and David</div>
-          <div className="welcome-hero-title headline">Here for every step of Maya's day</div>
+          <div className="welcome-hero-title headline">We're here for every step of the way</div>
           <div className="welcome-meta">Maya, age 4 · Cardiac catheterization</div>
         </div>
         <button className="primary-btn primary-btn-lg welcome-cta" onClick={onViewPath}>

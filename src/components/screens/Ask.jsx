@@ -11,7 +11,7 @@ function makeMessage(role, text, link) {
 // Deliberately scoped: this chat answers app/hospital logistics only.
 // Anything that reads as being about Maya's care routes to the care
 // team instead, see askAssistant.js for the actual constraint.
-export default function Ask({ onBack, currentStage, onOpenMap }) {
+export default function Ask({ currentStage, onOpenMap }) {
   const [messages, setMessages] = useState(() => [makeMessage("assistant", GREETING)]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -51,14 +51,7 @@ export default function Ask({ onBack, currentStage, onOpenMap }) {
 
   return (
     <div className="screen ask-screen">
-      <div className="back-row">
-        <button className="back-btn" onClick={onBack} aria-label="Back">
-          ←
-        </button>
-        <div className="back-title">Ask AI</div>
-      </div>
-
-      <div className="path-hero path-hero-plain" style={{ marginTop: 0 }}>
+      <div className="path-hero path-hero-plain">
         <div className="title headline">Ask AI</div>
         <div className="sub">
           Answers logistics and app questions. Anything about Maya's care goes to her team.
