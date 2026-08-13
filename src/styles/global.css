@@ -65,12 +65,13 @@ button:focus-visible {
     position: relative;
     width: 412px;
     height: 868px;
-    background: #0b0b0f;
+    background: #fafbfc;
+    border: 1px solid rgba(20, 20, 35, 0.09);
     border-radius: 56px;
-    padding: 14px;
+    padding: 10px;
     box-shadow:
-      0 40px 80px rgba(15, 15, 25, 0.35),
-      0 2px 0 rgba(255, 255, 255, 0.06) inset;
+      0 30px 60px rgba(15, 15, 25, 0.16),
+      0 1px 0 rgba(255, 255, 255, 0.6) inset;
     flex-shrink: 0;
     /* Any transform makes this the containing block for `position:
        fixed` descendants (every full-screen overlay in the app), so
@@ -85,7 +86,7 @@ button:focus-visible {
     max-width: none;
     min-height: 0;
     margin: 0;
-    border-radius: 40px;
+    border-radius: 44px;
     overflow-y: auto;
   }
 
@@ -93,26 +94,26 @@ button:focus-visible {
     display: block;
     position: absolute;
     z-index: 500;
-    top: 14px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 132px;
-    height: 28px;
-    background: #0b0b0f;
-    border-radius: 0 0 18px 18px;
+    width: 126px;
+    height: 24px;
+    background: #17171b;
+    border-radius: 0 0 16px 16px;
   }
 
   .device-home-indicator {
     display: block;
     position: absolute;
     z-index: 500;
-    bottom: 22px;
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
     width: 128px;
     height: 4px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(20, 20, 35, 0.22);
   }
 
 }

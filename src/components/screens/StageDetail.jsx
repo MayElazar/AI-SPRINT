@@ -61,9 +61,13 @@ export default function StageDetail({
   const [dismissed, setDismissed] = useState(() => new Set());
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef(null);
+  const screenRef = useRef(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // window.scrollTo does nothing when .app-shell itself is the
+    // scroll container (the desktop device-frame preview), so this
+    // scrolls whichever ancestor is actually scrollable instead.
+    screenRef.current?.scrollIntoView({ block: "start" });
   }, [stageIndex]);
 
   function togglePlay(e) {
@@ -95,7 +99,7 @@ export default function StageDetail({
   }
 
   return (
-    <div className="screen">
+    <div className="screen" ref={screenRef}>
       <div className="back-row">
         <button className="back-btn" onClick={onBack}>
           ←

@@ -119,14 +119,13 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
 
       <button className="pencil-btn write-fab" onClick={onOpenComposer}>
         <svg viewBox="0 0 24 24" fill="none">
-          <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M9 3v18" stroke="currentColor" strokeWidth="1.8" />
           <path
-            d="M12.5 8h4M12.5 11.5h4M12.5 15h2.5"
+            d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
             stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
+            strokeWidth="1.9"
+            strokeLinejoin="round"
           />
+          <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.9" />
         </svg>
         Add a new update
       </button>

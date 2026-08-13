@@ -147,11 +147,12 @@ export default function NoteComposer({ onClose, onSave }) {
           <div className="wa-idle-hint">
             <div className="wa-idle-hint-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
-                <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                <rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M9 3v18" stroke="currentColor" strokeWidth="1.6" />
                 <path
-                  d="M6 11a6 6 0 0 0 12 0M12 17v3"
+                  d="M12.5 8h4M12.5 11.5h4M12.5 15h2.5"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="1.4"
                   strokeLinecap="round"
                 />
               </svg>
