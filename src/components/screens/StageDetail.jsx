@@ -158,28 +158,6 @@ export default function StageDetail({
       <div className="stage-hero-welcome headline">{s.title}</div>
       <div className="stage-hero-sub">{s.sub}</div>
 
-      <button
-        type="button"
-        className={`stage-complete-toggle ${completed ? "on" : ""}`}
-        aria-pressed={completed}
-        onClick={onToggleComplete}
-      >
-        <span className="stage-complete-check" aria-hidden="true">
-          {completed && (
-            <svg viewBox="0 0 24 24" fill="none">
-              <path
-                d="M5 12.5l4.5 4.5L19 7"
-                stroke="#fff"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
-        </span>
-        {completed ? "Marked as completed" : "Mark this stage as completed"}
-      </button>
-
       {latestCheckin && (
         <div className="stage-feature-card stage-feature-card-static">
           <div className="stage-feature-label">Latest update</div>
@@ -326,6 +304,28 @@ export default function StageDetail({
           <div className="resource-item-chev">›</div>
         </button>
       )}
+
+      <button
+        type="button"
+        className={`stage-complete-toggle ${completed ? "on" : ""}`}
+        aria-pressed={completed}
+        onClick={onToggleComplete}
+      >
+        <span className="stage-complete-check" aria-hidden="true">
+          {completed && (
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 12.5l4.5 4.5L19 7"
+                stroke="#fff"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </span>
+        {completed ? "Marked as completed" : "Mark this stage as completed"}
+      </button>
 
       <div className="story-nav stage-detail-nav">
         <button

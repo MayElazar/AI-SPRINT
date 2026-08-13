@@ -106,9 +106,7 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
       </div>
 
       {feed.length === 0 ? (
-        filter === "checkin" ? (
-          <div className="qa-scope-note">No check-ins yet. They'll show up here as the team sends them.</div>
-        ) : (
+        filter === "note" ? (
           <div className="notes-empty-state">
             <div className="notes-empty-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
@@ -121,13 +119,17 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
                 <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.6" />
               </svg>
             </div>
-            <div className="notes-empty-title">
-              {filter === "note" ? "Nothing you've written yet" : "Nothing here yet"}
-            </div>
+            <div className="notes-empty-title">Nothing you've written yet</div>
             <div className="notes-empty-sub">Write it down, or record it and we'll type it up.</div>
             <button className="notes-empty-cta" onClick={onOpenComposer}>
               Write your first update
             </button>
+          </div>
+        ) : (
+          <div className="qa-scope-note">
+            {filter === "checkin"
+              ? "No check-ins yet. They'll show up here as the team sends them."
+              : "Nothing yet. Check-ins and anything you write will show up here."}
           </div>
         )
       ) : (

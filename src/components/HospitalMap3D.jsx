@@ -730,8 +730,8 @@ export default function HospitalMap3D({ onClose }) {
   return (
     <div className="map3d-overlay">
       <div className="map3d-topbar">
-        <button className="map3d-back" onClick={onClose} aria-label="Back">
-          ‹
+        <button className="back-btn" onClick={onClose} aria-label="Back">
+          ←
         </button>
         <div className="map3d-title">Hospital map · 3D</div>
         <button className="story-close" onClick={onClose}>

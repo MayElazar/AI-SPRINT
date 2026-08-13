@@ -28,6 +28,28 @@ const PROCEDURE_KEYWORDS = [
 const PROCEDURE_DECLINE =
   "That one's about Maya's medical care, and I'm kept from guessing at those on purpose, her care team knows her case and I don't. Please ask whoever's with you right now.";
 
+// Curated answers for a handful of specific, known questions, checked
+// before the general classifiers below so a logistics question that
+// happens to contain a procedure-ish word (like "bring... for the
+// procedure") doesn't get misrouted into a medical decline. Matched on
+// a few distinctive words rather than the whole phrase, since a live
+// demo won't always type the exact wording.
+const CURATED_ANSWERS = [
+  {
+    test: (q) => q.includes("l203") || (q.includes("room") && q.includes("where")),
+    a: "Room L203 is the Cath Lab, the procedure room itself, just past the family waiting area. Tap below and I'll show you the route on the map.",
+    link: { label: "Open hospital map", action: "map" },
+  },
+  {
+    test: (q) => q.includes("bring") && (q.includes("tomorrow") || q.includes("procedure")),
+    a: "Bring Maya's insurance card and photo ID, a written list of her current medications, and if you'd like, a comfort item like a favorite stuffed animal, dressed in something comfortable to change out of.",
+  },
+  {
+    test: (q) => q.includes("discharge") && q.includes("nurse"),
+    a: "Galit is Maya's discharge nurse. She'll walk you through going home at the end, so nothing gets missed.",
+  },
+];
+
 // Small, hand-written FAQ, the kind of thing safe to answer without a
 // real backend: about the hospital or the app, never about a patient.
 const LOGISTICS_FAQ = [
@@ -86,6 +108,12 @@ function findQaMatch(text, reachedStages) {
 
 export function answerQuestion(text, currentStageIndex = 0) {
   const q = normalize(text);
+
+  const curated = CURATED_ANSWERS.find((entry) => entry.test(q));
+  if (curated) {
+    return { scope: "general", reply: curated.a, link: curated.link };
+  }
+
   const isProcedure = PROCEDURE_KEYWORDS.some((k) => q.includes(k));
 
   if (isProcedure) {
@@ -113,10 +141,9 @@ export function answerQuestion(text, currentStageIndex = 0) {
 }
 
 export const SUGGESTED_QUESTIONS = [
-  "Is there wifi here?",
-  "Where can I get coffee?",
-  "How do I change notification settings?",
-  "Where's the family quiet room?",
+  "Where is room L203?",
+  "What do I need to bring tomorrow for the procedure?",
+  "Who is the discharge nurse?",
 ];
 
 // The current stage's own staff-vetted "Quick answers" (see StageDetail),

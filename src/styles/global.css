@@ -419,7 +419,7 @@ button:focus-visible {
 }
 
 .welcome-text-block {
-  margin-top: 26px;
+  margin-top: 36px;
 }
 
 .welcome-cta {
@@ -448,36 +448,41 @@ button:focus-visible {
 
 .welcome-eyebrow {
   text-align: center;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 16px;
 }
 
 .welcome-greeting {
   text-align: center;
-  font-size: 15px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 10px;
 }
 
 .welcome-hero-title {
   text-align: center;
-  font-size: 28px;
-  line-height: 1.18;
+  font-size: 29px;
+  line-height: 1.22;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .welcome-meta {
+  display: inline-block;
   text-align: center;
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 7px 16px;
 }
 
 /* Home, "right now" card */
@@ -2467,6 +2472,20 @@ button.resource-item {
   border-bottom-right-radius: 6px;
 }
 
+.chat-bubble-link {
+  display: block;
+  margin-top: 10px;
+  background: var(--accent-tint);
+  color: var(--accent-deep);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
 .chat-typing {
   display: flex;
   align-items: center;
@@ -2498,12 +2517,14 @@ button.resource-item {
   width: 100%;
   max-width: 440px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 0 20px;
 }
 
 .chat-suggestions-label {
+  flex-basis: 100%;
   font-size: 11px;
   font-weight: 700;
   color: var(--text-soft);
@@ -2513,6 +2534,8 @@ button.resource-item {
 }
 
 .chat-suggestion-chip {
+  flex: 0 0 auto;
+  max-width: 100%;
   text-align: left;
   background: var(--accent-tint);
   color: var(--accent-deep);
@@ -3022,7 +3045,7 @@ button.resource-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(12px + env(safe-area-inset-top)) 16px 10px;
+  padding: calc(24px + env(safe-area-inset-top)) 16px 10px;
   flex-shrink: 0;
 }
 
@@ -3031,24 +3054,6 @@ button.resource-item {
   text-align: center;
   font-size: 14px;
   font-weight: 700;
-}
-
-.map3d-back {
-  background: var(--surface);
-  border: none;
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  padding-right: 2px;
 }
 
 .map3d-canvas-wrap {

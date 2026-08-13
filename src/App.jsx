@@ -247,7 +247,9 @@ export default function App() {
         />
       )}
 
-      {phase === "ask" && <Ask onBack={() => setPhase("home")} currentStage={currentStage} />}
+      {phase === "ask" && (
+        <Ask onBack={() => setPhase("home")} currentStage={currentStage} onOpenMap={() => setMapOpen(true)} />
+      )}
 
       {phase === "you" && <You />}
 

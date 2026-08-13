@@ -2,16 +2,16 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { answerQuestion, SUGGESTED_QUESTIONS, getStageQuickQuestions } from "../../lib/askAssistant.js";
 
 const GREETING =
-  "Hi, I'm here for quick logistics and app questions, things like wifi, parking, or how a screen works. For anything about Maya's care or the procedure itself, her care team is always the better answer, so I'll point you back to them for that.";
+  "Hi, I'm your AI assistant for questions that come up during today's visit. For anything about Maya's care, her care team is always the best answer, I'll point you to them for that.";
 
-function makeMessage(role, text) {
-  return { id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`, role, text };
+function makeMessage(role, text, link) {
+  return { id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`, role, text, link };
 }
 
 // Deliberately scoped: this chat answers app/hospital logistics only.
 // Anything that reads as being about Maya's care routes to the care
 // team instead, see askAssistant.js for the actual constraint.
-export default function Ask({ onBack, currentStage }) {
+export default function Ask({ onBack, currentStage, onOpenMap }) {
   const [messages, setMessages] = useState(() => [makeMessage("assistant", GREETING)]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -30,10 +30,16 @@ export default function Ask({ onBack, currentStage }) {
     // Prototype stub: no model call behind this, a short delay stands in
     // for one so the reply doesn't just snap in.
     setTimeout(() => {
-      const { reply } = answerQuestion(trimmed, currentStage);
-      setMessages((prev) => [...prev, makeMessage("assistant", reply)]);
+      const { reply, link } = answerQuestion(trimmed, currentStage);
+      setMessages((prev) => [...prev, makeMessage("assistant", reply, link)]);
       setThinking(false);
     }, 650);
+  }
+
+  // A reply can carry a follow-up action, like opening the hospital
+  // map, rather than only ever being plain text.
+  function handleLink(link) {
+    if (link.action === "map") onOpenMap();
   }
 
   // A tap on one of today's staff-vetted Quick answers skips the
@@ -81,7 +87,14 @@ export default function Ask({ onBack, currentStage }) {
       <div className="chat-thread">
         {messages.map((m) => (
           <div className={`chat-bubble-row ${m.role}`} key={m.id}>
-            <div className={`chat-bubble ${m.role}`}>{m.text}</div>
+            <div className={`chat-bubble ${m.role}`}>
+              {m.text}
+              {m.link && (
+                <button className="chat-bubble-link" onClick={() => handleLink(m.link)}>
+                  {m.link.label} ›
+                </button>
+              )}
+            </div>
           </div>
         ))}
         {thinking && (
