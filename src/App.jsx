@@ -7,6 +7,7 @@ import Home from "./components/screens/Home.jsx";
 import StageDetail from "./components/screens/StageDetail.jsx";
 import ResourceDetail from "./components/screens/ResourceDetail.jsx";
 import Notes from "./components/screens/Notes.jsx";
+import Ask from "./components/screens/Ask.jsx";
 import You from "./components/screens/You.jsx";
 import TabBar from "./components/TabBar.jsx";
 import StageStory from "./components/StageStory.jsx";
@@ -16,7 +17,9 @@ import HeartRunner from "./components/HeartRunner.jsx";
 import { STAGES } from "./data/stages.js";
 import * as familyStore from "./lib/familyStore.js";
 
-// phase: "welcome" | "home" | "stage" | "updates" | "you"
+// phase: "welcome" | "home" | "stage" | "updates" | "ask" | "you"
+// "ask" has no tab bar of its own, same as "welcome", it's reached via
+// the Ask tab button and uses its own back arrow + input bar instead.
 const TAB_PHASES = ["home", "updates", "you"];
 
 const BOOT_WORDS = ["Connecting", "Gathering", "Preparing", "Assembling"];
@@ -243,6 +246,8 @@ export default function App() {
           onOpenComposer={() => setComposerOpen(true)}
         />
       )}
+
+      {phase === "ask" && <Ask onBack={() => setPhase("home")} currentStage={currentStage} />}
 
       {phase === "you" && <You />}
 
