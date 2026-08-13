@@ -71,25 +71,24 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
       <div className="path-hero path-hero-plain">
         <div className="eyebrow">Updates &amp; notes</div>
         <div className="title headline">Everything from today</div>
-        <div className="sub">
-          Check-ins from the team, plus anything you write or record yourself, together in one feed.
-        </div>
+        <div className="sub">Check-ins from the team, plus anything you write or record.</div>
       </div>
 
       <div className="section-row">
         <div className="section-label" style={{ margin: 0 }}>
           Today
         </div>
-        <button className="pencil-btn" aria-label="Add a note" onClick={onOpenComposer}>
+        <button className="pencil-btn" onClick={onOpenComposer}>
           <svg viewBox="0 0 24 24" fill="none">
             <path
               d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
               stroke="currentColor"
-              strokeWidth="1.7"
+              strokeWidth="1.9"
               strokeLinejoin="round"
             />
-            <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.7" />
+            <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.9" />
           </svg>
+          Write
         </button>
       </div>
 
@@ -107,12 +106,30 @@ export default function Notes({ logEntries, checkins, onOpenComposer }) {
       </div>
 
       {feed.length === 0 ? (
-        <div className="qa-scope-note">
-          {filter === "all" &&
-            "Nothing yet. Check-ins from the team and anything you write or record will show up here together, newest first."}
-          {filter === "checkin" && "No check-ins yet. They'll show up here as the team sends them."}
-          {filter === "note" && "No notes yet. Tap the pencil to write or record one."}
-        </div>
+        filter === "checkin" ? (
+          <div className="qa-scope-note">No check-ins yet. They'll show up here as the team sends them.</div>
+        ) : (
+          <div className="notes-empty-state">
+            <div className="notes-empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M14.5 4.5l5 5L9 20H4v-5L14.5 4.5z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <path d="M12.5 6.5l5 5" stroke="currentColor" strokeWidth="1.6" />
+              </svg>
+            </div>
+            <div className="notes-empty-title">
+              {filter === "note" ? "Nothing you've written yet" : "Nothing here yet"}
+            </div>
+            <div className="notes-empty-sub">Write it down, or record it and we'll type it up.</div>
+            <button className="notes-empty-cta" onClick={onOpenComposer}>
+              Write your first update
+            </button>
+          </div>
+        )
       ) : (
         <div className="notif-feed">
           {feed.map((e, i) => (

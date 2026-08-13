@@ -8,7 +8,16 @@ import NotifCard from "../NotifCard.jsx";
 // Home shows only the latest check-in, replaced as new ones land. The
 // full history stays one tap away in Updates, so nothing is lost, it
 // just isn't stacked up on the home screen.
-export default function Home({ currentStage, onOpenStory, checkins, onSeeAllCheckins, onOpenMap, liveLabel }) {
+export default function Home({
+  currentStage,
+  completedStages,
+  onToggleComplete,
+  onOpenStory,
+  checkins,
+  onSeeAllCheckins,
+  onOpenMap,
+  liveLabel,
+}) {
   const [dismissed, setDismissed] = useState(() => new Set());
   const latest = checkins.find((c) => !dismissed.has(c.key)) || null;
 
@@ -41,8 +50,7 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
 
       {!latest ? (
         <div className="qa-scope-note">
-          No updates yet. The moment something happens, it'll show up here, this
-          isn't a live feed, so a quiet stretch doesn't mean anything's wrong.
+          No updates yet. This isn't a live feed, so a quiet stretch doesn't mean anything's wrong.
         </div>
       ) : (
         <div className="latest-checkin">
@@ -66,7 +74,12 @@ export default function Home({ currentStage, onOpenStory, checkins, onSeeAllChec
       )}
 
       <div className="section-label">Maya's path</div>
-      <StoryTray currentStage={currentStage} onOpenStory={onOpenStory} />
+      <StoryTray
+        currentStage={currentStage}
+        completedStages={completedStages}
+        onToggleComplete={onToggleComplete}
+        onOpenStory={onOpenStory}
+      />
     </div>
   );
 }

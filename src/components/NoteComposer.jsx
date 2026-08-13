@@ -142,6 +142,23 @@ export default function NoteComposer({ onClose, onSave }) {
         )}
 
         {micError && <div className="mic-error">{micError}</div>}
+
+        {!transcribing && !recording && !micError && !text && (
+          <div className="wa-idle-hint">
+            <div className="wa-idle-hint-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                <path
+                  d="M6 11a6 6 0 0 0 12 0M12 17v3"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <div className="wa-idle-hint-text">Type what you heard, or tap the mic to record it</div>
+          </div>
+        )}
       </div>
 
       <div className="wa-input-bar">

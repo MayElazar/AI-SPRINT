@@ -45,9 +45,12 @@ const RESOURCE_ICON = {
 
 export default function StageDetail({
   stageIndex,
+  completed,
+  onToggleComplete,
   onBack,
   onOpenStory,
   onOpenResource,
+  onOpenMap,
   onOpenGame,
   onNavigate,
   checkins,
@@ -106,7 +109,7 @@ export default function StageDetail({
             ref={videoRef}
             className="stage-hero-video"
             src={s.videoUrl}
-            poster={POSTER_PHOTOS[s.avatar]}
+            poster={POSTER_PHOTOS[s.videoAvatar || s.avatar]}
             muted
             playsInline
             preload="metadata"
@@ -114,11 +117,25 @@ export default function StageDetail({
             onClick={togglePlay}
           />
           {!playing && (
-            <button className="stage-hero-play" aria-label="Play" onClick={togglePlay}>
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
-              </svg>
-            </button>
+            <>
+              <div className="stage-hero-scrim" aria-hidden="true" />
+              <button className="stage-hero-play" aria-label="Play" onClick={togglePlay}>
+                <span className="stage-hero-play-ring" aria-hidden="true" />
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M8 5.5v13l11-6.5-11-6.5z" fill="#fff" />
+                </svg>
+              </button>
+              {s.resource?.label && (
+                <div className="stage-hero-caption">
+                  <span className="stage-hero-caption-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
+                    </svg>
+                  </span>
+                  {s.resource.label}
+                </div>
+              )}
+            </>
           )}
           <button
             className="stage-hero-expand"
@@ -141,6 +158,28 @@ export default function StageDetail({
       <div className="stage-hero-welcome headline">{s.title}</div>
       <div className="stage-hero-sub">{s.sub}</div>
 
+      <button
+        type="button"
+        className={`stage-complete-toggle ${completed ? "on" : ""}`}
+        aria-pressed={completed}
+        onClick={onToggleComplete}
+      >
+        <span className="stage-complete-check" aria-hidden="true">
+          {completed && (
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 12.5l4.5 4.5L19 7"
+                stroke="#fff"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </span>
+        {completed ? "Marked as completed" : "Mark this stage as completed"}
+      </button>
+
       {latestCheckin && (
         <div className="stage-feature-card stage-feature-card-static">
           <div className="stage-feature-label">Latest update</div>
@@ -161,38 +200,78 @@ export default function StageDetail({
         </div>
       )}
 
-      {s.checklist.length > 0 && (
+      {((s.instructions || []).length > 0 || (s.recommendations || []).length > 0) && (
         <div className="stage-feature-card stage-feature-card-static">
           <div className="stage-feature-label">{s.checklistLabel || "Checklist"}</div>
           {s.checklistIntro && <div className="stage-checklist-intro">{s.checklistIntro}</div>}
-          <div className="check-list">
-            {s.checklist.map((c) => {
-              const itemKey = `${s.key}::${c}`;
-              const checked = checkedItems.has(itemKey);
-              return (
-                <button
-                  key={c}
-                  className={`check-item ${checked ? "checked" : ""}`}
-                  onClick={() => toggleChecklistItem(itemKey)}
-                >
-                  <span className="check-item-box" aria-hidden="true">
-                    {checked && (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M5 12.5l4.5 4.5L19 7"
-                          stroke="#fff"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                  <span className="check-item-text">{c}</span>
-                </button>
-              );
-            })}
-          </div>
+
+          {(s.instructions || []).length > 0 && (
+            <div className="checklist-group">
+              <div className="checklist-group-label instructions">Instructions</div>
+              <div className="check-list">
+                {s.instructions.map((c) => {
+                  const itemKey = `${s.key}::instr::${c}`;
+                  const checked = checkedItems.has(itemKey);
+                  return (
+                    <button
+                      key={c}
+                      className={`check-item instruction ${checked ? "checked" : ""}`}
+                      onClick={() => toggleChecklistItem(itemKey)}
+                    >
+                      <span className="check-item-box" aria-hidden="true">
+                        {checked && (
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M5 12.5l4.5 4.5L19 7"
+                              stroke="#fff"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="check-item-text">{c}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {(s.recommendations || []).length > 0 && (
+            <div className="checklist-group">
+              <div className="checklist-group-label recommendations">Recommended, not required</div>
+              <div className="check-list">
+                {s.recommendations.map((c) => {
+                  const itemKey = `${s.key}::rec::${c}`;
+                  const checked = checkedItems.has(itemKey);
+                  return (
+                    <button
+                      key={c}
+                      className={`check-item recommendation ${checked ? "checked" : ""}`}
+                      onClick={() => toggleChecklistItem(itemKey)}
+                    >
+                      <span className="check-item-box" aria-hidden="true">
+                        {checked && (
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M5 12.5l4.5 4.5L19 7"
+                              stroke="#fff"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="check-item-text">{c}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -223,7 +302,7 @@ export default function StageDetail({
               <button
                 className="resource-item"
                 key={r.title}
-                onClick={() => onOpenResource(r, s.color)}
+                onClick={() => (r.type === "map" ? onOpenMap() : onOpenResource(r, s.color))}
               >
                 <div className={`resource-item-icon tint-${s.color}`}>{RESOURCE_ICON[r.type]}</div>
                 <div className="resource-item-body">
@@ -242,22 +321,10 @@ export default function StageDetail({
           <div className="stage-game-card-icon">🏃</div>
           <div className="resource-item-body">
             <div className="resource-item-title">A game for Maya</div>
-            <div className="resource-item-sub">Run the halls and catch hearts along the way.</div>
+            <div className="resource-item-sub">A quick game to pass the time.</div>
           </div>
           <div className="resource-item-chev">›</div>
         </button>
-      )}
-
-      {s.qa.length > 0 && (
-        <>
-          <div className="section-label">Quick answers</div>
-          {s.qa.map((item) => (
-            <div className="qa-card" key={item.q}>
-              <div className="qa-q">{item.q}</div>
-              <div className="qa-a">{item.a}</div>
-            </div>
-          ))}
-        </>
       )}
 
       <div className="story-nav stage-detail-nav">

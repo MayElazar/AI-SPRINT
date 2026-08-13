@@ -1,36 +1,58 @@
 import StageIcon from "./StageIcon.jsx";
 import { STAGES } from "../data/stages.js";
 
-// Stacked cards, matching the check-in notification style, rather
-// than a horizontal circle scroller. Each stage's icon sits on its
-// own pastel tint, the current stage gets a highlighted card. Every
-// stage stays browsable regardless of progress, only completing one
-// is gated on order, not looking at it.
-export default function StoryTray({ currentStage, onOpenStory }) {
+// Maya's path: one card per stage, each with its own color and icon
+// so stages stay easy to tell apart, connected by a line down the left
+// edge so the sequence still reads as ordered stages, not a flat list.
+// Tapping a stage's icon toggles it complete/not-complete (a small
+// checkmark badge appears), tapping the rest of the card opens it.
+// Completion is its own state (see App's completedStages), not
+// something visiting a stage sets automatically.
+export default function StoryTray({ currentStage, completedStages, onToggleComplete, onOpenStory }) {
   return (
-    <div className="path-cards">
+    <div className="path-stepper">
       {STAGES.map((s, i) => {
-        const status = i < currentStage ? "done" : i === currentStage ? "current" : "upcoming";
+        const done = completedStages.has(i);
+        const status = done ? "done" : i === currentStage ? "current" : "upcoming";
+        const isLast = i === STAGES.length - 1;
         return (
-          <button key={s.key} className={`path-card ${status}`} onClick={() => onOpenStory(i)}>
-            <div className={`path-card-icon tint-${s.color}`}>
-              <StageIcon stageKey={s.key} />
-              {status === "done" && (
-                <span className="path-card-check" aria-hidden="true">
-                  ✓
-                </span>
-              )}
+          <div key={s.key} className="stepper-row">
+            <div className="stepper-track">
+              <button
+                type="button"
+                className={`stepper-icon tint-${s.color} ${status}`}
+                aria-pressed={done}
+                aria-label={done ? `Mark ${s.label} as not completed` : `Mark ${s.label} as completed`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleComplete(i);
+                }}
+              >
+                <StageIcon stageKey={s.key} />
+                {done && (
+                  <span className="stepper-icon-check" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M5 12.5l4.5 4.5L19 7"
+                        stroke="#fff"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                )}
+              </button>
+              {!isLast && <div className="stepper-line" />}
             </div>
-            <div className="path-card-body">
-              <div className="path-card-label">{s.label}</div>
-              <div className="path-card-meta">
-                {status === "current" && "Happening now"}
-                {status === "done" && "Completed"}
-                {status === "upcoming" && "Up next"}
-              </div>
+            <div className={`path-card ${status}`}>
+              <button className="path-card-body" onClick={() => onOpenStory(i)}>
+                <div className="path-card-title">{s.label}</div>
+                <div className="path-card-sub">{s.sub}</div>
+              </button>
+              <div className="path-card-chev">›</div>
             </div>
-            <div className="path-card-chev">›</div>
-          </button>
+          </div>
         );
       })}
     </div>

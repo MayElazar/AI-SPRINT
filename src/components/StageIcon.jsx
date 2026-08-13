@@ -42,6 +42,18 @@ const ArrivalIcon = (
   </svg>
 );
 
+// IV drip bag, the pre-op prep stage.
+const PreProcedureIcon = (
+  <svg viewBox="0 0 24 24">
+    <path d="M8.5 2.75h7l-1 5.5h-5l-1-5.5Z" {...S} />
+    <path d="M12 8.25v3.5" {...S} />
+    <path
+      d="M12 11.75c2.9 2.85 4.25 4.95 4.25 6.9a4.25 4.25 0 1 1-8.5 0c0-1.95 1.35-4.05 4.25-6.9Z"
+      {...S}
+    />
+  </svg>
+);
+
 // Heart with a pulse line through it.
 const ProcedureIcon = (
   <svg viewBox="0 0 24 24">
@@ -77,6 +89,7 @@ const ReadyIcon = (
 const ICONS = {
   daybefore: DayBeforeIcon,
   arrival: ArrivalIcon,
+  preprocedure: PreProcedureIcon,
   procedure: ProcedureIcon,
   recovery: RecoveryIcon,
   ready: ReadyIcon,

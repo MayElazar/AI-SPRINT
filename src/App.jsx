@@ -38,6 +38,11 @@ export default function App() {
   const [booting, setBooting] = useState(true);
   const [bootWordIndex, setBootWordIndex] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
+  // Separate from currentStage on purpose: currentStage tracks how far
+  // the timeline has progressed (drives check-in delivery), completion
+  // is a family-controlled checkbox that doesn't move just from opening
+  // a stage, so it needs its own state.
+  const [completedStages, setCompletedStages] = useState(() => new Set());
   const [openStageIndex, setOpenStageIndex] = useState(null);
   const [openResource, setOpenResource] = useState(null); // { resource, color }
   const [storyIndex, setStoryIndex] = useState(null); // non-null while the story overlay is open
@@ -155,6 +160,15 @@ export default function App() {
     [checkinsChrono, deliveredCount]
   );
 
+  function toggleStageComplete(i) {
+    setCompletedStages((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  }
+
   function openStage(i) {
     setOpenStageIndex(i);
     setPhase("stage");
@@ -187,6 +201,8 @@ export default function App() {
       {phase === "home" && (
         <Home
           currentStage={currentStage}
+          completedStages={completedStages}
+          onToggleComplete={toggleStageComplete}
           onOpenStory={openStage}
           checkins={deliveredCheckins}
           onSeeAllCheckins={() => setPhase("updates")}
@@ -198,9 +214,12 @@ export default function App() {
       {phase === "stage" && openStageIndex !== null && (
         <StageDetail
           stageIndex={openStageIndex}
+          completed={completedStages.has(openStageIndex)}
+          onToggleComplete={() => toggleStageComplete(openStageIndex)}
           onBack={() => setPhase("home")}
           onOpenStory={(i) => setStoryIndex(i)}
           onOpenResource={(resource, color) => setOpenResource({ resource, color })}
+          onOpenMap={() => setMapOpen(true)}
           onOpenGame={() => setGameOpen(true)}
           onNavigate={(i) => {
             if (i < 0 || i >= STAGES.length) return;

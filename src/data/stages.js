@@ -9,24 +9,26 @@ import galitPhoto from "../assets/galit.png";
 export const STAGES = [
   {
     key: "daybefore",
-    label: "The day before",
+    label: "Preparation",
     game: true,
     person: "Your care team",
     role: "Getting everything ready for tomorrow",
     avatar: "team",
     color: "cyan",
-    title: "The day before",
-    sub: "A few things to sort out tonight, so tomorrow morning is one less thing to think about.",
+    title: "Preparation",
+    sub: "A few things to take care of tonight before tomorrow.",
     offers: ["Checklist"],
     resource: null,
-    checklist: [
-      "Fasting after 8:00 PM tonight",
-      "Clear liquids only until 6:00 AM",
-      "Bring insurance card and ID",
-      "Bring a list of current medications",
-      "Bring a comfort item, like a favorite stuffed animal",
-      "Wear comfortable clothing, easy to change out of",
+    instructions: [
+      "Maya should fast, no food, starting at 8:00 PM tonight",
+      "Give clear liquids only after that, and nothing at all after 6:00 AM tomorrow",
+      "Bring Maya's insurance card and a photo ID",
+      "Bring a written list of Maya's current medications",
       "Confirm tomorrow's arrival time and where to check in",
+    ],
+    recommendations: [
+      "Pack a comfort item, like a favorite stuffed animal",
+      "Dress Maya in comfortable clothing that's easy to change out of",
       "Try to get a good night's sleep, yours matters too",
     ],
     checkins: [],
@@ -35,24 +37,24 @@ export const STAGES = [
       {
         type: "guide",
         title: "Talking to Maya about tomorrow",
-        body: "Age-appropriate words for a 4-year-old, and what not to promise her.",
+        body: "What to say tonight, and what not to promise.",
         full: [
           "Keep it simple: \"the doctors are fixing a small part of your heart.\"",
           "It's okay if Maya asks the same question more than once.",
           "Avoid words like \"cut\" or \"needle\" right before bed.",
-          "Answer honestly, even \"I don't know, let's ask tomorrow\" is a fine answer.",
-          "Remind her that you'll be there the whole time, that's the part kids worry about most.",
-          "Let her pack her own comfort item, having a job to do helps her feel in control.",
+          "Answer honestly. \"I don't know, let's ask tomorrow\" is a fine answer.",
+          "Remind her you'll be there the whole time.",
+          "Let her pack her own comfort item.",
         ],
       },
       {
         type: "article",
         title: "Fasting and arrival rules",
-        body: "What Maya can eat or drink, and exactly when to arrive.",
+        body: "When Maya can eat, drink, and when to arrive.",
         full: [
           "Maya can eat and drink normally until midnight the night before.",
           "After that, water only, and nothing at all starting 6 hours before her scheduled time.",
-          "Arrive 30 minutes early to allow time for check-in, that buffer is built in on purpose, even if traffic and parking go smoothly.",
+          "Arrive 30 minutes early for check-in.",
         ],
       },
     ],
@@ -63,6 +65,7 @@ export const STAGES = [
     person: "Yael",
     role: "Unit nurse, your point of contact today",
     avatar: "yael",
+    videoAvatar: "doctor",
     color: "gold",
     team: [
       {
@@ -85,22 +88,24 @@ export const STAGES = [
       },
     ],
     title: "Arrival & admission",
-    sub: "Meeting your team, a quick tour of the unit, and getting checked in, all before things get moving.",
+    sub: "Meet your team, tour the unit, and check in.",
     offers: ["Video", "Checklist"],
     resource: {
       type: "video",
-      label: "A video from Yael",
+      label: "A video from Dr. Bruckheimer",
       body: "Getting oriented for today",
     },
     videoUrl: "/videos/checkedin.mp4",
     transcript:
-      "Hi, I'm Yael. I'll be with you throughout today. Right now our team is confirming your child's details and getting everything ready before the procedure begins.",
+      "Hi, I'm Dr. Bruckheimer. I'll be leading Maya's procedure today. Right now our team is confirming her details and getting everything ready before we begin.",
     checklistLabel: "What to bring",
-    checklist: [
-      "Insurance card and ID",
-      "List of Maya's current medications",
-      "Favorite toy or blanket",
-      "Something for you: a book, headphones, whatever helps",
+    instructions: [
+      "Bring Maya's insurance card and ID",
+      "Bring a list of Maya's current medications",
+    ],
+    recommendations: [
+      "Bring her favorite toy or blanket",
+      "Bring something for you too: a book, headphones, whatever helps",
     ],
     checkins: [],
     qa: [
@@ -125,17 +130,77 @@ export const STAGES = [
       {
         type: "map",
         title: "Hospital map",
-        body: "Cath Lab unit, waiting area, cafeteria, and the quiet room, all on one map.",
+        body: "Cath Lab, waiting area, cafeteria, and quiet room.",
       },
       {
         type: "guide",
         title: "If Maya gets anxious waiting",
-        body: "A few things that actually help kids her age in a waiting room.",
+        body: "What helps kids her age in a waiting room.",
         full: [
-          "A familiar comfort item from home helps more than most toys bought for the occasion.",
+          "A familiar comfort item helps more than a new toy.",
           "Short simple games work better than a long video.",
-          "Keep a calm, matter-of-fact tone, kids pick up on parental anxiety fast.",
-          "The quiet room is available anytime either of you needs a few minutes away from the main waiting area.",
+          "Stay calm and matter-of-fact, kids pick up on anxiety fast.",
+          "The quiet room is open anytime you need a few minutes away.",
+        ],
+      },
+    ],
+  },
+  {
+    key: "preprocedure",
+    label: "Pre Procedure",
+    person: "Pre-op nurse",
+    role: "Getting Maya ready for the procedure room",
+    avatar: "nurse",
+    color: "purple",
+    title: "Pre Procedure",
+    sub: "Changing, monitors, and meeting the anesthesia team.",
+    offers: ["Checklist"],
+    resource: null,
+    checklist: [],
+    checkins: [
+      {
+        time: "10:50 AM",
+        text: "Maya's in her gown. The anesthesia team is meeting with you both now.",
+        person: "Pre-op nurse",
+        role: "Getting Maya ready for the procedure room",
+      },
+    ],
+    qa: [
+      {
+        q: "Can I stay with Maya until she's asleep?",
+        a: "Yes, one parent can stay right up until she's under anesthesia, then a nurse walks you out to the waiting area.",
+      },
+      {
+        q: "Why does the anesthesia team ask the same questions Yael already asked?",
+        a: "It's a deliberate double-check, not a sign anything was missed the first time.",
+      },
+      {
+        q: "Will Maya be awake when they place the IV?",
+        a: "Usually not, the anesthesia team times sedation so the IV goes in once she's already calm or asleep.",
+      },
+    ],
+    resources: [
+      {
+        type: "guide",
+        title: "What happens in pre-op",
+        body: "What happens, in order.",
+        full: [
+          "Maya changes into a gown. A nurse attaches monitors for her heart rate and oxygen.",
+          "The anesthesia team introduces themselves and reviews her history. Some questions repeat Yael's, that's a safety check.",
+          "A light sedative, often a flavored liquid, helps her relax first.",
+          "You stay with her until she's fully asleep.",
+          "A nurse then walks you to the waiting area. The procedure starts shortly after.",
+        ],
+      },
+      {
+        type: "guide",
+        title: "Helping Maya through this part",
+        body: "What helps in the last few minutes before anesthesia.",
+        full: [
+          "\"Sleepy medicine\" lands better than technical words.",
+          "Bringing her comfort item into pre-op is usually fine, ask the nurse to confirm.",
+          "A calm, steady voice from you matters more than what you say.",
+          "Grogginess or silliness as the sedative kicks in is normal.",
         ],
       },
     ],
@@ -162,19 +227,13 @@ export const STAGES = [
     checkins: [
       {
         time: "11:42 AM",
-        text: "Maya is settled and the procedure has started, on schedule.",
-        person: "Noa K.",
-        role: "Care coordinator, covering check-ins during the procedure",
-      },
-      {
-        time: "12:35 PM",
-        text: "Still on track. No news is expected news right now.",
+        text: "Procedure started on schedule. Maya is settled.",
         person: "Noa K.",
         role: "Care coordinator, covering check-ins during the procedure",
       },
       {
         time: "1:20 PM",
-        text: "Running about 20 minutes past the typical window, this happens and isn't a concern on its own.",
+        text: "Running about 20 minutes behind schedule. This is normal, not a concern.",
         person: "Noa K.",
         role: "Care coordinator, covering check-ins during the procedure",
       },
@@ -193,12 +252,12 @@ export const STAGES = [
       {
         type: "article",
         title: "What to expect during the wait",
-        body: "Typical timing, what's normal, and when a delay is actually worth asking about.",
+        body: "Typical timing and what's normal.",
         full: [
           "Most procedures run 2 to 3 hours.",
-          "It's normal, even expected, for that to feel longer than the procedure itself does for your child.",
+          "It's normal for the wait to feel longer than the procedure itself.",
           "Timing can vary by 20 minutes or more without anything being wrong.",
-          "Someone will always come find you the moment there's an update, so there's no need to go looking.",
+          "Someone will come find you the moment there's an update.",
         ],
       },
       {
@@ -223,7 +282,7 @@ export const STAGES = [
     checkins: [
       {
         time: "1:52 PM",
-        text: "Maya is out of the procedure and in recovery, vitals being monitored.",
+        text: "Maya's out of the procedure and in recovery. Vitals are being monitored.",
         person: "Yael",
         role: "Unit nurse, your point of contact today",
       },
@@ -244,20 +303,20 @@ export const STAGES = [
         title: "What's happening right now",
         body: "What the team's doing, where to go, and how long it takes.",
         full: [
-          "Maya is in the recovery bay, being watched closely as the sedation wears off, vitals are checked regularly the whole time.",
+          "Maya's in the recovery bay while the sedation wears off. Vitals are checked regularly.",
           "This usually takes 15 to 20 minutes from when she arrives in recovery.",
-          "You don't need to go looking for her, Yael or another team member will come get you from the family waiting area as soon as she's settled and ready for you.",
-          "The recovery bay is just past the Cath Lab unit, it's marked on the hospital map if you want to see exactly where.",
+          "Yael or another team member will come get you from the waiting area once she's ready.",
+          "The recovery bay is just past the Cath Lab unit, marked on the hospital map.",
         ],
       },
       {
         type: "guide",
         title: "What waking up looks like",
-        body: "Grogginess and fussiness are normal, here's what actually helps.",
+        body: "Grogginess and fussiness are normal, here's what helps.",
         full: [
-          "Some grogginess, fussiness, or brief confusion right after waking up is completely normal.",
+          "Grogginess, fussiness, or brief confusion right after waking up is normal.",
           "It usually passes within the first 15 to 20 minutes.",
-          "You'll be brought in to see her as soon as she's settled, seeing a familiar face tends to help more than anything else at that point.",
+          "You'll be brought in as soon as she's settled. Seeing you helps more than anything else.",
         ],
       },
     ],
@@ -268,7 +327,7 @@ export const STAGES = [
     person: "Galit",
     role: "Discharge nurse",
     avatar: "galit",
-    color: "gold",
+    color: "coral",
     title: "Discharge",
     sub: "The last stage. Instructions get written down as Galit covers them.",
     offers: ["Video", "Checklist"],
@@ -278,14 +337,14 @@ export const STAGES = [
       body: "Getting ready to head home",
     },
     videoUrl: "/videos/ready.mp4",
-    checklist: [
-      "Rest today, no running, contact sports, or biking for a week",
-      "Check the puncture site daily for 3 days, change the dressing once a day",
-      "No bath or pool for 24 hours, no swimming for a week",
-      "Mild leg discomfort for a few days is normal",
-      "Call the unit if: bleeding, spreading redness, worsening pain, a cold limb, or fever above 38C",
-      "Follow-up echo, about 6 months out",
+    instructions: [
+      "Keep Maya resting today, no running, contact sports, or biking for one week",
+      "Check the puncture site once a day for 3 days, change the dressing once a day",
+      "No bath or pool for 24 hours, no swimming for one week",
+      "Call the unit right away if you see: bleeding, spreading redness, worsening pain, a cold limb, or a fever above 38C",
+      "Schedule the follow-up echo for about 6 months from today",
     ],
+    recommendations: ["Mild leg discomfort for a few days is normal, no action needed unless it gets worse"],
     checkins: [],
     qa: [
       {
@@ -301,11 +360,11 @@ export const STAGES = [
       {
         type: "guide",
         title: "Explaining recovery at home to Maya",
-        body: "Why she has to rest for a few days, in words a 4-year-old will accept.",
+        body: "Why she needs to rest, explained simply.",
         full: [
-          "Her body did some hard work today and now needs a few quiet days to feel strong again, like resting after being really tired.",
+          "Her body worked hard today and needs a few quiet days to recover.",
           "Name the specific things she can't do yet, like running or swimming.",
-          "That tends to land better and cause fewer arguments than a vague \"take it easy.\"",
+          "That works better than a vague \"take it easy.\"",
         ],
       },
     ],

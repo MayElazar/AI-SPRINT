@@ -143,27 +143,25 @@ button:focus-visible {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* Extra bottom padding clears the now-fixed tab bar (~54px tall,
-     20px offset) so content never scrolls in underneath it. Screens
-     without a tab bar just get a bit of harmless extra whitespace. */
-  padding: 32px 20px calc(48px + 74px + 32px);
+  /* Top padding adds the device's own safe-area inset (notch/status
+     bar) on top of the visual gap, so content never starts flush with
+     the physical top edge. Bottom padding does the same plus clears
+     the now-fixed tab bar (~54px tall, 20px offset) so content never
+     scrolls in underneath it. Screens without a tab bar just get a
+     bit of harmless extra whitespace. */
+  padding: calc(40px + env(safe-area-inset-top)) 20px
+    calc(48px + 74px + 40px + env(safe-area-inset-bottom));
 }
 
 /* Onboarding + arrival */
-.onb-wrap {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 .welcome-screen {
-  padding-top: 0;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
   /* No tab bar on this screen, so match its bottom spacing (32px off
      the edge) directly instead of inheriting .screen's tab-bar
      clearance padding, which would leave the button floating with a
      much bigger gap than the tab bar ever has. */
-  padding-bottom: calc(32px + env(safe-area-inset-bottom));
 }
 
 .onb-hero {
@@ -380,35 +378,55 @@ button:focus-visible {
   font-size: 12.5px;
 }
 
-/* Welcome, hero photo bleeds against an angled backdrop panel rather
-   than sitting cropped inside a bounded card. */
-.welcome-hero-wrap {
+/* Welcome: a full-bleed abstract background (not a flat rectangle),
+   the doctor's cutout photo floating roughly mid-screen, and a
+   centered text block anchored toward the lower half, so the layout
+   uses the whole screen instead of stacking everything at the top. */
+.welcome-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(0, 181, 214, 0.4) 0%, transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(255, 198, 69, 0.28) 0%, transparent 38%),
+    radial-gradient(circle at 82% 78%, rgba(0, 181, 214, 0.3) 0%, transparent 45%),
+    radial-gradient(circle at 10% 85%, rgba(122, 90, 190, 0.35) 0%, transparent 45%),
+    linear-gradient(165deg, var(--accent) 0%, var(--accent-deep) 100%);
+}
+
+.welcome-layout {
   position: relative;
-  height: 330px;
-  margin-bottom: 22px;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 28px calc(32px + env(safe-area-inset-bottom));
 }
 
-.welcome-hero-backdrop {
-  position: absolute;
-  top: -22px;
-  left: -32px;
-  right: -32px;
-  height: 350px;
-  border-radius: 32px;
-  background: linear-gradient(160deg, var(--accent) 0%, var(--accent-deep) 100%);
-  box-shadow: var(--shadow-card);
+.welcome-portrait-wrap {
+  margin-top: auto;
+  padding-top: 12px;
 }
 
-.welcome-hero-photo {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  height: 296px;
+.welcome-portrait {
+  height: 240px;
   width: auto;
   max-width: none;
   object-fit: contain;
-  filter: drop-shadow(0 22px 26px rgba(20, 15, 35, 0.22));
+  filter: drop-shadow(0 22px 30px rgba(10, 8, 25, 0.35));
+}
+
+.welcome-text-block {
+  margin-top: 26px;
+}
+
+.welcome-cta {
+  margin-top: auto;
+  width: 100%;
+  background: #fff;
+  color: var(--accent-deep);
 }
 
 .welcome-float-icon {
@@ -429,49 +447,37 @@ button:focus-visible {
 .welcome-float-icon.icon-syringe { top: 148px; left: -8px; }
 
 .welcome-eyebrow {
-  text-align: left;
+  text-align: center;
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-deep);
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 10px;
+}
+
+.welcome-greeting {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
 }
 
 .welcome-hero-title {
-  text-align: left;
-  font-size: 34px;
-  line-height: 1.08;
+  text-align: center;
+  font-size: 28px;
+  line-height: 1.18;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: #fff;
   margin-bottom: 12px;
 }
 
-.welcome-sub {
-  text-align: left;
-  font-size: 15px;
-  color: var(--text-soft);
-  margin-bottom: 4px;
-}
-
 .welcome-meta {
-  text-align: left;
+  text-align: center;
   font-size: 12.5px;
-  color: var(--text-soft);
-  margin-bottom: 22px;
-}
-
-.welcome-note {
-  color: var(--text);
-  padding: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
-  text-align: left;
-  margin-bottom: 22px;
-}
-
-.welcome-note strong {
-  color: #000;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Home, "right now" card */
@@ -522,16 +528,88 @@ button:focus-visible {
   text-align: center;
 }
 
-/* Maya's path, stacked cards matching the check-in notification
-   style, rather than a horizontal circle scroller. */
-.path-cards {
+/* Maya's path: one colored, icon-per-stage card so stages stay easy
+   to tell apart, connected by a line down the left edge so the whole
+   thing still reads as an ordered sequence rather than a flat list. */
+.path-stepper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   margin-bottom: 4px;
 }
 
+.stepper-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.stepper-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stepper-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.stepper-icon > svg {
+  width: 23px;
+  height: 23px;
+}
+
+.stepper-icon.tint-purple { background: var(--purple-tint); color: var(--purple-tint-text); }
+.stepper-icon.tint-cyan { background: var(--cyan-tint); color: var(--cyan-tint-text); }
+.stepper-icon.tint-gold { background: var(--gold-tint); color: var(--gold-tint-text); }
+.stepper-icon.tint-coral { background: var(--coral-tint); color: var(--coral-tint-text); }
+.stepper-icon.tint-pink { background: var(--pink-tint); color: var(--pink-tint-text); }
+.stepper-icon.tint-green { background: var(--green-tint); color: var(--green-tint-text); }
+
+.stepper-icon.current {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.stepper-icon-check {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--available);
+  border: 2px solid var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepper-icon-check svg {
+  width: 10px;
+  height: 10px;
+}
+
+.stepper-line {
+  width: 2px;
+  flex: 1;
+  min-height: 12px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
 .path-card {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -539,10 +617,8 @@ button:focus-visible {
   border: 1px solid transparent;
   border-radius: 16px;
   box-shadow: var(--shadow-sm);
-  padding: 10px 12px;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 12px;
 }
 
 .path-card.current {
@@ -551,79 +627,36 @@ button:focus-visible {
   box-shadow: var(--shadow-card);
 }
 
-
-.path-card-lock svg {
-  width: 100%;
-  height: 100%;
-}
-
-.path-card-icon {
-  position: relative;
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/* Pastel ground, with the matching dark tint colour inherited by the
-   line icon's currentColor stroke. */
-.path-card-icon.tint-purple { background: var(--purple-tint); color: var(--purple-tint-text); }
-.path-card-icon.tint-cyan { background: var(--cyan-tint); color: var(--cyan-tint-text); }
-.path-card-icon.tint-gold { background: var(--gold-tint); color: var(--gold-tint-text); }
-.path-card-icon.tint-coral { background: var(--coral-tint); color: var(--coral-tint-text); }
-.path-card-icon.tint-pink { background: var(--pink-tint); color: var(--pink-tint-text); }
-.path-card-icon.tint-green { background: var(--green-tint); color: var(--green-tint-text); }
-
-.path-card-icon > svg {
-  width: 23px;
-  height: 23px;
-}
-
-.path-card-check {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--available);
-  color: #fff;
-  border: 2px solid var(--surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
-}
-
 .path-card-body {
   flex: 1;
   min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
 }
 
-.path-card-label {
-  font-size: 14px;
+.path-card-title {
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
 }
 
-.path-card.current .path-card-label {
+.path-card.current .path-card-title {
   color: var(--accent-deep);
 }
 
-.path-card-meta {
-  font-size: 11.5px;
+.path-card-sub {
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--text-soft);
-  margin-top: 1px;
-}
-
-.path-card.current .path-card-meta {
-  color: var(--accent);
-  font-weight: 600;
+  margin-top: 2px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .path-card-chev {
@@ -698,7 +731,7 @@ button:focus-visible {
 .story-top-ui {
   position: relative;
   z-index: 1;
-  padding: 12px 14px 0;
+  padding: calc(12px + env(safe-area-inset-top)) 14px 0;
 }
 
 .story-topbar {
@@ -802,6 +835,106 @@ button:focus-visible {
 .check-item.checked .check-item-text {
   color: var(--text-soft);
   text-decoration: line-through;
+}
+
+/* Instructions vs recommendations: instructions are the "must do"
+   items, given a solid coloured box and firmer text so they read as
+   direct. Recommendations are optional, so they get a lighter dashed
+   box and softer, smaller text, clearly a notch down in urgency. */
+.checklist-group + .checklist-group {
+  margin-top: 14px;
+}
+
+.checklist-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.checklist-group-label.instructions {
+  color: var(--accent-deep);
+}
+
+.checklist-group-label.recommendations {
+  color: var(--text-soft);
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.check-item.instruction .check-item-box {
+  border-color: var(--accent);
+}
+
+.check-item.instruction .check-item-text {
+  font-weight: 600;
+}
+
+.check-item.instruction.checked .check-item-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.check-item.recommendation .check-item-box {
+  border-style: dashed;
+}
+
+.check-item.recommendation .check-item-text {
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.check-item.recommendation.checked .check-item-text {
+  color: var(--text-soft);
+}
+
+/* Manual complete/uncomplete control for a stage, deliberately not
+   auto-set just from opening the stage, see App's completedStages. */
+.stage-complete-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 13px 16px;
+  border-radius: var(--radius-card);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stage-complete-toggle.on {
+  border-color: var(--available);
+  background: var(--green-tint);
+  color: var(--green-tint-text);
+}
+
+.stage-complete-check {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-complete-toggle.on .stage-complete-check {
+  border-color: var(--available);
+  background: var(--available);
+}
+
+.stage-complete-check svg {
+  width: 12px;
+  height: 12px;
 }
 
 .resource-list {
@@ -1317,20 +1450,78 @@ button.resource-item {
   object-fit: cover;
 }
 
+/* A bottom-up gradient, so the paused video reads as a real video
+   frame (something to press play on) rather than a flat portrait
+   photo, and keeps the caption legible over whatever's underneath. */
+.stage-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
+}
+
 .stage-hero-play {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+}
+
+.stage-hero-play-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  animation: stage-hero-pulse 2.2s ease-out infinite;
+}
+
+@keyframes stage-hero-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.stage-hero-caption {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.stage-hero-caption-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-hero-caption-icon svg {
+  width: 10px;
+  height: 10px;
 }
 
 .stage-hero-play svg {
@@ -1866,18 +2057,25 @@ button.resource-item {
 }
 
 .pencil-btn {
-  background: var(--surface);
+  background: var(--accent);
   border: none;
-  color: var(--accent-deep);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
+  color: #fff;
+  height: 34px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+.pencil-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .pencil-btn svg {
@@ -1926,8 +2124,45 @@ button.resource-item {
 
 .wa-compose-body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 8px 16px;
   overflow-y: auto;
+}
+
+/* Fills the otherwise-empty middle of the compose screen with a
+   direct prompt, so it reads as ready-to-use rather than blank. */
+.wa-idle-hint {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--text-soft);
+  padding-bottom: 40px;
+}
+
+.wa-idle-hint-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-idle-hint-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.wa-idle-hint-text {
+  font-size: 13.5px;
+  max-width: 220px;
 }
 
 .wa-recording-hint {
@@ -2028,6 +2263,64 @@ button.resource-item {
 
 .qa-scope-note strong {
   color: var(--accent-deep);
+}
+
+/* Empty state for Updates & notes, an inviting card with a direct way
+   in rather than just a line of grey text, since the pencil button up
+   top is easy to miss on a first visit. */
+.notes-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-card);
+  padding: 32px 24px 26px;
+  margin-top: 4px;
+}
+
+.notes-empty-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.notes-empty-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.notes-empty-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.notes-empty-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  max-width: 280px;
+  margin-bottom: 18px;
+}
+
+.notes-empty-cta {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Notes */
